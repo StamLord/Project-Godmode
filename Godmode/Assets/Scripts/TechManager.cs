@@ -242,7 +242,7 @@ public class TechManager : MonoBehaviour
     {
         #region Check
 
-        Move nextMove = m.moveArray[punchNum + 1];
+        Move nextMove = m.moveArray[(punchNum + 1)%m.moveArray.Length];
 
         if (nextMove.healthCost > character.health ||
             nextMove.staminaCost > character.stamina ||
@@ -405,7 +405,7 @@ public class TechManager : MonoBehaviour
 
         if (t.GetType() == typeof(MartialArt))
         {
-            if ((t as MartialArt).moveArray[punchNum].chargable)
+            if ((t as MartialArt).moveArray[(punchNum + 1) % (t as MartialArt).moveArray.Length].chargable)
                 TechCharge();
             else
                 UseMartialArt(t as MartialArt);

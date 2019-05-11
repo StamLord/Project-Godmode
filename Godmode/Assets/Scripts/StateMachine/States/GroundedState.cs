@@ -24,6 +24,7 @@ public class GroundedState : State
     public float doubleTapWindow = 0.5f;
     private float doubleTapTimer;
     private KeyCode lastKey;
+    private Vector3 inputVec;
 
     [Header("Melee")]
     public bool isChargingTech;
@@ -99,7 +100,7 @@ public class GroundedState : State
             float inputX = vi.horizontal;
             float inputZ = vi.vertical;
 
-            Vector3 inputVec;
+            //Vector3 inputVec;
 
             //If no target, create from own forward and right
             if (ts.lockOn == false)

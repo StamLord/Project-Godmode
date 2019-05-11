@@ -36,4 +36,4 @@ MonoBehaviour:
   attackAnimation: 1
   animation: {fileID: 0}
   stunTime: 0
-  juggle: 1
+  juggle: 0

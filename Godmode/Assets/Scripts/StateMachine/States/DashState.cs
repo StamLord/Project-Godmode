@@ -12,6 +12,8 @@ public class DashState : State
     protected TechManager techManager;
 
     [Header("Settings")]
+    public float staminaDepleteRate = 100f;
+    protected float staminaTimer;
     public float moveSpeed = 15f;
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
@@ -40,7 +42,7 @@ public class DashState : State
             Machine.SetState<GroundedState>();
 
         InputCheck();
-
+        StaminaDeplete();
         AnimationUpdate();
     }
 
@@ -187,6 +189,25 @@ public class DashState : State
                     if (camScript) camScript.StartShake(.75f, true);
             }
         }
+    }
+
+    private void StaminaDeplete()
+    {
+        if(staminaTimer >= 1f / staminaDepleteRate)
+        {
+            Machine.stamina--;
+            staminaTimer = 0f;
+
+            if (Machine.stamina <= 0)
+            {
+                if(Machine.groundCheck.grounded)
+                    Machine.SetState<GroundedState>();
+                else
+                    Machine.SetState<FlyingState>();
+            }
+        }
+        staminaTimer += Time.deltaTime;
+
     }
 
     private void MousePressMain()

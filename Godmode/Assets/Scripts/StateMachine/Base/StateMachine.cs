@@ -82,6 +82,7 @@ public class StateMachine : MonoBehaviour
 
     private void Update()
     {
+        Regen();
         UpdateUI();
     }
 
@@ -201,6 +202,10 @@ public class StateMachine : MonoBehaviour
                 //crashDirection = (worldPosition - transform.position).normalized;
                 SetState<CrashState>();
             }
+            else if (currentState.GetType() == typeof(JuggleState))
+            {
+                (currentState as JuggleState).timer = 0f;
+            }
             else
             {
                 SetState<HitState>();
@@ -212,6 +217,31 @@ public class StateMachine : MonoBehaviour
         UpdateHealth(-damage);
         if (camScript) camScript.StartShake(0.25f, true);
         return true;
+    }
+
+    void Regen()
+    {
+        if(healthRegenTimer >= 1f / healthRegenRate)
+        {
+            health = Mathf.Clamp(health + 1, 0, maxHealth);
+            healthRegenTimer -= 1f / healthRegenRate;
+        }
+
+        if (energyRegenTimer >= 1f / energyRegenRate)
+        {
+            energy = Mathf.Clamp(energy + 1, 0, maxEnergy);
+            energyRegenTimer -= 1f / energyRegenRate;
+        }
+
+        if (staminaRegenTimer >= 1f / staminaRegenRate)
+        {
+            stamina = Mathf.Clamp(stamina + 1, 0, maxStamina);
+            staminaRegenTimer -= 1f / staminaRegenRate;
+        }
+
+        healthRegenTimer += Time.deltaTime;
+        energyRegenTimer += Time.deltaTime;
+        staminaRegenTimer += Time.deltaTime;
     }
 
     void UpdateHealth(int amount)
