@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SmokeDissipationParticle
+  m_Shader: {fileID: 4800000, guid: 6b9408c2e0669fb4fa6da090ca274c31, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _SampleTexture2D_A6FE35B6_Texture:
+        m_Texture: {fileID: 2800000, guid: 98bceb9b5f1fe9143926a50fd788eef0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_D371EF95_Texture:
+        m_Texture: {fileID: 2800000, guid: 18cd26b86f08da0469c4f51eb5e207b4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_F915CE90_Texture:
+        m_Texture: {fileID: 2800000, guid: 98bceb9b5f1fe9143926a50fd788eef0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_2A4CF95E: 0.5
+    - Vector1_56848ED3: 0
+    - Vector1_6496AD0E: 0.6
+    m_Colors:
+    - Color_9E6FDF48: {r: 0, g: 0, b: 0, a: 0}
+    - Color_F5F5EF81: {r: 2, g: 0.6596858, b: 0, a: 0}

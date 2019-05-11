@@ -3,6 +3,11 @@
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
+Assets/Models
+Assets/Warrior
+Assets/unity-chan!
+Assets/FightingUnityChan_FreeAsset
+Assets/InfinitaStudio - Mountains
 Assets/AssetStoreTools*
 
 # Visual Studio cache directory
@@ -24,6 +29,7 @@ ExportedObj/
 *.pdb
 *.opendb
 *.VC.db
+*.fbx
 
 # Unity3D generated meta files
 *.pidb.meta

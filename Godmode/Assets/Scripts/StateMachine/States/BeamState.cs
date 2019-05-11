@@ -1,0 +1,51 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BeamState : State
+{
+    protected CharacterController cr;
+    protected ThirdPersonCam camScript;
+    protected Animator anim;
+    protected TechManager techManager;
+    protected VirtualInput vi;
+
+    public override void OnStateEnter()
+    {
+        base.OnStateEnter();
+        cr = Machine.cr;
+        camScript = Machine.camScript;
+        camScript.StartShake(false);
+        anim = Machine.anim;
+        anim.SetFloat("Speed", 0f);
+        techManager = Machine.techManager;
+        vi = Machine.vi;
+    }
+
+    void Update()
+    {
+        if(vi.lmbDown || vi.lmb)
+        {
+            if(GroundCheck())
+            {
+                Machine.SetState<GroundedState>();
+            }
+            else if(Machine.canFly)
+            {
+                Machine.SetState<FlyingState>();
+            }
+        }
+    }
+
+    bool GroundCheck()
+    {
+        return cr.isGrounded;
+    }
+
+    public override void OnStateExit()
+    {
+        base.OnStateExit();
+        camScript.EndShake();
+        techManager.ExitBeamMode();
+    }
+}

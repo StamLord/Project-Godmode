@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab079fa8cb28ce5468249348047fa3f3, type: 3}
+  m_Name: BasicArt
+  m_EditorClassIdentifier: 
+  healthCost: 0
+  energyCost: 0
+  staminaCost: 0
+  type: 0
+  chargable: 0
+  releaseBeforeChargeEnd: 0
+  minChageTime: 0
+  fullChargeTime: 0
+  autoFire: 0
+  timeBetweenFire: 0
+  castRadius: 0
+  secondary: 0
+  damage: 0
+  fullChargeDamge: 0
+  speed: 0
+  blowBackForce: 0
+  fullChargeBlowBackForce: 0
+  fullChargeScale: 0
+  projectile: {fileID: 0}
+  chargePrefab: {fileID: 0}
+  chargeAnimation: 1
+  attackAnimation: 1
+  moveArray:
+  - {fileID: 11400000, guid: 6b0386ed10320114a87ce83c3225cfbf, type: 2}
+  - {fileID: 11400000, guid: 7b92f6d95b4f20747840792eddefc97d, type: 2}
+  - {fileID: 11400000, guid: 5a70a44fa0adea046823094196224112, type: 2}
+  - {fileID: 11400000, guid: 37d2e942a524d7541a08bd4604c23cbf, type: 2}
+  - {fileID: 11400000, guid: 554923fdc8dd2604a8d1aab3fa9108c1, type: 2}
