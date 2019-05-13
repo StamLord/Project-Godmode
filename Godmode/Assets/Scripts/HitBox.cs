@@ -27,7 +27,7 @@ public class HitBox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        StateMachine c = other.GetComponent<StateMachine>();
+        StateMachine c = other.transform.root.GetComponent<StateMachine>();
         Move t = owner.techManager.currentMove;
 
         //Ignore own character
@@ -56,14 +56,14 @@ public class HitBox : MonoBehaviour
                 Debug.Log(owner + ":: Tossed " + owner.ts.lockOn + "with force " + force);
                 owner.ts.hardLock = true;
 
-                PerformHit(c, t.damage, t.stunTime, t.juggle);
+                PerformHit(c, t.damage, t.stunTime, t.juggle, t.pushBack);
 
                 techManager.lastTechChargeTimer = 0f;
                 ShockwaveManager.instance.Create(transform.position);
             }
             else
             {
-                PerformHit(c, t.damage, t.stunTime, t.juggle);
+                PerformHit(c, t.damage, t.stunTime, t.juggle, t.pushBack);
             }
 
             hits.Add(c);
@@ -83,9 +83,9 @@ public class HitBox : MonoBehaviour
             hits.Clear();
     }
 
-    void PerformHit(StateMachine c, int damage, float stunTime, bool juggle)
+    void PerformHit(StateMachine c, int damage, float stunTime, bool juggle, float pushback)
     {
-        bool success = c.Hit(damage, owner, stunTime, juggle, transform.position);
+        bool success = c.Hit(damage, owner, stunTime, juggle, pushback, transform.position);
 
         if (success)
         {

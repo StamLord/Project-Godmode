@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TossState : State
 {
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected ThirdPersonCam camScript;
     protected VirtualInput vi;
     protected Animator anim;
@@ -92,7 +92,7 @@ public class TossState : State
 
     private bool GroundCheck()
     {
-        return cr.isGrounded;
+        return Machine.groundCheck.grounded;
     }
 
     private void Movement(Vector3 direction)

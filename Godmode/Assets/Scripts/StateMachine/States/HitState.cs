@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class HitState : State
 {
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected Animator anim;
     protected TechManager techManager;
 
     public float stunTime;
+    public Vector3 pushback;
     public float timer;
 
     public override void OnStateEnter()
@@ -19,11 +20,12 @@ public class HitState : State
         anim.SetBool("Hit", true);
         techManager = Machine.techManager;
         techManager.ResetCombo();
+        timer = 0f;
     }
 
     void Update()
     {
-        if(timer> stunTime)
+        if(timer > stunTime)
         {
             if(GroundCheck())
                 Machine.SetState<GroundedState>();
@@ -31,12 +33,19 @@ public class HitState : State
                 Machine.SetState<FallingState>();
         }
 
+        Movement(Vector3.Lerp(pushback, Vector3.zero, timer / stunTime));
+
         timer += Time.deltaTime;
     }
 
     bool GroundCheck()
     {
-        return cr.isGrounded;
+        return Machine.groundCheck.grounded;
+    }
+
+    void Movement(Vector3 direction)
+    {
+        cr.Move(direction * Time.deltaTime);
     }
 
     public override void OnStateExit()

@@ -6,7 +6,7 @@ public class FlyingState : State
 {
     protected ThirdPersonCam camScript;
     protected VirtualInput vi;
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected TargetingSystem ts;
     protected Animator anim;
     protected TechManager techManager;
@@ -14,6 +14,7 @@ public class FlyingState : State
     [Header("Settings")]
     public float moveSpeed = 15f;
 
+    public float decelAmount = .01f;
     public float decelTime = 0.5f;
     protected float decelTimer;
     protected Vector3 lastInputVector;
@@ -125,7 +126,8 @@ public class FlyingState : State
 
             if (inputVec == Vector3.zero)
             {
-                currentVector = Vector3.Slerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
+                currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
+                //lastInputVector = lastInputVector - lastInputVector * decelAmount * Time.deltaTime;
                 Movement(currentVector);
                 decelTimer += Time.deltaTime;
             }

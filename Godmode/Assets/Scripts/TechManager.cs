@@ -7,6 +7,7 @@ public class TechManager : MonoBehaviour
 {
     [Header("References")]
     public StateMachine character;
+    public CharacterStats stats;
     public Animator anim;
     public VirtualInput vi;
     public ThirdPersonCam camScript;
@@ -63,6 +64,7 @@ public class TechManager : MonoBehaviour
     private void Start()
     {
         character = GetComponent<StateMachine>();
+        stats = character.stats;
         anim = character.anim;
         vi = character.vi;
         camScript = character.camScript;
@@ -150,12 +152,12 @@ public class TechManager : MonoBehaviour
             return;
         }
 
-        if (t.energyCost > character.energy || t.healthCost > character.health)
+        if (t.energyCost > stats.energy || t.healthCost > stats.health)
             return;
         else
         {
-            character.health -= t.healthCost;
-            character.energy -= t.energyCost;
+            stats.health -= t.healthCost;
+            stats.energy -= t.energyCost;
             //UpdateUI();
         }
 
@@ -244,9 +246,9 @@ public class TechManager : MonoBehaviour
 
         Move nextMove = m.moveArray[(punchNum + 1)%m.moveArray.Length];
 
-        if (nextMove.healthCost > character.health ||
-            nextMove.staminaCost > character.stamina ||
-            nextMove.energyCost > character.energy)
+        if (nextMove.healthCost > stats.health ||
+            nextMove.staminaCost > stats.stamina ||
+            nextMove.energyCost > stats.energy)
             return;
 
         #endregion
@@ -264,9 +266,9 @@ public class TechManager : MonoBehaviour
 
                 currentMove = m.moveArray[punchNum - 1];
 
-                character.health -= currentMove.healthCost;
-                character.stamina -= currentMove.staminaCost;
-                character.energy -= currentMove.energyCost;
+                stats.health -= currentMove.healthCost;
+                stats.stamina -= currentMove.staminaCost;
+                stats.energy -= currentMove.energyCost;
 
                 anim.SetInteger("Combo", punchNum);
                 canClick = false;

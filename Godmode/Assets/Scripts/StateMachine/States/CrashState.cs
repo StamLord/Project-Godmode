@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CrashState : State
 {
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected ThirdPersonCam camScript;
     protected Animator anim;
 
@@ -63,7 +63,7 @@ public class CrashState : State
 
     private bool GroundCheck()
     {
-        return cr.isGrounded;
+        return Machine.groundCheck.grounded;
     }
 
     private void Movement(Vector3 direction)

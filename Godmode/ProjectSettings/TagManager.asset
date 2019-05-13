@@ -19,8 +19,8 @@ TagManager:
   - Destructable
   - Projectile
   - ClothCollider
-  - 
-  - 
+  - Hurtbox
+  - Hitbox
   - 
   - 
   - 

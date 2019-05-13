@@ -5,8 +5,9 @@ using UnityEngine;
 public class ChargeState : State
 {
     protected VirtualInput vi;
+    protected CharacterStats stats;
     protected ThirdPersonCam camScript;
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected Animator anim;
     protected ParticleSystem chargeAura;
     //protected State originState;
@@ -17,6 +18,7 @@ public class ChargeState : State
     {
         base.OnStateEnter();
         vi = Machine.vi;
+        stats = Machine.stats;
         camScript = Machine.camScript;
         cr = Machine.cr;
         anim = Machine.anim;
@@ -36,9 +38,9 @@ public class ChargeState : State
             else if (Machine.canFly)
                 Machine.SetState<FlyingState>();
         }
-        if(chargeTimer >= 1f / (float)Machine.energyChargeRate)
+        if(chargeTimer >= 1f / (float)stats.energyChargeRate)
         {
-            Machine.energy++;
+            stats.energy++;
             chargeTimer = 0f;
         }
 

@@ -12,6 +12,7 @@ public class Move : Technique
     [Header("Settings")]
     public float stunTime;
     public bool juggle;
+    public float pushBack;
 
 
 }

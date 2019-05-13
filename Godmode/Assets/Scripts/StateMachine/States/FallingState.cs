@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FallingState : State
 {
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected ThirdPersonCam camScript;
     protected Animator anim;
     protected VirtualInput vi;

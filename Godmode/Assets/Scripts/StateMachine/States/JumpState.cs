@@ -5,7 +5,7 @@ using UnityEngine;
 public class JumpState : State
 {
     protected ThirdPersonCam camScript;
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected Animator anim;
     protected VirtualInput vi;
     protected TechManager techManager;
@@ -106,7 +106,7 @@ public class JumpState : State
         {
             decelTimer = 0;
             Movement(inputVec);
-            lastInputVector = ((inputVec * jumpControlSpeed) + -Vector3.up * 10f) * Time.deltaTime;
+            lastInputVector = (inputVec * jumpControlSpeed) * Time.deltaTime;
         }
 
         #endregion

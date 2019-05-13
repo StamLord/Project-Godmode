@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthCost: 0
   energyCost: 0
-  staminaCost: 0
+  staminaCost: 20
   type: 0
   chargable: 0
   releaseBeforeChargeEnd: 0
@@ -24,7 +24,7 @@ MonoBehaviour:
   timeBetweenFire: 0
   castRadius: 0
   secondary: 0
-  damage: 0
+  damage: 30
   fullChargeDamge: 0
   speed: 0
   blowBackForce: 0
@@ -37,3 +37,4 @@ MonoBehaviour:
   animation: {fileID: 0}
   stunTime: 0
   juggle: 0
+  pushBack: 0

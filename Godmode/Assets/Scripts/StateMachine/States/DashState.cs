@@ -6,7 +6,8 @@ public class DashState : State
 {
     protected ThirdPersonCam camScript;
     protected VirtualInput vi;
-    protected CharacterController cr;
+    protected CharacterStats stats;
+    protected AdvancedController cr;
     protected TargetingSystem ts;
     protected Animator anim;
     protected TechManager techManager;
@@ -27,6 +28,7 @@ public class DashState : State
     {
         base.OnStateEnter();
         vi = Machine.vi;
+        stats = Machine.stats;
         cr = Machine.cr;
         ts = Machine.ts;
         anim = Machine.anim;
@@ -195,10 +197,10 @@ public class DashState : State
     {
         if(staminaTimer >= 1f / staminaDepleteRate)
         {
-            Machine.stamina--;
+            stats.stamina--;
             staminaTimer = 0f;
 
-            if (Machine.stamina <= 0)
+            if (stats.stamina <= 0)
             {
                 if(Machine.groundCheck.grounded)
                     Machine.SetState<GroundedState>();

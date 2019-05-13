@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class JuggleState : State
 {
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected Animator anim;
     protected TechManager techManager;
 
@@ -27,7 +27,7 @@ public class JuggleState : State
 
         timer += Time.deltaTime;
 
-        if (GroundCheck())
+        if (timer > 0.5f && GroundCheck())
             Machine.SetState<GroundedState>();
     }
 
@@ -40,7 +40,13 @@ public class JuggleState : State
 
     bool GroundCheck()
     {
-        return cr.isGrounded;
+        return Machine.groundCheck.grounded;
+    }
+
+    public void ResetJuggle()
+    {
+        timer = 0;
+        anim.SetBool("Juggle", true);
     }
 
     public override void OnStateExit()

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BeamState : State
 {
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected ThirdPersonCam camScript;
     protected Animator anim;
     protected TechManager techManager;
@@ -39,7 +39,7 @@ public class BeamState : State
 
     bool GroundCheck()
     {
-        return cr.isGrounded;
+        return Machine.groundCheck.grounded;
     }
 
     public override void OnStateExit()

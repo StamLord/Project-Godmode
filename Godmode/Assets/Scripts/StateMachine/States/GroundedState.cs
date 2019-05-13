@@ -6,7 +6,7 @@ public class GroundedState : State
 {
     protected ThirdPersonCam camScript;
     protected VirtualInput vi;
-    protected CharacterController cr;
+    protected AdvancedController cr;
     protected TargetingSystem ts;
     protected Animator anim;
     protected TechManager techManager;
