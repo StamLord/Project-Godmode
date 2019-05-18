@@ -30,6 +30,8 @@ public class JumpState : State
     public Vector3 lastInputVector;
     public Vector3 currentVector;
 
+    protected bool startedJumping;
+
     public override void OnStateEnter()
     {
         base.OnStateEnter();
@@ -89,8 +91,8 @@ public class JumpState : State
 
         float inputX = vi.horizontal;
         float inputZ = vi.vertical;
-        
 
+        /*
         Vector3 inputVec;
        
         inputVec = (transform.forward * inputZ) + (transform.right * inputX);
@@ -107,6 +109,36 @@ public class JumpState : State
             decelTimer = 0;
             Movement(inputVec);
             lastInputVector = (inputVec * jumpControlSpeed) * Time.deltaTime;
+        }*/
+
+        if (vi.localPlayer)
+        {
+            Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
+            Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
+
+            Vector3 moveVector = cameraFlatDirection * inputZ;
+            moveVector += cameraRight * inputX;
+            moveVector *= jumpControlSpeed;
+            moveVector.y = jumpVelocity.Evaluate(jumpTimer);
+
+            // Prevent climbing on un-stable slopes with air movement
+            if (cr.Motor.GroundingStatus.FoundAnyGround)
+            {
+                Vector3 perpenticularObstructionNormal = Vector3.Cross(Vector3.Cross(cr.Motor.CharacterUp, cr.Motor.GroundingStatus.GroundNormal), cr.Motor.CharacterUp).normalized;
+                moveVector = Vector3.ProjectOnPlane(moveVector, perpenticularObstructionNormal);
+            }
+
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+            inputs.cameraPlanarDirection = cameraFlatDirection;
+
+            if (startedJumping == false)
+            {
+                cr.Motor.ForceUnground(0.2f);
+                startedJumping = true;
+            }
+
+            cr.SetInputs(ref inputs);
         }
 
         #endregion
@@ -138,6 +170,7 @@ public class JumpState : State
                 {
                     jumpNumber++;
                     jumpTimer = 0f;
+                    startedJumping = false;
                     anim.SetBool("DoubleJump", (jumpNumber > 1));
                 }
             }
@@ -157,11 +190,11 @@ public class JumpState : State
 
     private void Movement(Vector3 direction)
     {
-        float verticalY = jumpVelocity.Evaluate(jumpTimer);
-        Vector3 speedVector = direction * jumpControlSpeed;
-        speedVector += Vector3.up * verticalY;
+        //float verticalY = jumpVelocity.Evaluate(jumpTimer);
+        //Vector3 speedVector = direction * jumpControlSpeed;
+        //speedVector += Vector3.up * verticalY;
 
-        cr.Move(speedVector * Time.deltaTime);
+        //cr.Move(speedVector * Time.deltaTime);
     }
 
     void DoubleTapCheck()
@@ -246,7 +279,7 @@ public class JumpState : State
 
     private bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
+        return cr.grounded;
     }
 
     /*private bool CeilingCheck()
@@ -393,6 +426,7 @@ public class JumpState : State
         anim.SetBool("Jump", false);
         anim.SetBool("DoubleJump", false);
         AnimationUpdate();
+        startedJumping = false;
 
         decelTimer = 0;
         Machine.lastVector = currentVector;

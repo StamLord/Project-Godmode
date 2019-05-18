@@ -132,6 +132,8 @@ public class CharacterStats : MonoBehaviour
         if (vi && !vi.localPlayer)
             return;
 
+        if (hBar == null)
+            return;
         #region Health
 
         hBar.fillAmount = (float)health / maxHealth;

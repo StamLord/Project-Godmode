@@ -82,22 +82,45 @@ public class FallingState : State
         float inputZ = vi.vertical;
 
 
-        Vector3 inputVec;
+        //Vector3 inputVec;
 
-        inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-        inputVec = inputVec.normalized;
+        //inputVec = (transform.forward * inputZ) + (transform.right * inputX);
+        //inputVec = inputVec.normalized;
 
-        if (inputVec == Vector3.zero)
+        //if (inputVec == Vector3.zero)
+        //{
+        //    currentVector = Vector3.Slerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
+        //    Movement(currentVector);
+        //    decelTimer += Time.deltaTime;
+        //}
+        //else
+        //{
+        //    decelTimer = 0;
+        //    Movement(inputVec);
+        //    lastInputVector = (inputVec * fallControlSpeed) * Time.deltaTime;
+        //}
+
+        if (vi.localPlayer)
         {
-            currentVector = Vector3.Slerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-            Movement(currentVector);
-            decelTimer += Time.deltaTime;
-        }
-        else
-        {
-            decelTimer = 0;
-            Movement(inputVec);
-            lastInputVector = (inputVec * fallControlSpeed) * Time.deltaTime;
+            Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
+            Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
+
+            Vector3 moveVector = cameraFlatDirection * inputZ;
+            moveVector += cameraRight * inputX;
+            moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+
+            Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
+            moveVector = Vector3.Cross(transform.up, inputRight); //Compensating for the angle between camera and surface
+
+            moveVector *= fallControlSpeed;
+
+            moveVector.y = fallVelocity.Evaluate(fallTimer); //Downward velocity is seperate to all inputs
+
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+            inputs.cameraPlanarDirection = cameraFlatDirection;
+
+            cr.SetInputs(ref inputs);
         }
 
         #endregion
@@ -212,16 +235,16 @@ public class FallingState : State
 
     private void Movement(Vector3 direction)
     {
-        float verticalY = fallVelocity.Evaluate(fallTimer);
-        Vector3 speedVector = direction * fallControlSpeed;
-        speedVector += Vector3.up * verticalY;
+        //float verticalY = fallVelocity.Evaluate(fallTimer);
+        //Vector3 speedVector = direction * fallControlSpeed;
+        //speedVector += Vector3.up * verticalY;
 
-        cr.Move(speedVector * Time.deltaTime);
+        //cr.Move(speedVector * Time.deltaTime);
     }
 
     private bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
+        return cr.grounded;
     }
 
     private void MousePressMain()

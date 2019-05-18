@@ -28,14 +28,18 @@ public class JuggleState : State
         timer += Time.deltaTime;
 
         if (timer > 0.5f && GroundCheck())
-            Machine.SetState<GroundedState>();
+            Machine.SetState<LayingState>();
     }
 
     void Movement()
     {
         float y = yCurve.Evaluate(timer);
         Vector3 direction = new Vector3(0, y, 0);
-        cr.Move(direction * Time.deltaTime);
+        PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+        inputs.motion = direction;
+
+        cr.Motor.ForceUnground(0.1f);
+        cr.SetInputs(ref inputs);
     }
 
     bool GroundCheck()

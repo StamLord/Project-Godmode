@@ -88,7 +88,7 @@ public class FlyingState : State
 
             float inputX = vi.horizontal;
             float inputZ = vi.vertical;
-
+            /*
             Vector3 inputVec;
 
             //If no target, create from own forward and right
@@ -136,6 +136,30 @@ public class FlyingState : State
                 decelTimer = 0;
                 Movement(inputVec);
                 lastInputVector = (inputVec * moveSpeed) * Time.deltaTime;
+            }*/
+
+            if (vi.localPlayer)
+            {
+                Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
+                Vector3 moveVector = new Vector3(inputX, 0, inputZ);
+                moveVector = camScript.transform.rotation * moveVector;
+
+                if (vi.space)
+                    moveVector.y += 1;
+                if (vi.lShift)
+                    moveVector.y -= 1;
+
+                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+                moveVector *= moveSpeed;
+
+                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+                inputs.motion = moveVector;
+                inputs.cameraPlanarDirection = cameraPlanarDirection;
+
+                if (moveVector != Vector3.zero)
+                    cr.Motor.ForceUnground(0.1f);
+
+                cr.SetInputs(ref inputs);
             }
 
             #endregion
@@ -250,7 +274,7 @@ public class FlyingState : State
 
     private void Movement(Vector3 direction)
     {
-        cr.Move((direction * moveSpeed) * Time.deltaTime);
+        //cr.Move((direction * moveSpeed) * Time.deltaTime);
     }
 
     private void MousePressMain()

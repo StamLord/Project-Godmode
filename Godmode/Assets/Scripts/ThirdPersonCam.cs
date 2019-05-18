@@ -5,7 +5,8 @@ using UnityEngine;
 public class ThirdPersonCam : MonoBehaviour
 {
     [Header("References")]
-    public StateMachine target;
+    public StateMachine character;
+    public Transform target;
     //public CharController target;
     public Camera cam;
     public Projector castProj;
@@ -67,9 +68,13 @@ public class ThirdPersonCam : MonoBehaviour
     Vector3 lastPos;
     Vector3 currPos;
 
+    public Transform Transform;
+    public Quaternion CurrentRotation;
+
     // Start is called before the first frame update
     void Start()
     {
+        Transform = this.transform;
         cam = GetComponent<Camera>();
         restFov = cam.fieldOfView;
         currentDistance = restDistance;
@@ -81,6 +86,9 @@ public class ThirdPersonCam : MonoBehaviour
     {
         currentX += Input.GetAxis("Mouse X") * sensX;
         currentY += Input.GetAxis("Mouse Y") * sensY;
+
+        currentX %= 360f;
+        currentY %= 360f;
 
         //Clamp Camera
         if (currentY > 80f)
@@ -122,21 +130,6 @@ public class ThirdPersonCam : MonoBehaviour
             TransitionView(camView.TransitionBack);
         #endregion
         
-        //if(target.isCasting)
-        //{
-        //    castProj.enabled = true;
-        //    Ray r = cam.ScreenPointToRay(Input.mousePosition);
-        //    RaycastHit hit;
-        //    int layerMask = 1 << 9;
-        //    layerMask = ~layerMask;
-        //    Physics.Raycast(r, out hit, layerMask);
-        //    Debug.Log(hit.point);
-        //    castProj.transform.position = hit.point;
-        //}
-        //else
-        //{
-        //    castProj.enabled = false;
-        //}
     }
 
     void LateUpdate()
@@ -218,20 +211,21 @@ public class ThirdPersonCam : MonoBehaviour
         //transform.rotation = Quaternion.Euler(currentY, currentX, 0);
 
         //Rotate Player
-        if (target.GetCurrentState is GroundedState || target.GetCurrentState is JumpState || target.GetCurrentState is FallingState)
+
+        if (character.GetCurrentState is GroundedState || character.GetCurrentState is JumpState || character.GetCurrentState is FallingState)
         {
-            if(target.anim.GetCurrentAnimatorStateInfo(1).IsName("New State"))
-                target.transform.rotation = Quaternion.Euler(0, currentX, 0);
+            //if(character.anim.GetCurrentAnimatorStateInfo(1).IsName("New State"))
+            //   target.transform.rotation = Quaternion.Euler(0, currentX, 0);
         }
-        else if(target.GetCurrentState is FlyingState || target.GetCurrentState is DashState)
+        else if(character.GetCurrentState is FlyingState || character.GetCurrentState is DashState)
         {
-            target.transform.rotation = Quaternion.Euler(currentY, currentX, 0);
+            character.transform.rotation = Quaternion.Euler(currentY, currentX, 0);
         }
 
         if (targetSys.lockOn != null)
         {
             //Find point adjacent to enemy to treat as destination
-            Vector3 toPlayer = (target.transform.position - targetSys.lockOn.transform.position);
+            Vector3 toPlayer = (character.transform.position - targetSys.lockOn.transform.position);
 
             float angle = Mathf.Atan2(toPlayer.z, toPlayer.x) ; //Rads
             float zLength = Mathf.Sin(angle) * targetSys.bodyCenter.radius;
@@ -247,21 +241,21 @@ public class ThirdPersonCam : MonoBehaviour
 
             //Find where enemy is in relation to player
 
-            Vector3 toEnemy = targetSys.lockOn.transform.position - target.transform.position;
+            Vector3 toEnemy = targetSys.lockOn.transform.position - character.transform.position;
             float angleY = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
             //Debug.Log(angleY);
-            if ((target.GetCurrentState is FlyingState) == false)
+            if ((character.GetCurrentState is FlyingState) == false)
             {
                 //Vector3 euler = target.transform.rotation.eulerAngles;
                 //euler.y = angleY;
                 //target.transform.eulerAngles = euler;
                 toEnemy = toEnemy / toEnemy.magnitude;
                 toEnemy.y = 0;
-                target.transform.forward = toEnemy;
+                character.transform.forward = toEnemy;
             }
             else
             {
-                target.transform.LookAt(targetSys.lockOn.transform);
+                character.transform.LookAt(targetSys.lockOn.transform);
             }
 
         }

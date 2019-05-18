@@ -45,7 +45,7 @@ public class HitState : State
 
     void Movement(Vector3 direction)
     {
-        cr.Move(direction * Time.deltaTime);
+        //cr.Move(direction * Time.deltaTime);
     }
 
     public override void OnStateExit()

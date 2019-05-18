@@ -50,7 +50,7 @@ public class DashState : State
 
     private bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
+        return cr.grounded;
     }
 
     private void InputCheck()
@@ -84,7 +84,7 @@ public class DashState : State
             float inputX = vi.horizontal;
             float inputZ = vi.vertical;
 
-            Vector3 inputVec;
+            /*Vector3 inputVec;
 
             //If no target, create from own forward and right
             if (ts.lockOn == false)
@@ -128,7 +128,36 @@ public class DashState : State
                 lastInputVector = (inputVec * moveSpeed) * Time.deltaTime;
             }
 
-            Movement(inputVec);
+            Movement(inputVec);*/
+
+            if (inputZ == 0f && inputX==0f &&!vi.lShift && !vi.space)
+            {
+                Machine.SetState<FlyingState>();
+            }
+
+            if (vi.localPlayer)
+            {
+                Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
+                Vector3 moveVector = new Vector3(inputX, 0, inputZ);
+                moveVector = camScript.transform.rotation * moveVector;
+
+                if (vi.space)
+                    moveVector.y +=1;
+                if (vi.lShift)
+                    moveVector.y -=1;
+
+                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+                moveVector *= moveSpeed;
+
+                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+                inputs.motion = moveVector;
+                inputs.cameraPlanarDirection = cameraPlanarDirection;
+
+                if (moveVector != Vector3.zero)
+                    cr.Motor.ForceUnground(0.1f);
+
+                cr.SetInputs(ref inputs);
+            }
 
             #endregion
 
@@ -163,7 +192,7 @@ public class DashState : State
 
     private void Movement(Vector3 direction)
     {
-        cr.Move(((direction * moveSpeed)) * Time.deltaTime);
+        //cr.Move(((direction * moveSpeed)) * Time.deltaTime);
     }
 
     void DestructionSphere()
@@ -173,6 +202,9 @@ public class DashState : State
         foreach (Collider c in colliders)
         {
             if (c.CompareTag("Projectile"))
+                continue;
+
+            if (c.transform.root.transform == this.transform)
                 continue;
 
             Destructable d = c.GetComponent<Destructable>();

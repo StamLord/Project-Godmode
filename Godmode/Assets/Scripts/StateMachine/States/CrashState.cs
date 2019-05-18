@@ -69,7 +69,7 @@ public class CrashState : State
     private void Movement(Vector3 direction)
     {
 
-        cr.Move(direction * Time.deltaTime);
+        //cr.Move(direction * Time.deltaTime);
     }
 
     void DestructionSphere()

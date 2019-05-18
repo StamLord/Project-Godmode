@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class GroundCheck : MonoBehaviour
 {
+    public AdvancedController ac;
     public Transform groundColl;
     public float checkDistance = 0.25f;
     public float checkRadius = 0.2f;
     public LayerMask groundMask;
     public bool grounded;
-    
+
+    private void Start()
+    {
+        ac = GetComponent<AdvancedController>();
+    }
     void Update()
     {
         grounded = isGrounded();
@@ -21,9 +26,9 @@ public class GroundCheck : MonoBehaviour
 
         bool ray1 = Physics.Raycast(groundColl.position + new Vector3(checkRadius, 0, checkRadius), Vector3.down, checkDistance, groundMask);
         bool ray2 = Physics.Raycast(groundColl.position + new Vector3(-checkRadius, 0, -checkRadius), Vector3.down, checkDistance, groundMask);
-        Debug.Log(ray1);
         grounded = (ray1 || ray2);
 
+        //return grounded;
         return grounded;
     }
 

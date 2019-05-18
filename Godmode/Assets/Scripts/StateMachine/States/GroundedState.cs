@@ -64,7 +64,7 @@ public class GroundedState : State
 
     private bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
+        return cr.grounded;
     }
 
     private void InputCheck()
@@ -100,8 +100,7 @@ public class GroundedState : State
             float inputX = vi.horizontal;
             float inputZ = vi.vertical;
 
-            //Vector3 inputVec;
-
+            /*
             //If no target, create from own forward and right
             if (ts.lockOn == false)
             {
@@ -136,6 +135,26 @@ public class GroundedState : State
                 decelTimer = 0;
                 Movement(inputVec);
                 lastInputVector = ((inputVec * moveSpeed) + -Vector3.up * 10f ) * Time.deltaTime;
+            }*/
+
+            if (vi.localPlayer)
+            {
+                Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
+                Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
+
+                Vector3 moveVector = cameraFlatDirection * inputZ;
+                moveVector += cameraRight * inputX;
+                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+
+                Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
+                moveVector = Vector3.Cross(transform.up,inputRight); //Compensating for the angle between camera and surface
+                moveVector *= moveSpeed; 
+
+                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+                inputs.motion = moveVector;
+                inputs.cameraPlanarDirection = cameraFlatDirection;
+
+                cr.SetInputs(ref inputs);
             }
 
             #endregion
@@ -259,7 +278,7 @@ public class GroundedState : State
 
     private void Movement(Vector3 direction)
     {
-        cr.Move(((direction * moveSpeed) + -Vector3.up * 10f) * Time.deltaTime);
+        //cr.Move(((direction * moveSpeed) + -Vector3.up * 10f) * Time.deltaTime);
     }
 
     private void MousePressMain()
@@ -289,7 +308,7 @@ public class GroundedState : State
 
     private void AnimationUpdate()
     {
-        anim.SetFloat("Speed", vi.vertical);
+        anim.SetFloat("Speed", new Vector2(vi.horizontal, vi.vertical).normalized.magnitude);
     }
 
     void AnimateCharge(Technique t)

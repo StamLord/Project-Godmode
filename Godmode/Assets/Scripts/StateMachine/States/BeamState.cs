@@ -35,6 +35,8 @@ public class BeamState : State
                 Machine.SetState<FlyingState>();
             }
         }
+
+        cr.ResetInput();
     }
 
     bool GroundCheck()

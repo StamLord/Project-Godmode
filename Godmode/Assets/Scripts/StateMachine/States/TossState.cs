@@ -42,7 +42,11 @@ public class TossState : State
         float speed = tossSpeed.Evaluate(tossTimer);
         currentVector = direction * speed;
 
-        Movement(currentVector);
+        PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+        inputs.motion = currentVector;
+
+        cr.SetInputs(ref inputs);
+        //Movement(currentVector);
 
         AnimationUpdate();
 
@@ -98,7 +102,7 @@ public class TossState : State
     private void Movement(Vector3 direction)
     {
         
-        cr.Move(direction * Time.deltaTime);
+        //cr.Move(direction * Time.deltaTime);
     }
 
     void DestructionSphere()

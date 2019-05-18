@@ -522,6 +522,9 @@ public class TechManager : MonoBehaviour
         if (!vi.localPlayer)
             return;
 
+        if (!chargeParent)
+            return;
+
         chargeParent.gameObject.SetActive(isChargingTech && GetSelected.minChageTime > 1);
 
         chargeBar.fillAmount = techChargeTimer / GetSelected.fullChargeTime;

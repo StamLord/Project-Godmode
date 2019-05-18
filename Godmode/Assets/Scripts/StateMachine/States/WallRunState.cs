@@ -168,20 +168,11 @@ public class WallRunState : State
             inputVec.y += ySpeed.Evaluate(wallrunTimer);
             inputVec = inputVec.normalized;
 
-            Movement(inputVec);
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = inputVec * moveSpeed;
 
-            //if (inputVec == Vector3.zero)
-            //{
-            //    currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-            //    Movement(currentVector);
-            //    decelTimer += Time.deltaTime;
-            //}
-            //else
-            //{
-            //    decelTimer = 0;
-            //    Movement(inputVec);
-            //    lastInputVector = ((inputVec * moveSpeed) + -Vector3.up * 10f) * Time.deltaTime;
-            //}
+            cr.SetInputs(ref inputs);
+            //Movement(inputVec);
 
             #endregion
 
@@ -207,7 +198,7 @@ public class WallRunState : State
 
     private void Movement(Vector3 direction)
     {
-        cr.Move((direction * moveSpeed) * Time.deltaTime);
+        //cr.Move((direction * moveSpeed) * Time.deltaTime);
     }
 
     private void MousePressMain()
