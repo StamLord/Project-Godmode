@@ -171,7 +171,7 @@ public class WallRunState : State
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = inputVec * moveSpeed;
 
-            cr.SetInputs(ref inputs);
+            cr.SetInputs(inputs);
             //Movement(inputVec);
 
             #endregion

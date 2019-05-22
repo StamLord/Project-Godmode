@@ -39,7 +39,7 @@ public class JuggleState : State
         inputs.motion = direction;
 
         cr.Motor.ForceUnground(0.1f);
-        cr.SetInputs(ref inputs);
+        cr.SetInputs(inputs);
     }
 
     bool GroundCheck()

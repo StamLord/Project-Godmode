@@ -10,6 +10,7 @@ public class GroundedState : State
     protected TargetingSystem ts;
     protected Animator anim;
     protected TechManager techManager;
+    protected SimpleAI ai;
 
     [Header("Settings")]
     public float moveSpeed = 15f;
@@ -38,6 +39,7 @@ public class GroundedState : State
         ts = Machine.ts;
         anim = Machine.anim;
         techManager = Machine.techManager;
+        ai = Machine.ai;
 
         lastInputVector = Machine.lastVector;
     }
@@ -154,7 +156,18 @@ public class GroundedState : State
                 inputs.motion = moveVector;
                 inputs.cameraPlanarDirection = cameraFlatDirection;
 
-                cr.SetInputs(ref inputs);
+                cr.SetInputs(inputs);
+            }
+            else
+            {
+                Vector3 moveVector = ai.currentDirection * inputZ;
+                moveVector += Vector3.Cross(transform.up, ai.currentDirection) * inputX;
+                moveVector *= moveSpeed;
+
+                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+                inputs.motion = moveVector;
+
+                cr.SetInputs(inputs);
             }
 
             #endregion

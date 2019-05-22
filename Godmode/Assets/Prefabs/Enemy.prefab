@@ -172,15 +172,15 @@ PrefabInstance:
       propertyPath: localPlayer
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5057145672917171094, guid: 022f2d7c95d429540aec0f53c7e1d1e0,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 03b4bc0600db06747a0e3aed45c69a0e, type: 2}
     - target: {fileID: 5057145672917171092, guid: 022f2d7c95d429540aec0f53c7e1d1e0,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 87d86a190fcbba347848030a47867de2, type: 2}
+    - target: {fileID: 5057145672917171094, guid: 022f2d7c95d429540aec0f53c7e1d1e0,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 03b4bc0600db06747a0e3aed45c69a0e, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 022f2d7c95d429540aec0f53c7e1d1e0, type: 3}

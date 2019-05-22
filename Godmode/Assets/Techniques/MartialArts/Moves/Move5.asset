@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthCost: 0
   energyCost: 0
-  staminaCost: 20
+  staminaCost: 50
   type: 0
   chargable: 0
   releaseBeforeChargeEnd: 0

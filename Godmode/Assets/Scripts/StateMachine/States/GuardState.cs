@@ -9,6 +9,7 @@ public class GuardState : State
 
     public float perfectGuardTime = 0.25f;
     public float guardTimer = 0f;
+    public int staminaOnPerfect = 250;
 
     public override void OnStateEnter()
     {
@@ -24,6 +25,8 @@ public class GuardState : State
         {
             Machine.SetState<GroundedState>();
         }
+
+        guardTimer += Time.deltaTime;
     }
 
     public override void OnStateExit()

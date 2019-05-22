@@ -45,7 +45,7 @@ public class TossState : State
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = currentVector;
 
-        cr.SetInputs(ref inputs);
+        cr.SetInputs(inputs);
         //Movement(currentVector);
 
         AnimationUpdate();

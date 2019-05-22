@@ -8,7 +8,4 @@ public class MartialArt : Technique
 {
     [Header("Martial Art")]
     public Move[] moveArray = new Move[5];
-
-   // new protected int healthCost;
-    
 }

@@ -120,7 +120,7 @@ public class FallingState : State
             inputs.motion = moveVector;
             inputs.cameraPlanarDirection = cameraFlatDirection;
 
-            cr.SetInputs(ref inputs);
+            cr.SetInputs(inputs);
         }
 
         #endregion

@@ -70,10 +70,10 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     /// <summary>
     /// This is called every frame by ExamplePlayer in order to tell the character what its inputs are
     /// </summary>
-    public void SetInputs(ref PlayerCharacterInputs inputs)
+    public void SetInputs(PlayerCharacterInputs inputs)
     {
         _moveInputVector = inputs.motion;
-        Debug.Log("Set input to " + inputs.motion);
+        //Debug.Log("Set input to " + inputs.motion);
         switch (OrientationMethod)
         {
             case OrientationMethod.TowardsCamera:
@@ -141,7 +141,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     /// </summary>
     public void AfterCharacterUpdate(float deltaTime)
     {
-        
+        ResetInput();
     }
 
     public void PostGroundingUpdate(float deltaTime)
@@ -206,7 +206,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     {
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = Vector3.zero;
-        SetInputs(ref inputs);
+        SetInputs(inputs);
         
     }
 }

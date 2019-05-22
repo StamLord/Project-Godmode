@@ -17,9 +17,13 @@ public class CharacterStats : MonoBehaviour
     public int maxEnergy = 1000;
     public int maxStamina = 1000;
 
-    public int health = 1000;
-    public int energy = 1000;
-    public int stamina = 1000;
+    [SerializeField] private int health = 1000;
+    [SerializeField] private int energy = 1000;
+    [SerializeField] private int stamina = 1000;
+
+    public int GetHealth { get { return health; } }
+    public int GetStamina { get { return stamina; } }
+    public int GetEnergy { get { return energy; } }
 
     [Header("Regeneration")]
     public State[] skipHealthRegen;
@@ -195,6 +199,16 @@ public class CharacterStats : MonoBehaviour
         health += amount;
         if (health <= 0)
             Die();
+    }
+
+    public void UpdateStamina(int amount)
+    {
+        stamina += amount;
+    }
+
+    public void UpdateEnergy(int amount)
+    {
+        energy += amount;
     }
 
     void Die()

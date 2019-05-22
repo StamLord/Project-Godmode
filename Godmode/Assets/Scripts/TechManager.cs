@@ -152,12 +152,12 @@ public class TechManager : MonoBehaviour
             return;
         }
 
-        if (t.energyCost > stats.energy || t.healthCost > stats.health)
+        if (t.energyCost > stats.GetEnergy || t.healthCost > stats.GetHealth)
             return;
         else
         {
-            stats.health -= t.healthCost;
-            stats.energy -= t.energyCost;
+            stats.UpdateHealth(-t.healthCost);
+            stats.UpdateEnergy(-t.energyCost);
             //UpdateUI();
         }
 
@@ -246,9 +246,9 @@ public class TechManager : MonoBehaviour
 
         Move nextMove = m.moveArray[(punchNum + 1)%m.moveArray.Length];
 
-        if (nextMove.healthCost > stats.health ||
-            nextMove.staminaCost > stats.stamina ||
-            nextMove.energyCost > stats.energy)
+        if (nextMove.healthCost > stats.GetHealth ||
+            nextMove.staminaCost > stats.GetStamina ||
+            nextMove.energyCost > stats.GetEnergy)
             return;
 
         #endregion
@@ -266,9 +266,9 @@ public class TechManager : MonoBehaviour
 
                 currentMove = m.moveArray[punchNum - 1];
 
-                stats.health -= currentMove.healthCost;
-                stats.stamina -= currentMove.staminaCost;
-                stats.energy -= currentMove.energyCost;
+                stats.UpdateHealth(-currentMove.healthCost);
+                stats.UpdateStamina(-currentMove.staminaCost);
+                stats.UpdateEnergy(-currentMove.energyCost);
 
                 anim.SetInteger("Combo", punchNum);
                 canClick = false;

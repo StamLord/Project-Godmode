@@ -156,7 +156,7 @@ public class DashState : State
                 if (moveVector != Vector3.zero)
                     cr.Motor.ForceUnground(0.1f);
 
-                cr.SetInputs(ref inputs);
+                cr.SetInputs(inputs);
             }
 
             #endregion
@@ -229,10 +229,10 @@ public class DashState : State
     {
         if(staminaTimer >= 1f / staminaDepleteRate)
         {
-            stats.stamina--;
+            stats.UpdateStamina(-1);
             staminaTimer = 0f;
 
-            if (stats.stamina <= 0)
+            if (stats.GetStamina <= 0)
             {
                 if(Machine.groundCheck.grounded)
                     Machine.SetState<GroundedState>();

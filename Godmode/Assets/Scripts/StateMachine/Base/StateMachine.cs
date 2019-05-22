@@ -23,6 +23,7 @@ public class StateMachine : MonoBehaviour
     public Animator anim;
     public TechManager techManager;
     public GroundCheck groundCheck;
+    public SimpleAI ai;
 
     [Header("Combo")]
     public int hits;
@@ -71,6 +72,7 @@ public class StateMachine : MonoBehaviour
         ts = GetComponent<TargetingSystem>();
         anim = GetComponent<Animator>();
         techManager = GetComponent<TechManager>();
+        ai = GetComponent<SimpleAI>();
     }
 
     protected virtual bool SwitchState(State state)
@@ -163,6 +165,7 @@ public class StateMachine : MonoBehaviour
             //Perfect Guard
             if(gs.guardTimer <= gs.perfectGuardTime)
             {
+                stats.UpdateStamina(gs.staminaOnPerfect);
                 return false;
             }
 

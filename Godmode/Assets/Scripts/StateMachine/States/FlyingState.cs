@@ -159,7 +159,7 @@ public class FlyingState : State
                 if (moveVector != Vector3.zero)
                     cr.Motor.ForceUnground(0.1f);
 
-                cr.SetInputs(ref inputs);
+                cr.SetInputs(inputs);
             }
 
             #endregion

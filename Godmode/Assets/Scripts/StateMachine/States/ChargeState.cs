@@ -40,7 +40,7 @@ public class ChargeState : State
         }
         if(chargeTimer >= 1f / (float)stats.energyChargeRate)
         {
-            stats.energy++;
+            stats.UpdateEnergy(1);
             chargeTimer = 0f;
         }
 

@@ -138,7 +138,7 @@ public class JumpState : State
                 startedJumping = true;
             }
 
-            cr.SetInputs(ref inputs);
+            cr.SetInputs(inputs);
         }
 
         #endregion
