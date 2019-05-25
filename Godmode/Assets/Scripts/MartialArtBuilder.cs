@@ -19,8 +19,12 @@ public class MartialArtBuilder : MonoBehaviour
     public GameObject customButtonPrefab;
     public GameObject moveButtonPrefab;
 
+    [Header("Design")]
     public Sprite regularCustom;
     public Sprite selectedCustom;
+
+    public Sprite emptyMoveSlot;
+    public Sprite occupiedMoveSlot;
 
     protected List<MoveButton> moveButtons = new List<MoveButton>();
     protected Dictionary<GameObject, MartialArt> customButtons = new Dictionary<GameObject, MartialArt>();
@@ -184,10 +188,12 @@ public class MartialArtBuilder : MonoBehaviour
             if (editing == null || editing.moveArray[i] == null)
             {
                 editableMoves[i].GetComponentInChildren<TextMeshProUGUI>().text = "Empty";
+                editableMoves[i].GetComponentInChildren<Image>().sprite = emptyMoveSlot;
             }
             else
             {
                 editableMoves[i].GetComponentInChildren<TextMeshProUGUI>().text = editing.moveArray[i].name;
+                editableMoves[i].GetComponentInChildren<Image>().sprite = occupiedMoveSlot;
             }
         }
 

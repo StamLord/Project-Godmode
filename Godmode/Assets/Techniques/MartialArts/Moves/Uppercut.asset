@@ -35,6 +35,6 @@ MonoBehaviour:
   chargeAnimation: 1
   attackAnimation: 1
   animation: {fileID: 7400000, guid: f26de6af8e7dd3f4bb30e7be0834d9ed, type: 2}
-  stunTime: 0
+  stunTime: 0.5
   juggle: 1
   pushBack: 0

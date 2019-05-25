@@ -92,7 +92,7 @@ public class HitBox : MonoBehaviour
             owner.hits++;
             owner.tempDamage += damage;
             particles.Play();
-            Debug.Log(owner + ":: Hit: " + c.gameObject + "With: " + gameObject + "for damage: " + damage);
+            Debug.Log(owner + ":: Hit: " + c.gameObject.name + "With: " + gameObject.name + "Damage: " + damage + "Stun: " + stunTime);
         }
     }
 }

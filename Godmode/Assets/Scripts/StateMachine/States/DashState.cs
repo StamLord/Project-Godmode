@@ -198,7 +198,7 @@ public class DashState : State
     void DestructionSphere()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, destructionRadius);
-
+        
         foreach (Collider c in colliders)
         {
             if (c.CompareTag("Projectile"))
@@ -223,6 +223,11 @@ public class DashState : State
                     if (camScript) camScript.StartShake(.75f, true);
             }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, destructionRadius);
     }
 
     private void StaminaDeplete()

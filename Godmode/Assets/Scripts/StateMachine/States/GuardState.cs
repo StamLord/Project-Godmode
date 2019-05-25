@@ -6,6 +6,8 @@ public class GuardState : State
 {
     protected VirtualInput vi;
     protected Animator anim;
+    protected AdvancedController cr;
+    protected TechManager techManager;
 
     public float perfectGuardTime = 0.25f;
     public float guardTimer = 0f;
@@ -17,13 +19,23 @@ public class GuardState : State
         vi = Machine.vi;
         anim = Machine.anim;
         anim.SetBool("Guard", true);
+        techManager = Machine.techManager;
+        techManager.ResetCombo();
+        cr = Machine.cr;
+
+        PlayerCharacterInputs input = new PlayerCharacterInputs();
+        input.motion = Vector3.zero;
+        cr.SetInputs(input);
     }
 
     void Update()
     {
         if(vi.qUp || vi.q == false)
         {
-            Machine.SetState<GroundedState>();
+            if(cr.grounded)
+                Machine.SetState<GroundedState>();
+            else
+                Machine.SetState<FlyingState>();
         }
 
         guardTimer += Time.deltaTime;

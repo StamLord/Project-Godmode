@@ -19,6 +19,7 @@ public class JuggleState : State
         anim.SetBool("Juggle", true);
         techManager = Machine.techManager;
         techManager.ResetCombo();
+        cr.Motor.ForceUnground(0.1f);
     }
 
     void Update()
@@ -37,8 +38,7 @@ public class JuggleState : State
         Vector3 direction = new Vector3(0, y, 0);
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = direction;
-
-        cr.Motor.ForceUnground(0.1f);
+        
         cr.SetInputs(inputs);
     }
 

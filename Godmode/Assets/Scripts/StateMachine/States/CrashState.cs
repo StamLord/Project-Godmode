@@ -7,6 +7,7 @@ public class CrashState : State
     protected AdvancedController cr;
     protected ThirdPersonCam camScript;
     protected Animator anim;
+    protected TechManager techManager;
 
     public LayerMask crashColMask;
     public Vector3 direction;
@@ -24,6 +25,8 @@ public class CrashState : State
         camScript = Machine.camScript;
         anim = Machine.anim;
         anim.SetBool("Crashing", true);
+        techManager = Machine.techManager;
+        techManager.ResetCombo();
 
         direction = Machine.lastVector;
     }
@@ -31,7 +34,10 @@ public class CrashState : State
     void Update()
     {
         Vector3 vectorGrav = new Vector3(0, gravity, 0);
-        Movement((direction * crashSpeed) - vectorGrav);
+
+        PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+        inputs.motion = (direction * crashSpeed) - vectorGrav;
+        cr.SetInputs(inputs);
 
         //DestructionSphere();
 
@@ -69,7 +75,7 @@ public class CrashState : State
     private void Movement(Vector3 direction)
     {
 
-        //cr.Move(direction * Time.deltaTime);
+        //
     }
 
     void DestructionSphere()
