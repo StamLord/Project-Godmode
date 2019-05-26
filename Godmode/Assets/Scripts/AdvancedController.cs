@@ -30,7 +30,6 @@ public struct AICharacterInputs
 public class AdvancedController : MonoBehaviour, ICharacterController
 {
     public KinematicCharacterMotor Motor;
-    public ThirdPersonCam Camera1;
     public bool grounded;
 
     [Header("Stable Movement")]
@@ -60,6 +59,12 @@ public class AdvancedController : MonoBehaviour, ICharacterController
 
     private Vector3 lastInnerNormal = Vector3.zero;
     private Vector3 lastOuterNormal = Vector3.zero;
+
+
+    private void OnValidate()
+    {
+        Motor = GetComponent<KinematicCharacterMotor>();
+    }
 
     private void Start()
     {

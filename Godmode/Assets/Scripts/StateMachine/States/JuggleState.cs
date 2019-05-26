@@ -37,54 +37,9 @@ public class JuggleState : State
         Vector3 direction = new Vector3(0, y, 0);
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = direction;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of dc1c306... test
-        
-=======
 
         cr.Motor.ForceUnground(0.1f);
-<<<<<<< HEAD
->>>>>>> parent of e540f79... 25.05
-=======
-
-        cr.Motor.ForceUnground(0.1f);
->>>>>>> parent of e540f79... 25.05
-=======
-
-        cr.Motor.ForceUnground(0.1f);
->>>>>>> parent of e540f79... 25.05
-=======
-
-        cr.Motor.ForceUnground(0.1f);
->>>>>>> parent of e540f79... 25.05
-=======
-
-        cr.Motor.ForceUnground(0.1f);
->>>>>>> parent of e540f79... 25.05
-=======
-
-        cr.Motor.ForceUnground(0.1f);
->>>>>>> parent of e540f79... 25.05
         cr.SetInputs(inputs);
-<<<<<<< HEAD
-=======
-
-        cr.Motor.ForceUnground(0.1f);
-        cr.SetInputs(ref inputs);
->>>>>>> parent of c4c115a... 21.05
-=======
-        cr.SetInputs(ref inputs);
->>>>>>> parent of c4c115a... 21.05
-=======
->>>>>>> parent of dc1c306... test
     }
 
     bool GroundCheck()

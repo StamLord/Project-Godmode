@@ -19,46 +19,13 @@ public class MartialArtBuilder : MonoBehaviour
     public GameObject customButtonPrefab;
     public GameObject moveButtonPrefab;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of dc1c306... test
     [Header("Design")]
-=======
->>>>>>> parent of e540f79... 25.05
-=======
->>>>>>> parent of e540f79... 25.05
-=======
->>>>>>> parent of e540f79... 25.05
-=======
->>>>>>> parent of e540f79... 25.05
-=======
->>>>>>> parent of e540f79... 25.05
-=======
->>>>>>> parent of e540f79... 25.05
+
     public Sprite regularCustom;
     public Sprite selectedCustom;
 
     protected List<MoveButton> moveButtons = new List<MoveButton>();
     protected Dictionary<GameObject, MartialArt> customButtons = new Dictionary<GameObject, MartialArt>();
-<<<<<<< HEAD
-=======
-    protected Dictionary<GameObject, Move> moveButtons;
-    protected Dictionary<GameObject, MartialArt> customButtons;
->>>>>>> parent of c4c115a... 21.05
-=======
-    protected Dictionary<GameObject, Move> moveButtons;
-    protected Dictionary<GameObject, MartialArt> customButtons;
->>>>>>> parent of c4c115a... 21.05
-=======
->>>>>>> parent of dc1c306... test
 
     [Header("Database")]
     public List<Move> allMoves = new List<Move>();
@@ -179,11 +146,6 @@ public class MartialArtBuilder : MonoBehaviour
         return true;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of dc1c306... test
     public void AnimateMove(Move m)
     {
 
@@ -235,15 +197,11 @@ public class MartialArtBuilder : MonoBehaviour
     }
 
     void UpdateAnimations()
-<<<<<<< HEAD
-=======
+    {
+
+    }
+
     void Animate()
->>>>>>> parent of c4c115a... 21.05
-=======
-    void Animate()
->>>>>>> parent of c4c115a... 21.05
-=======
->>>>>>> parent of dc1c306... test
     {
         if (editing == null)
             return;

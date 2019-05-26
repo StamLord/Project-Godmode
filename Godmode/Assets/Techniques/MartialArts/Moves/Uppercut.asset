@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bce87461e66a73d4dbb49b257f749494, type: 3}
-  m_Name: Uppercut
+  m_Name: UpperCut
   m_EditorClassIdentifier: 
   healthCost: 0
   energyCost: 0
@@ -34,37 +34,7 @@ MonoBehaviour:
   chargePrefab: {fileID: 0}
   chargeAnimation: 1
   attackAnimation: 1
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Uppercut.asset
-=======
->>>>>>> parent of dc1c306... test:Godmode/Assets/Techniques/MartialArts/Moves/Uppercut.asset
   animation: {fileID: 7400000, guid: f26de6af8e7dd3f4bb30e7be0834d9ed, type: 2}
-<<<<<<< HEAD
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-  stunTime: 0.5
-<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-=======
-=======
->>>>>>> parent of c4c115a... 21.05:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-  animation: {fileID: 0}
   stunTime: 0
->>>>>>> parent of c4c115a... 21.05:Godmode/Assets/Techniques/MartialArts/Moves/Move3.asset
-=======
-  stunTime: 0
->>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/Uppercut.asset
-=======
-  stunTime: 0
->>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/Uppercut.asset
-=======
-  stunTime: 0
->>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/Uppercut.asset
-=======
->>>>>>> parent of dc1c306... test:Godmode/Assets/Techniques/MartialArts/Moves/Uppercut.asset
-=======
-  stunTime: 0
->>>>>>> parent of e540f79... 25.05
-  juggle: 1
+  juggle: 0
   pushBack: 0

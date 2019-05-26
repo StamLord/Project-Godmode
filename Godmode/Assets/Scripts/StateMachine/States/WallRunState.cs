@@ -14,7 +14,7 @@ public class WallRunState : State
     [Header("Settings")]
     public LayerMask runnableMask;
     public float moveSpeed = 15f;
-    public float wallRunDuration;
+    public float wallRunDuration = 3f;
     protected float wallrunTimer;
     public AnimationCurve ySpeed;
 
@@ -56,6 +56,7 @@ public class WallRunState : State
             anim.SetBool("LeftWallrun", true);
         else
             anim.SetBool("RightWallrun", true);
+        Debug.Log("entered");
     }
 
     public override void OnStateInitialize(StateMachine machine = null)

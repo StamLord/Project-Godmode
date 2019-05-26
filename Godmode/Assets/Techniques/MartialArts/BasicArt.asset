@@ -35,8 +35,8 @@ MonoBehaviour:
   chargeAnimation: 1
   attackAnimation: 1
   moveArray:
-  - {fileID: 11400000, guid: 6b0386ed10320114a87ce83c3225cfbf, type: 2}
-  - {fileID: 11400000, guid: 7b92f6d95b4f20747840792eddefc97d, type: 2}
-  - {fileID: 11400000, guid: 5a70a44fa0adea046823094196224112, type: 2}
-  - {fileID: 11400000, guid: 37d2e942a524d7541a08bd4604c23cbf, type: 2}
+  - {fileID: 11400000, guid: a558b51a355557e46ad69d8e7402562c, type: 2}
   - {fileID: 11400000, guid: 554923fdc8dd2604a8d1aab3fa9108c1, type: 2}
+  - {fileID: 11400000, guid: a558b51a355557e46ad69d8e7402562c, type: 2}
+  - {fileID: 11400000, guid: de0c12f85a2d4dd4ba0929029ee94554, type: 2}
+  - {fileID: 11400000, guid: 7840ee485bb45e941b03916c373d2c81, type: 2}

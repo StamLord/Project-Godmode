@@ -15,7 +15,7 @@ public class DashState : State
     [Header("Settings")]
     public float staminaDepleteRate = 100f;
     protected float staminaTimer;
-    public float moveSpeed = 15f;
+    public float moveSpeed = 35f;
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
 

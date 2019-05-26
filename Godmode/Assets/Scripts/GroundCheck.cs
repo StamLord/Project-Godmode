@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class GroundCheck : MonoBehaviour
 {
-    public AdvancedController ac;
     public Transform groundColl;
     public float checkDistance = 0.25f;
     public float checkRadius = 0.2f;
     public LayerMask groundMask;
     public bool grounded;
 
-    private void Start()
-    {
-        ac = GetComponent<AdvancedController>();
-    }
     void Update()
     {
         grounded = isGrounded();

@@ -7,7 +7,7 @@ public class GuardState : State
     protected VirtualInput vi;
     protected Animator anim;
 
-    public float perfectGuardTime = 0.25f;
+    public float perfectGuardTime = 0.20f;
     public float guardTimer = 0f;
     public int staminaOnPerfect = 250;
 

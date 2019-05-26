@@ -389,8 +389,8 @@ public class JumpState : State
         Physics.Raycast(transform.position, -transform.right, out left, 1f, wallMask);
         Physics.Raycast(transform.position, transform.right, out right, 1f, wallMask);
 
-        Debug.Log(left.transform);
-        Debug.Log(right.transform);
+        //Debug.Log(left.transform);
+        //Debug.Log(right.transform);
 
         RaycastHit closest = new RaycastHit();
 
