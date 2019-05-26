@@ -82,7 +82,9 @@ public class SimpleAI : MonoBehaviour
         else
         {
             self.vi.vertical = 0f;
-            SimulateLMB();
+
+            if(Vector3.Distance(transform.position, enemy.transform.position) < 1.5f)
+                SimulateLMB();
         }
 
         ResetLMB();

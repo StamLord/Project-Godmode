@@ -48,9 +48,6 @@ public class CharacterStats : MonoBehaviour
     public TextMeshProUGUI hitCounter;
     public TextMeshProUGUI damageCounter;
 
-    public GameObject stunTimer;
-    public Image stunFill;
-
     private void OnValidate()
     {
         machine = GetComponent<StateMachine>();
@@ -192,22 +189,6 @@ public class CharacterStats : MonoBehaviour
             sBars[j].fillAmount = 0;
         }
 
-
-        #endregion
-
-        #region Stun
-
-        if(machine.GetCurrentState.GetType() == typeof(HitState))
-        {
-            stunTimer.SetActive(true);
-            HitState state = machine.GetCurrentState as HitState;
-            stunFill.fillAmount = state.timer / state.stunTime;
-        }
-        else
-        {
-            stunTimer.SetActive( false);
-            stunFill.fillAmount = 0f;
-        }
 
         #endregion
 

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 922976531786880904}
   - component: {fileID: 922976531786880905}
   - component: {fileID: 922976531786880906}
+  - component: {fileID: 922976531786880911}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -55,13 +56,13 @@ MonoBehaviour:
   transitionToMaxFov: 0
   fovTransitionTimer: 0.5
   fovTransitionDuration: 0.5
-  restDistance: 6
-  currentDistance: 6
+  restDistance: 5
+  currentDistance: 5
   minDistance: 0.2
   disTransitionTimer: 0.5
   disTransitionDuration: 0.5
-  minOffsetY: 0.95
-  offsetY: 0.95
+  minOffsetY: 0.35
+  offsetY: 0.9
   maxOffsetY: 0.65
   currentX: 0
   currentY: 0
@@ -133,3 +134,40 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922976531786880900}
   m_Enabled: 1
+--- !u!114 &922976531786880911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 922976531786880900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowDebugText: 0
+  m_ShowCameraFrustum: 1
+  m_IgnoreTimeScale: 0
+  m_WorldUpOverride: {fileID: 0}
+  m_UpdateMethod: 2
+  m_DefaultBlend:
+    m_Style: 1
+    m_Time: 2
+    m_CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  m_CustomBlends: {fileID: 0}
+  m_CameraCutEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Cinemachine.CinemachineBrain+BrainEvent, Cinemachine, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  m_CameraActivatedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Cinemachine.CinemachineBrain+VcamActivatedEvent, Cinemachine, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null

@@ -34,7 +34,37 @@ MonoBehaviour:
   chargePrefab: {fileID: 0}
   chargeAnimation: 1
   attackAnimation: 1
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Left Jab.asset
+=======
+>>>>>>> parent of dc1c306... test:Godmode/Assets/Techniques/MartialArts/Moves/Left Jab.asset
   animation: {fileID: 7400000, guid: 88e8b1707e8ec0b41b1013d7355ed97b, type: 2}
+<<<<<<< HEAD
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
   stunTime: 0.5
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+=======
+=======
+>>>>>>> parent of c4c115a... 21.05:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+  animation: {fileID: 0}
+  stunTime: 0
+>>>>>>> parent of c4c115a... 21.05:Godmode/Assets/Techniques/MartialArts/Moves/Move1.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/Left Jab.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/Left Jab.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/Left Jab.asset
+=======
+>>>>>>> parent of dc1c306... test:Godmode/Assets/Techniques/MartialArts/Moves/Left Jab.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05
   juggle: 0
   pushBack: 1

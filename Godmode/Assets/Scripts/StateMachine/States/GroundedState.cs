@@ -95,7 +95,7 @@ public class GroundedState : State
 
         DoubleTapCheck();
 
-        if (anim.GetCurrentAnimatorStateInfo(1).IsName("New State") || anim.GetCurrentAnimatorStateInfo(1).IsName("FightIdle") || anim.GetCurrentAnimatorStateInfo(1).IsName("FightFlyIdle"))
+        if (anim.GetInteger("Combo") == 0)
         {
             #region Movement Input
 

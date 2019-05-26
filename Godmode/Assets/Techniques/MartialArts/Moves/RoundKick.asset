@@ -34,7 +34,37 @@ MonoBehaviour:
   chargePrefab: {fileID: 0}
   chargeAnimation: 1
   attackAnimation: 1
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/RoundKick.asset
+=======
+>>>>>>> parent of dc1c306... test:Godmode/Assets/Techniques/MartialArts/Moves/RoundKick.asset
   animation: {fileID: 7400000, guid: 88cfb31224c59ed4f99a6f6a205d44b1, type: 2}
+<<<<<<< HEAD
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
   stunTime: 1
+<<<<<<< HEAD:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+=======
+=======
+>>>>>>> parent of c4c115a... 21.05:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+  animation: {fileID: 0}
+  stunTime: 0
+>>>>>>> parent of c4c115a... 21.05:Godmode/Assets/Techniques/MartialArts/Moves/Move4.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/RoundKick.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/RoundKick.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05:Godmode/Assets/Techniques/MartialArts/Moves/RoundKick.asset
+=======
+>>>>>>> parent of dc1c306... test:Godmode/Assets/Techniques/MartialArts/Moves/RoundKick.asset
+=======
+  stunTime: 0
+>>>>>>> parent of e540f79... 25.05
   juggle: 0
   pushBack: 0
