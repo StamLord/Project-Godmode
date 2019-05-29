@@ -13,10 +13,8 @@ public struct PlayerCharacterInputs
 {
     public Vector3 motion;
     public Vector3 cameraPlanarDirection;
-    //public float MoveAxisForward;
-    //public float MoveAxisUp;
-    //public float MoveAxisRight;
-    public float Speed;
+    public float maxSpeed;
+    public float decelRate;
     public Vector3 Gravity;
 }
 
@@ -24,13 +22,16 @@ public struct AICharacterInputs
 {
     public Vector3 MoveVector;
     public Vector3 LookVector;
-    
 }
 
 public class AdvancedController : MonoBehaviour, ICharacterController
 {
     public KinematicCharacterMotor Motor;
     public bool grounded;
+    public Vector3 lastVector;
+    [SerializeField] protected float _maxSpeed;
+    [SerializeField] protected float _decelRate;
+    public float GetLastMaxSpeed { get { return this._maxSpeed; } }
 
     [Header("Stable Movement")]
     public float MaxStableMoveSpeed = 10f;
@@ -78,7 +79,9 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     public void SetInputs(PlayerCharacterInputs inputs)
     {
         _moveInputVector = inputs.motion;
-        //Debug.Log("Set input to " + inputs.motion);
+        _maxSpeed = inputs.maxSpeed;
+        _decelRate = inputs.decelRate;
+
         switch (OrientationMethod)
         {
             case OrientationMethod.TowardsCamera:
@@ -138,6 +141,18 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
         currentVelocity = _moveInputVector;
+
+        if(_moveInputVector != Vector3.zero)
+        {
+            lastVector = _moveInputVector;
+        }
+
+        currentVelocity += lastVector;
+        currentVelocity = Vector3.ClampMagnitude(currentVelocity, _maxSpeed);
+        if (lastVector.magnitude > 0.25f)
+            lastVector -= lastVector * _decelRate * Time.deltaTime;
+        else
+            lastVector = Vector3.zero;
     }
 
     /// <summary>

@@ -25,13 +25,18 @@ public class CrashState : State
         anim = Machine.anim;
         anim.SetBool("Crashing", true);
 
-        direction = Machine.lastVector;
+        direction = cr.lastVector;
     }
 
     void Update()
     {
         Vector3 vectorGrav = new Vector3(0, gravity, 0);
-        Movement((direction * crashSpeed) - vectorGrav);
+
+        PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+        inputs.motion = (direction * crashSpeed) + vectorGrav;
+        cr.SetInputs(inputs);
+        
+        //Movement((direction * crashSpeed) - vectorGrav);
 
         //DestructionSphere();
 

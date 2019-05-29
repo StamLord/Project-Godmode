@@ -19,8 +19,6 @@ public class DashState : State
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
 
-    protected Vector3 lastInputVector;
-
     [Header("Melee")]
     public bool isChargingTech;
 
@@ -152,6 +150,7 @@ public class DashState : State
                 PlayerCharacterInputs inputs = new PlayerCharacterInputs();
                 inputs.motion = moveVector;
                 inputs.cameraPlanarDirection = cameraPlanarDirection;
+                inputs.maxSpeed = moveSpeed;
 
                 if (moveVector != Vector3.zero)
                     cr.Motor.ForceUnground(0.1f);
@@ -339,7 +338,6 @@ public class DashState : State
     {
         base.OnStateExit();
         anim.SetBool("Dashing", false);
-        Machine.lastVector = lastInputVector;
         camScript.SetMaxFov(false);
     }
 }

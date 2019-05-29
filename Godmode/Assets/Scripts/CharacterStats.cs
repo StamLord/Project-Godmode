@@ -197,6 +197,7 @@ public class CharacterStats : MonoBehaviour
     public void UpdateHealth(int amount)
     {
         health += amount;
+        health = Mathf.Clamp(health, 0, maxHealth);
         if (health <= 0)
             Die();
     }
@@ -204,11 +205,13 @@ public class CharacterStats : MonoBehaviour
     public void UpdateStamina(int amount)
     {
         stamina += amount;
+        stamina = Mathf.Clamp(stamina, 0, maxStamina);
     }
 
     public void UpdateEnergy(int amount)
     {
         energy += amount;
+        energy = Mathf.Clamp(energy, 0, maxEnergy);
     }
 
     void Die()

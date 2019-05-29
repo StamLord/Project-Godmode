@@ -48,7 +48,6 @@ public class StateMachine : MonoBehaviour
     public TextMeshProUGUI damageCounter;
 
     [Header("Holders")]
-    public Vector3 lastVector;
     public Vector3 tossDirection;
     public Vector3 crashDirection;
     public RaycastHit wallToRun;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GroundedState : State
 {
+    protected CharacterStats stats;
     protected ThirdPersonCam camScript;
     protected VirtualInput vi;
     protected AdvancedController cr;
@@ -14,6 +15,7 @@ public class GroundedState : State
 
     [Header("Settings")]
     public float moveSpeed = 15f;
+    public float decelRate = 2f;
     protected float groundedTimer;
 
     public float decelTime = 0.5f;
@@ -33,6 +35,7 @@ public class GroundedState : State
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+        stats = Machine.stats;
         camScript = Machine.camScript;
         vi = Machine.vi;
         cr = Machine.cr;
@@ -40,8 +43,6 @@ public class GroundedState : State
         anim = Machine.anim;
         techManager = Machine.techManager;
         ai = Machine.ai;
-
-        lastInputVector = Machine.lastVector;
     }
 
     public override void OnStateInitialize(StateMachine machine = null)
@@ -150,11 +151,13 @@ public class GroundedState : State
 
                 Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
                 moveVector = Vector3.Cross(transform.up,inputRight); //Compensating for the angle between camera and surface
-                moveVector *= moveSpeed; 
-
+                moveVector *= moveSpeed;
+                
                 PlayerCharacterInputs inputs = new PlayerCharacterInputs();
                 inputs.motion = moveVector;
                 inputs.cameraPlanarDirection = cameraFlatDirection;
+                inputs.maxSpeed = moveSpeed;
+                inputs.decelRate = decelRate;
 
                 cr.SetInputs(inputs);
             }
@@ -192,7 +195,7 @@ public class GroundedState : State
 
             #region Charge Key
 
-            if (vi.e)
+            if (vi.eDown || vi.e && stats.GetEnergy < stats.maxEnergy)
             {
                 Machine.SetState<ChargeState>();
             }
@@ -352,6 +355,5 @@ public class GroundedState : State
         groundedTimer = 0f;
 
         decelTimer = 0;
-        Machine.lastVector = currentVector;
     }
 }

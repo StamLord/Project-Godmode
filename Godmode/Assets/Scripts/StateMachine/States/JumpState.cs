@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class JumpState : State
 {
+    protected CharacterStats stats;
     protected ThirdPersonCam camScript;
     protected AdvancedController cr;
     protected Animator anim;
@@ -25,16 +26,14 @@ public class JumpState : State
     private float doubleTapTimer;
     private KeyCode lastKey;
 
-    public float decelTime = 0.5f;
-    protected float decelTimer;
-    public Vector3 lastInputVector;
-    public Vector3 currentVector;
+    public float decelRate = 2f;
 
     protected bool startedJumping;
 
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+        stats = Machine.stats;
         camScript = Machine.camScript;
         cr = Machine.cr;
         anim = Machine.anim;
@@ -42,13 +41,11 @@ public class JumpState : State
         techManager = Machine.techManager;
         anim.SetBool("Jump", true);
         jumpNumber++;
-
-        lastInputVector = Machine.lastVector;
     }
 
     void Update()
     {
-        if (GroundCheck() && jumpTimer >= 0.1f)
+        if (GroundCheck() && jumpTimer >= 0.2f)
             Machine.SetState<GroundedState>();
 
         //if (CeilingCheck() && jumpTimer >= 0.1f)
@@ -131,6 +128,8 @@ public class JumpState : State
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = moveVector;
             inputs.cameraPlanarDirection = cameraFlatDirection;
+            inputs.maxSpeed = 30f;
+            inputs.decelRate = decelRate;
 
             if (startedJumping == false)
             {
@@ -180,7 +179,7 @@ public class JumpState : State
 
         #region Charge Key
 
-        if (vi.e && Machine.canFly)
+        if (vi.eDown && Machine.canFly || vi.e && stats.GetEnergy < stats.maxEnergy && Machine.canFly)
         {
             Machine.SetState<ChargeState>();
         }
@@ -427,8 +426,5 @@ public class JumpState : State
         anim.SetBool("DoubleJump", false);
         AnimationUpdate();
         startedJumping = false;
-
-        decelTimer = 0;
-        Machine.lastVector = currentVector;
     }
 }

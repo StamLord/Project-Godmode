@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class FlyingState : State
 {
+    protected CharacterStats stats;
     protected ThirdPersonCam camScript;
     protected VirtualInput vi;
     protected AdvancedController cr;
@@ -13,10 +14,8 @@ public class FlyingState : State
 
     [Header("Settings")]
     public float moveSpeed = 15f;
+    public float decelRate = 2f;
 
-    public float decelAmount = .01f;
-    public float decelTime = 0.5f;
-    protected float decelTimer;
     protected Vector3 lastInputVector;
     protected Vector3 currentVector;
 
@@ -31,6 +30,7 @@ public class FlyingState : State
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+        stats = Machine.stats;
         vi = Machine.vi;
         cr = Machine.cr;
         ts = Machine.ts;
@@ -38,8 +38,6 @@ public class FlyingState : State
         anim.SetBool("Flying", true);
         camScript = Machine.camScript;
         techManager = Machine.techManager;
-
-        lastInputVector = Machine.lastVector;
     }
 
     void Update()
@@ -155,6 +153,8 @@ public class FlyingState : State
                 PlayerCharacterInputs inputs = new PlayerCharacterInputs();
                 inputs.motion = moveVector;
                 inputs.cameraPlanarDirection = cameraPlanarDirection;
+                inputs.maxSpeed = moveSpeed;
+                inputs.decelRate = decelRate;
 
                 if (moveVector != Vector3.zero)
                     cr.Motor.ForceUnground(0.1f);
@@ -175,7 +175,7 @@ public class FlyingState : State
 
             #region Charge Key
 
-            if (vi.e)
+            if (vi.eDown || vi.e && stats.GetEnergy < stats.maxEnergy)
             {
                 Machine.SetState<ChargeState>();
             }
@@ -270,11 +270,6 @@ public class FlyingState : State
             lastKey = KeyCode.None;
             doubleTapTimer = 0;
         }
-    }
-
-    private void Movement(Vector3 direction)
-    {
-        //cr.Move((direction * moveSpeed) * Time.deltaTime);
     }
 
     private void MousePressMain()
@@ -373,7 +368,5 @@ public class FlyingState : State
         base.OnStateExit();
         anim.SetBool("Flying", false);
 
-        decelTimer = 0;
-        Machine.lastVector = currentVector;
     }
 }

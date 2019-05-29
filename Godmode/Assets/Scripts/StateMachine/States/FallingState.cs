@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class FallingState : State
 {
+    protected CharacterStats stats;
     protected AdvancedController cr;
     protected ThirdPersonCam camScript;
     protected Animator anim;
@@ -14,6 +15,7 @@ public class FallingState : State
     public float fallControlSpeed = 15f;
     public AnimationCurve fallVelocity;
     public float fallTimer;
+    public float decelRate = 2f;
 
     [Header("Input Controls")]
     public float doubleTapWindow = 0.5f;
@@ -30,14 +32,13 @@ public class FallingState : State
     public override void OnStateEnter()
     {
         base.OnStateEnter();
+        stats = Machine.stats;
         cr = Machine.cr;
         camScript = Machine.camScript;
         anim = Machine.anim;
         vi = Machine.vi;
         anim.SetBool("Jump", true);
         techManager = Machine.techManager;
-
-        lastInputVector = Machine.lastVector;
     }
 
     void Update()
@@ -119,6 +120,8 @@ public class FallingState : State
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = moveVector;
             inputs.cameraPlanarDirection = cameraFlatDirection;
+            inputs.maxSpeed = 30f;
+            inputs.decelRate = decelRate;
 
             cr.SetInputs(inputs);
         }
@@ -145,7 +148,7 @@ public class FallingState : State
 
         #region Charge Key
 
-        if (vi.e && Machine.canFly)
+        if (vi.eDown && Machine.canFly || vi.e && stats.GetEnergy < stats.maxEnergy && Machine.canFly)
         {
             Machine.SetState<ChargeState>();
         }
@@ -347,6 +350,5 @@ public class FallingState : State
         anim.SetBool("Jump", false);
 
         decelTimer = 0;
-        Machine.lastVector = currentVector;
     }
 }

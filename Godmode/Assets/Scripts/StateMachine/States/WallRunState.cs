@@ -40,8 +40,6 @@ public class WallRunState : State
         
         techManager = Machine.techManager;
 
-        lastInputVector = Machine.lastVector;
-
         currentWall = Machine.wallToRun;
         Machine.wallToRun = new RaycastHit();
 
@@ -171,9 +169,9 @@ public class WallRunState : State
 
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = inputVec * moveSpeed;
+            inputs.maxSpeed = moveSpeed;
 
             cr.SetInputs(inputs);
-            //Movement(inputVec);
 
             #endregion
 
@@ -195,11 +193,6 @@ public class WallRunState : State
 
             #endregion
         }
-    }
-
-    private void Movement(Vector3 direction)
-    {
-        //cr.Move((direction * moveSpeed) * Time.deltaTime);
     }
 
     private void MousePressMain()
@@ -301,6 +294,5 @@ public class WallRunState : State
         wallrunTimer = 0f;
 
         decelTimer = 0;
-        Machine.lastVector = currentVector;
     }
 }

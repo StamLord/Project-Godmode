@@ -17,8 +17,8 @@ public class VirtualInput : MonoBehaviour
         if(localPlayer)
         {
             //Axis
-            horizontal = Input.GetAxis("Horizontal");
-            vertical = Input.GetAxis("Vertical");
+            horizontal = Input.GetAxisRaw("Horizontal");
+            vertical = Input.GetAxisRaw("Vertical");
 
             //Direction Buttons
             w = Input.GetKey(KeyCode.W);

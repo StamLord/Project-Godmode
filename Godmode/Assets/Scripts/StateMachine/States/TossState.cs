@@ -138,7 +138,6 @@ public class TossState : State
         tossTimer = 0f;
         anim.SetBool("Tossed", false);
         Machine.tossDirection = Vector3.zero;
-        Machine.lastVector = currentVector;
         currentVector = Vector3.zero;
     }
 
