@@ -10,6 +10,9 @@ Assets/FightingUnityChan_FreeAsset
 Assets/InfinitaStudio - Mountains
 Assets/AssetStoreTools*
 
+# Never ignore Asset meta data
+!/[Aa]ssets/**/*.meta
+
 # Visual Studio cache directory
 .vs/
 
@@ -34,6 +37,7 @@ ExportedObj/
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
+*.mdb.meta
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
