@@ -19,6 +19,10 @@ public class DashState : State
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
 
+    [Header("Animation")]
+    public string animState = "DashBlend";
+    public float transitionSpeed = 0.1f;
+
     [Header("Melee")]
     public bool isChargingTech;
 
@@ -29,8 +33,10 @@ public class DashState : State
         stats = Machine.stats;
         cr = Machine.cr;
         ts = Machine.ts;
+
         anim = Machine.anim;
-        anim.SetBool("Dashing", true);
+        anim.CrossFade(animState, transitionSpeed);
+
         camScript = Machine.camScript;
         camScript.SetMaxFov(true);
         techManager = Machine.techManager;

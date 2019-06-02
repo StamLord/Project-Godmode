@@ -17,6 +17,10 @@ public class FallingState : State
     public float fallTimer;
     public float decelRate = 2f;
 
+    [Header("Animation")]
+    public string animState = "JumpBlend";
+    public float transitionSpeed = 0.1f;
+
     [Header("Input Controls")]
     public float doubleTapWindow = 0.5f;
     private float doubleTapTimer;
@@ -35,9 +39,11 @@ public class FallingState : State
         stats = Machine.stats;
         cr = Machine.cr;
         camScript = Machine.camScript;
-        anim = Machine.anim;
         vi = Machine.vi;
-        anim.SetBool("Jump", true);
+
+        anim = Machine.anim;
+        anim.CrossFade(animState, transitionSpeed);
+
         techManager = Machine.techManager;
     }
 
@@ -236,14 +242,6 @@ public class FallingState : State
         }
     }
 
-    private void Movement(Vector3 direction)
-    {
-        //float verticalY = fallVelocity.Evaluate(fallTimer);
-        //Vector3 speedVector = direction * fallControlSpeed;
-        //speedVector += Vector3.up * verticalY;
-
-        //cr.Move(speedVector * Time.deltaTime);
-    }
 
     private bool GroundCheck()
     {
@@ -347,7 +345,6 @@ public class FallingState : State
     {
         base.OnStateExit();
         fallTimer = 0f;
-        anim.SetBool("Jump", false);
 
         decelTimer = 0;
     }

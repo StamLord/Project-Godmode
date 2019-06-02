@@ -11,14 +11,20 @@ public class ChargeState : State
     protected Animator anim;
     //protected State originState;
 
+    [Header("References")]
     public ParticleSystem chargeAura;
     public ParticleSystem fullAura;
 
+    [Header("Settings")]
     public float lastSpeed;
-    public float groundDecelRate = 4f;
-    public float airDecelRate = 2f;
+    public float groundDecelRate = 8f;
+    public float airDecelRate = 4f;
 
     public float chargeTimer = 0f;
+
+    [Header("Animation")]
+    public string animState = "Charge";
+    public float transitionSpeed = 0.1f;
 
     protected float lastShockwave;
     protected bool startedWithFullEnergy;
@@ -33,7 +39,8 @@ public class ChargeState : State
         lastSpeed = cr.GetLastMaxSpeed;
 
         anim = Machine.anim;
-        anim.SetBool("Charge", true);
+        anim.CrossFade(animState, transitionSpeed);
+
         if (camScript && !camScript.continousShake)
             camScript.StartShake(false);
 
@@ -97,7 +104,6 @@ public class ChargeState : State
     {
         base.OnStateExit();
         chargeTimer = 0f;
-        anim.SetBool("Charge", false);
         chargeAura.Stop();
         fullAura.Stop();
 

@@ -148,7 +148,7 @@ public class TechManager : MonoBehaviour
     {
         if (!t)
         {
-            Debug.LogWarning("Tried to use Technique that is null!");
+            UnityEngine.Debug.LogWarning("Tried to use Technique that is null!");
             return;
         }
 
@@ -295,6 +295,7 @@ public class TechManager : MonoBehaviour
 
     public void ResetCombo()
     {
+        //Debug.Log("Called reset");
         punchNum = 0;
         anim.SetInteger("Combo", punchNum);
         EnableClick();

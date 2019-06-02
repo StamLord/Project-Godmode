@@ -23,7 +23,11 @@ public class GuardState : State
     {
         if(vi.qUp || vi.q == false)
         {
-            Machine.SetState<GroundedState>();
+            if(Machine.groundCheck.grounded)
+                Machine.SetState<GroundedState>();
+            else if(Machine.canFly)
+                Machine.SetState<FlyingState>();
+
         }
 
         guardTimer += Time.deltaTime;

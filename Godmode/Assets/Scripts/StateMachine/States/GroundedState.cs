@@ -15,11 +15,13 @@ public class GroundedState : State
 
     [Header("Settings")]
     public float moveSpeed = 15f;
-    public float decelRate = 2f;
+    public float decelRate = 4f;
     protected float groundedTimer;
 
-    public float decelTime = 0.5f;
-    protected float decelTimer;
+    [Header("Animation")]
+    public string animState = "GroundBlend";
+    public float transitionSpeed = 0.1f;
+
     public Vector3 lastInputVector;
     public Vector3 currentVector;
 
@@ -40,7 +42,17 @@ public class GroundedState : State
         vi = Machine.vi;
         cr = Machine.cr;
         ts = Machine.ts;
+
         anim = Machine.anim;
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("JumpBlend"))
+        {
+            anim.CrossFade("JumpEnd", transitionSpeed);
+        }
+        else
+        {
+            anim.CrossFade(animState, transitionSpeed);
+        }
+
         techManager = Machine.techManager;
         ai = Machine.ai;
     }
@@ -57,7 +69,7 @@ public class GroundedState : State
             Machine.SetState<FallingState>();
         }
 
-        
+
         InputCheck();
 
         AnimationUpdate();
@@ -161,7 +173,7 @@ public class GroundedState : State
 
                 cr.SetInputs(inputs);
             }
-            else
+            else if (ai != null)
             {
                 Vector3 moveVector = ai.currentDirection * inputZ;
                 moveVector += Vector3.Cross(transform.up, ai.currentDirection) * inputX;
@@ -353,7 +365,5 @@ public class GroundedState : State
         base.OnStateExit();
         anim.SetFloat("Speed", 0f);
         groundedTimer = 0f;
-
-        decelTimer = 0;
     }
 }

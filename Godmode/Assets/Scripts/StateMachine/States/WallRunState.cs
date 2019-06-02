@@ -18,13 +18,12 @@ public class WallRunState : State
     protected float wallrunTimer;
     public AnimationCurve ySpeed;
 
-
-    public float decelTime = 0.5f;
-    protected float decelTimer;
-    public Vector3 lastInputVector;
-    public Vector3 currentVector;
-
     public RaycastHit currentWall;
+
+    [Header("Animation")]
+    public string animStateLeft = "LeftWallRun";
+    public string animStateRight = "RightWallRun";
+    public float transitionSpeed = 0.1f;
 
     [Header("Melee")]
     public bool isChargingTech;
@@ -51,10 +50,9 @@ public class WallRunState : State
 
         //Face along wall
         if (angle < 90)
-            anim.SetBool("LeftWallrun", true);
+            anim.CrossFade(animStateLeft, transitionSpeed);
         else
-            anim.SetBool("RightWallrun", true);
-        Debug.Log("entered");
+            anim.CrossFade(animStateRight, transitionSpeed);
     }
 
     public override void OnStateInitialize(StateMachine machine = null)
@@ -85,8 +83,8 @@ public class WallRunState : State
         Physics.Raycast(transform.position, -transform.right, out left, 1f, runnableMask);
         Physics.Raycast(transform.position, transform.right, out right, 1f, runnableMask);
 
-        Debug.Log(left.transform);
-        Debug.Log(right.transform);
+        //Debug.Log(left.transform);
+        //Debug.Log(right.transform);
 
         RaycastHit closest = new RaycastHit();
 
@@ -289,10 +287,6 @@ public class WallRunState : State
     public override void OnStateExit()
     {
         base.OnStateExit();
-        anim.SetBool("LeftWallrun", false);
-        anim.SetBool("RightWallrun", false);
         wallrunTimer = 0f;
-
-        decelTimer = 0;
     }
 }

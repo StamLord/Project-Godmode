@@ -21,6 +21,12 @@ public class JumpState : State
 
     public bool isChargingTech;
 
+    [Header("Animation")]
+    public string animStateBegin = "JumpBegin";
+    public string animState = "JumpBlend";
+    public string animStateDouble = "FrontFlip";
+    public float transitionSpeed = 0.1f;
+
     [Header("Input Controls")]
     public float doubleTapWindow = 0.5f;
     private float doubleTapTimer;
@@ -36,11 +42,22 @@ public class JumpState : State
         stats = Machine.stats;
         camScript = Machine.camScript;
         cr = Machine.cr;
-        anim = Machine.anim;
         vi = Machine.vi;
         techManager = Machine.techManager;
-        anim.SetBool("Jump", true);
+
+        anim = Machine.anim;
+        if(anim.GetCurrentAnimatorStateInfo(0).IsName("GroundBlend"))
+        {
+            anim.CrossFade(animStateBegin, transitionSpeed);
+        }
+        else
+        {
+            anim.CrossFade(animState, transitionSpeed);
+        }
+
+
         jumpNumber++;
+        jumpTimer = 0f;
     }
 
     void Update()
@@ -170,7 +187,7 @@ public class JumpState : State
                     jumpNumber++;
                     jumpTimer = 0f;
                     startedJumping = false;
-                    anim.SetBool("DoubleJump", (jumpNumber > 1));
+                    anim.CrossFade(animStateDouble, transitionSpeed);
                 }
             }
         }
@@ -421,9 +438,7 @@ public class JumpState : State
     {
         base.OnStateExit();
         jumpNumber = 0;
-        jumpTimer = 0f;
-        anim.SetBool("Jump", false);
-        anim.SetBool("DoubleJump", false);
+        
         AnimationUpdate();
         startedJumping = false;
     }

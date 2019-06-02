@@ -40,13 +40,7 @@ public class CharacterStats : MonoBehaviour
 
     public int energyChargeRate = 250;
 
-    [Header("UI")]
-    public Image hBar;
-    public Image[] eBars = new Image[5];
-    public Image[] sBars = new Image[5];
-
-    public TextMeshProUGUI hitCounter;
-    public TextMeshProUGUI damageCounter;
+    
 
     private void OnValidate()
     {
@@ -57,7 +51,6 @@ public class CharacterStats : MonoBehaviour
     void Update()
     {
         Regen();
-        UpdateUI();
     }
 
     void Regen()
@@ -77,7 +70,7 @@ public class CharacterStats : MonoBehaviour
 
         if (healthRegenTimer >= 1f / healthRegenRate)
         {
-            health = Mathf.Clamp(health + 1, 0, maxHealth);
+            UpdateHealth(1);
             healthRegenTimer -= 1f / healthRegenRate;
         }
 
@@ -94,7 +87,7 @@ public class CharacterStats : MonoBehaviour
 
         if (energyRegenTimer >= 1f / energyRegenRate)
         {
-            energy = Mathf.Clamp(energy + 1, 0, maxEnergy);
+            UpdateEnergy(1);
             energyRegenTimer -= 1f / energyRegenRate;
         }
 
@@ -111,7 +104,7 @@ public class CharacterStats : MonoBehaviour
 
         if (staminaRegenTimer >= 1f / staminaRegenRate)
         {
-            stamina = Mathf.Clamp(stamina + 1, 0, maxStamina);
+            UpdateStamina(1);
             staminaRegenTimer -= 1f / staminaRegenRate;
         }
 
@@ -129,69 +122,6 @@ public class CharacterStats : MonoBehaviour
         }
 
         return false;
-    }
-
-    void UpdateUI()
-    {
-        if (vi && !vi.localPlayer)
-            return;
-
-        if (hBar == null)
-            return;
-        #region Health
-
-        hBar.fillAmount = (float)health / maxHealth;
-
-        #endregion
-
-        #region Energy
-
-        float energyPerBar = maxEnergy / 5;
-
-        int fullBars = Mathf.FloorToInt(energy / energyPerBar);
-        float leftOver = energy % energyPerBar;
-        //Debug.Log(leftOver);
-
-        int i;
-        for (i = 0; i < fullBars; i++)
-        {
-            eBars[i].fillAmount = 1;
-        }
-
-        if (leftOver != 0 && i < eBars.Length)
-            eBars[i].fillAmount = leftOver / energyPerBar;
-
-        for (i++; i < eBars.Length; i++)
-        {
-            eBars[i].fillAmount = 0;
-        }
-
-        #endregion
-
-        #region Stamina
-
-        float staminaPerBar = maxStamina / 5;
-
-        int fullSTMBars = Mathf.FloorToInt(stamina / staminaPerBar);
-        float leftOverSTM = stamina % staminaPerBar;
-
-        int j;
-        for (j = 0; j < fullSTMBars; j++)
-        {
-            sBars[j].fillAmount = 1;
-        }
-
-        if (leftOverSTM != 0 && j < sBars.Length)
-            sBars[j].fillAmount = leftOverSTM / staminaPerBar;
-
-        for (j++; j < sBars.Length; j++)
-        {
-            sBars[j].fillAmount = 0;
-        }
-
-
-        #endregion
-
     }
 
     public void UpdateHealth(int amount)

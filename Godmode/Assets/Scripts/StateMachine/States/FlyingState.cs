@@ -16,6 +16,10 @@ public class FlyingState : State
     public float moveSpeed = 15f;
     public float decelRate = 2f;
 
+    [Header("Animation")]
+    public string animState = "GroundBlend";
+    public float transitionSpeed = 0.1f;
+
     protected Vector3 lastInputVector;
     protected Vector3 currentVector;
 
@@ -34,8 +38,10 @@ public class FlyingState : State
         vi = Machine.vi;
         cr = Machine.cr;
         ts = Machine.ts;
+
         anim = Machine.anim;
-        anim.SetBool("Flying", true);
+        anim.CrossFade(animState, transitionSpeed);
+
         camScript = Machine.camScript;
         techManager = Machine.techManager;
     }
@@ -366,7 +372,5 @@ public class FlyingState : State
     public override void OnStateExit()
     {
         base.OnStateExit();
-        anim.SetBool("Flying", false);
-
     }
 }

@@ -39,18 +39,11 @@ public class StateMachine : MonoBehaviour
     public Transform topCheck;
     public Transform botCheck;
 
-    [Header("UI")]
-    public Image hBar;
-    public Image[] eBars = new Image[5];
-    public Image[] sBars = new Image[5];
-    
-    public TextMeshProUGUI hitCounter;
-    public TextMeshProUGUI damageCounter;
-
     [Header("Holders")]
     public Vector3 tossDirection;
     public Vector3 crashDirection;
     public RaycastHit wallToRun;
+    public bool layingFaceDown;
 
     [Header("Base")]
     public List<State> statesList = new List<State>();
@@ -186,6 +179,7 @@ public class StateMachine : MonoBehaviour
             else if (juggle)
             {
                 SetState<JuggleState>();
+                Debug.Log("Juggling");
             }
             else
             {

@@ -17,13 +17,18 @@ public class CrashState : State
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
 
+    [Header("Animation")]
+    public string animState = "Crashing";
+    public float transitionSpeed = 0.1f;
+
     public override void OnStateEnter()
     {
         base.OnStateEnter();
         cr = Machine.cr;
         camScript = Machine.camScript;
+
         anim = Machine.anim;
-        anim.SetBool("Crashing", true);
+        anim.CrossFade(animState, transitionSpeed);
 
         direction = cr.lastVector;
     }
@@ -34,6 +39,8 @@ public class CrashState : State
 
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = (direction * crashSpeed) + vectorGrav;
+        inputs.maxSpeed = crashSpeed;
+
         cr.SetInputs(inputs);
         
         //Movement((direction * crashSpeed) - vectorGrav);
@@ -42,12 +49,15 @@ public class CrashState : State
 
         if(GroundCheck())
         {
+            Machine.layingFaceDown = true;
             Machine.SetState<LayingState>();
         }
 
+        CheckCollision();
+
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    private void CheckCollision()
     {
         RaycastHit h;
         if (Physics.SphereCast(transform.position, .5f, direction.normalized, out h, 1f, crashColMask))
@@ -107,7 +117,6 @@ public class CrashState : State
     public override void OnStateExit()
     {
         base.OnStateExit();
-        anim.SetBool("Crashing", false);
         Machine.crashDirection = Vector3.zero;
     }
 }
