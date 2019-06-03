@@ -11,6 +11,9 @@ public class JuggleState : State
     public AnimationCurve yCurve;
     public float timer;
 
+    public Vector3 attackPoint;
+    public Vector3 pushback;
+
     public override void OnStateEnter()
     {
         base.OnStateEnter();
@@ -37,7 +40,10 @@ public class JuggleState : State
         Vector3 direction = new Vector3(0, y, 0);
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = direction;
+        inputs.motion += pushback;
         inputs.maxSpeed = yCurve.keys[0].value;
+        inputs.ignoreOrientation = true;
+        inputs.lookAt = attackPoint;
 
         cr.Motor.ForceUnground(0.1f);
         cr.SetInputs(inputs);

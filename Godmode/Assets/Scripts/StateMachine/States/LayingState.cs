@@ -15,7 +15,10 @@ public class LayingState : State
     public float timer = 0f;
 
     [Header("Particles")]
+    public float plowThreshold = 10f;
     public ParticleSystem plowTrail;
+    protected ParticleSystem[] subSystems;
+    protected bool trailActivated;
 
     [Header("Animation")]
     public string animStateUp = "LayingFaceUp";
@@ -42,8 +45,20 @@ public class LayingState : State
         cr = Machine.cr;
         lastSpeed = cr.GetLastMaxSpeed;
 
-        var emission = plowTrail.emission;
-        emission.enabled = true;
+        if (lastSpeed > plowThreshold)
+        {
+            var emission = plowTrail.emission;
+            emission.enabled = true;
+
+            subSystems = plowTrail.GetComponentsInChildren<ParticleSystem>();
+            foreach(ParticleSystem p in subSystems)
+            {
+                var em = p.emission;
+                em.enabled = true;
+            }
+
+            trailActivated = true;
+        }
     }
 
     void Update()
@@ -75,7 +90,19 @@ public class LayingState : State
         timer = 0f;
         anim.SetBool("Laying", false);
 
-        var emission = plowTrail.emission;
-        emission.enabled = false;
+
+        if (trailActivated)
+        {
+            var emission = plowTrail.emission;
+            emission.enabled = false;
+
+            foreach (ParticleSystem p in subSystems)
+            {
+                var em = p.emission;
+                em.enabled = false;
+            }
+
+            trailActivated = false;
+        }
     }
 }

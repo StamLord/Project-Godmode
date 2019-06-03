@@ -221,7 +221,7 @@ public class ThirdPersonCam : MonoBehaviour
         {
             character.transform.rotation = Quaternion.Euler(currentY, currentX, 0);
         }
-
+        /*
         if (targetSys.lockOn != null)
         {
             //Find point adjacent to enemy to treat as destination
@@ -258,7 +258,7 @@ public class ThirdPersonCam : MonoBehaviour
                 character.transform.LookAt(targetSys.lockOn.transform);
             }
 
-        }
+        }*/
 
         Shake();
     }

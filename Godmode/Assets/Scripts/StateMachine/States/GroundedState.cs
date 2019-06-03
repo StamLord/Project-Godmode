@@ -154,17 +154,38 @@ public class GroundedState : State
 
             if (vi.localPlayer)
             {
+                Vector3 moveVector = Vector3.zero;
                 Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
                 Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
 
-                Vector3 moveVector = cameraFlatDirection * inputZ;
-                moveVector += cameraRight * inputX;
-                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+                if (ts.lockOn != null)
+                {
+                    Vector3 enemyPos = ts.lockOn.position;
+                    Vector3 playerPos = transform.position;
 
-                Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
-                moveVector = Vector3.Cross(transform.up,inputRight); //Compensating for the angle between camera and surface
-                moveVector *= moveSpeed;
-                
+                    enemyPos.y = playerPos.y = 0f;
+
+                    Vector3 dir = (enemyPos - playerPos).normalized;
+
+                    if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
+                    {
+                        moveVector += dir * inputZ;
+                    }
+
+                    moveVector += Vector3.Cross(transform.up, dir) * inputX;
+                    moveVector *= moveSpeed;
+                }
+                else
+                { 
+                    moveVector = cameraFlatDirection * inputZ;
+                    moveVector += cameraRight * inputX;
+                    moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+
+                    Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
+                    moveVector = Vector3.Cross(transform.up,inputRight); //Compensating for the angle between camera and surface
+                    moveVector *= moveSpeed;
+                }
+
                 PlayerCharacterInputs inputs = new PlayerCharacterInputs();
                 inputs.motion = moveVector;
                 inputs.cameraPlanarDirection = cameraFlatDirection;

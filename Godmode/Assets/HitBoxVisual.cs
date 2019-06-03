@@ -15,19 +15,19 @@ public class HitBoxVisual : MonoBehaviour
         renderer = GetComponent<MeshRenderer>();
         toCopy = GetComponentInParent<Collider>();
         toggle = GameObject.Find("HitBoxToggle").GetComponent<Toggle>();
-        //GameObject.FindObjectOfType<MartialArtBuilder>().
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if (toggle == null)
-            return;
-
-        renderer.enabled = toggle.isOn && toCopy.enabled;
-
         if (toCopy == null)
             return;
+
+        if (toggle == null)
+            renderer.enabled = toCopy.enabled;
+        else
+            renderer.enabled = toggle.isOn && toCopy.enabled;
+
 
         if (toCopy is SphereCollider)
         {
@@ -36,6 +36,15 @@ public class HitBoxVisual : MonoBehaviour
 
             transform.localScale = new Vector3(scale, scale, scale);
             transform.localPosition = offset;
+        }
+
+        else if (toCopy is BoxCollider)
+        {
+            Vector3 size = (toCopy as BoxCollider).size;
+            Vector3 offset = (toCopy as BoxCollider).center;
+
+            transform.localScale = new Vector3(size.x, size.y, size.z);
+            transform.localEulerAngles = offset;
         }
 
     }

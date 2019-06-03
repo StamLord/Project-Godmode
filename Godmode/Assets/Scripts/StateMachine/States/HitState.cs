@@ -8,9 +8,12 @@ public class HitState : State
     protected Animator anim;
     protected TechManager techManager;
 
+    public Vector3 attackPoint;
     public float stunTime;
     public Vector3 pushback;
     public float timer;
+
+    public float decelRate = 4f;
 
     public override void OnStateEnter()
     {
@@ -21,6 +24,8 @@ public class HitState : State
         techManager = Machine.techManager;
         techManager.ResetCombo();
         timer = 0f;
+
+        
     }
 
     void Update()
@@ -33,9 +38,9 @@ public class HitState : State
                 Machine.SetState<FallingState>();
         }
 
-        Movement(Vector3.Lerp(pushback, Vector3.zero, timer / stunTime));
-
         timer += Time.deltaTime;
+
+        Movement(pushback);
     }
 
     bool GroundCheck()
@@ -45,7 +50,14 @@ public class HitState : State
 
     void Movement(Vector3 direction)
     {
-        //cr.Move(direction * Time.deltaTime);
+        PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+        inputs.motion = direction;
+        inputs.maxSpeed = direction.magnitude;
+        inputs.decelRate = decelRate;
+        inputs.ignoreOrientation = true;
+        inputs.lookAt = attackPoint;
+
+        cr.SetInputs(inputs);
     }
 
     public override void OnStateExit()

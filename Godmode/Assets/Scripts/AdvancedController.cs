@@ -16,6 +16,8 @@ public struct PlayerCharacterInputs
     public float maxSpeed;
     public float decelRate;
     public Vector3 Gravity;
+    public bool ignoreOrientation;
+    public Vector3 lookAt;
 }
 
 public struct AICharacterInputs
@@ -26,6 +28,7 @@ public struct AICharacterInputs
 
 public class AdvancedController : MonoBehaviour, ICharacterController
 {
+    public TargetingSystem Targeting;
     public KinematicCharacterMotor Motor;
     public bool grounded;
     public Vector3 lastVector;
@@ -82,14 +85,22 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         _maxSpeed = inputs.maxSpeed;
         _decelRate = inputs.decelRate;
 
-        switch (OrientationMethod)
+        if (inputs.ignoreOrientation)
         {
-            case OrientationMethod.TowardsCamera:
-                _lookInputVector = inputs.cameraPlanarDirection;
-                break;
-            case OrientationMethod.TowardsMovement:
-                _lookInputVector = new Vector3(_moveInputVector.x, 0, _moveInputVector.z).normalized;
-                break;
+            Debug.Log(inputs.ignoreOrientation);
+            _lookInputVector = Utility.FlatDirection(transform.position,inputs.lookAt).normalized;
+        }
+        else
+        {
+            switch (OrientationMethod)
+            {
+                case OrientationMethod.TowardsCamera:
+                    _lookInputVector = inputs.cameraPlanarDirection;
+                    break;
+                case OrientationMethod.TowardsMovement:
+                    _lookInputVector = new Vector3(_moveInputVector.x, 0, _moveInputVector.z).normalized;
+                    break;
+            }
         }
     }
 
@@ -140,6 +151,26 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     /// </summary>
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
+        if(Targeting != null && Targeting.lockOn != null)
+        {
+            Vector3 playerPos = transform.position;
+            Vector3 enemyPos = Targeting.lockOn.position;
+            enemyPos.y = playerPos.y;
+
+            Vector3 lockPoint = enemyPos + (playerPos - enemyPos).normalized * .8f;
+
+            if (Vector3.Distance(playerPos, enemyPos) < Vector3.Distance(enemyPos, lockPoint))
+            {
+                Debug.Log("Distance smaller than lockpoint");
+                
+                lastVector = currentVelocity = Vector3.zero;
+
+                Motor.SetPositionAndRotation(lockPoint, Quaternion.LookRotation(enemyPos - playerPos));
+                //Motor.SetRotation(Quaternion.LookRotation(enemyPos - playerPos));
+                return;
+            }
+        }
+
         currentVelocity = _moveInputVector;
 
         if(_moveInputVector != Vector3.zero)

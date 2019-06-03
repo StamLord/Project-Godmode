@@ -175,18 +175,24 @@ public class StateMachine : MonoBehaviour
             else if (currentState.GetType() == typeof(JuggleState))
             {
                 (currentState as JuggleState).ResetJuggle();
+                JuggleState juggleState = GetCurrentState as JuggleState;
+                juggleState.attackPoint = owner.transform.position;
+                juggleState.pushback = (transform.position - owner.transform.position).normalized * pushback;
             }
             else if (juggle)
             {
                 SetState<JuggleState>();
-                Debug.Log("Juggling");
+                JuggleState juggleState = GetCurrentState as JuggleState;
+                juggleState.attackPoint = owner.transform.position;
+                juggleState.pushback = (transform.position - owner.transform.position).normalized * pushback;
             }
             else
             {
                 SetState<HitState>();
                 HitState hitState = GetCurrentState as HitState;
+                hitState.attackPoint = owner.transform.position;
                 hitState.stunTime = stunTime;
-                hitState.pushback = (transform.position - worldPosition).normalized * pushback;
+                hitState.pushback = (transform.position - owner.transform.position).normalized * pushback;
             }
         }
 
