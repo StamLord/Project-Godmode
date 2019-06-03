@@ -7,14 +7,13 @@ public class HitBoxVisual : MonoBehaviour
 {
     Collider toCopy;
     MeshRenderer renderer;
-    Toggle toggle;
+    public Toggle toggle;
 
     // Start is called before the first frame update
     void Start()
     {
         renderer = GetComponent<MeshRenderer>();
         toCopy = GetComponentInParent<Collider>();
-        toggle = GameObject.Find("HitBoxToggle").GetComponent<Toggle>();
     }
 
     // Update is called once per frame
