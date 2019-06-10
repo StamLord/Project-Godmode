@@ -213,7 +213,7 @@ public class WallRunState : State
     {
 
     }
-
+    /*
     private void TechCharge()
     {
         isChargingTech = true;
@@ -283,7 +283,7 @@ public class WallRunState : State
         if (t.type == HitType.Beam)
             Machine.SetState<BeamState>();
     }
-
+    */
     public override void OnStateExit()
     {
         base.OnStateExit();

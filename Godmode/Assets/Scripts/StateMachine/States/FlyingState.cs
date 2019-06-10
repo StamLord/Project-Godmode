@@ -14,7 +14,10 @@ public class FlyingState : State
 
     [Header("Settings")]
     public float moveSpeed = 15f;
-    public float decelRate = 2f;
+    [Tooltip("Deceleration that comes into effect when stopping")]
+    public float stopDecelRate = 4f;
+    [Tooltip("Deceleration that comes into effect on turns")]
+    public float moveDecelRate = 2f;
 
     [Header("Animation")]
     public string animState = "GroundBlend";
@@ -86,66 +89,90 @@ public class FlyingState : State
 
         DoubleTapCheck();
 
-        if (anim.GetInteger("Combo") == 0)
+        #region Movement Input
+
+        float inputX = vi.horizontal;
+        float inputZ = vi.vertical;
+        /*
+        Vector3 inputVec;
+
+        //If no target, create from own forward and right
+        if (ts.lockOn == false)
         {
-            #region Movement Input
+            inputVec = (transform.forward * inputZ) + (transform.right * inputX);
+            inputVec = inputVec.normalized;
+        }
+        else //Find the direction to the target (clamped to magnitude of 1)
+        {
+            Vector3 dirToTarget = ts.bodyCenter.transform.position - transform.position;
+            dirToTarget = dirToTarget / dirToTarget.magnitude;
 
-            float inputX = vi.horizontal;
-            float inputZ = vi.vertical;
-            /*
-            Vector3 inputVec;
+            float angleZX = Mathf.Atan2(dirToTarget.z, dirToTarget.x);
+            float zLength = Mathf.Sin(angleZX);
+            float xLength = Mathf.Cos(angleZX);
 
-            //If no target, create from own forward and right
-            if (ts.lockOn == false)
+            float angleZY = Mathf.Atan2(dirToTarget.z, dirToTarget.y);
+            float yLength = Mathf.Cos(angleZY);
+
+            Vector3 newDir = new Vector3(xLength, yLength, zLength);
+
+            inputVec = (newDir * inputZ) + (transform.right * inputX);
+        }
+
+        if (vi.space)
+        {
+            inputVec += Vector3.up;
+        }
+
+        if (vi.lShift)
+        {
+            inputVec -= Vector3.up;
+        }
+
+        if (inputVec == Vector3.zero)
+        {
+            currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
+            //lastInputVector = lastInputVector - lastInputVector * decelAmount * Time.deltaTime;
+            Movement(currentVector);
+            decelTimer += Time.deltaTime;
+        }
+        else
+        {
+            decelTimer = 0;
+            Movement(inputVec);
+            lastInputVector = (inputVec * moveSpeed) * Time.deltaTime;
+        }*/
+
+        if (vi.localPlayer)
+        {
+            Vector3 moveVector = new Vector3();
+            Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
+
+            if (ts.lockOn != null)
             {
-                inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-                inputVec = inputVec.normalized;
-            }
-            else //Find the direction to the target (clamped to magnitude of 1)
-            {
-                Vector3 dirToTarget = ts.bodyCenter.transform.position - transform.position;
-                dirToTarget = dirToTarget / dirToTarget.magnitude;
+                Vector3 enemyPos = ts.lockOn.position;
+                Vector3 playerPos = transform.position;
 
-                float angleZX = Mathf.Atan2(dirToTarget.z, dirToTarget.x);
-                float zLength = Mathf.Sin(angleZX);
-                float xLength = Mathf.Cos(angleZX);
+                Vector3 dir = (enemyPos - playerPos).normalized;
 
-                float angleZY = Mathf.Atan2(dirToTarget.z, dirToTarget.y);
-                float yLength = Mathf.Cos(angleZY);
+                if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
+                {
+                    moveVector += dir * inputZ;
+                }
+                    
+                moveVector += Vector3.Cross(transform.up, dir) * inputX;
 
-                Vector3 newDir = new Vector3(xLength, yLength, zLength);
+                if (vi.space)
+                    moveVector.y += 1;
+                if (vi.lShift)
+                    moveVector.y -= 1;
 
-                inputVec = (newDir * inputZ) + (transform.right * inputX);
-            }
-
-            if (vi.space)
-            {
-                inputVec += Vector3.up;
+                moveVector *= moveSpeed;
             }
 
-            if (vi.lShift)
-            {
-                inputVec -= Vector3.up;
-            }
-
-            if (inputVec == Vector3.zero)
-            {
-                currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-                //lastInputVector = lastInputVector - lastInputVector * decelAmount * Time.deltaTime;
-                Movement(currentVector);
-                decelTimer += Time.deltaTime;
-            }
             else
             {
-                decelTimer = 0;
-                Movement(inputVec);
-                lastInputVector = (inputVec * moveSpeed) * Time.deltaTime;
-            }*/
-
-            if (vi.localPlayer)
-            {
-                Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
-                Vector3 moveVector = new Vector3(inputX, 0, inputZ);
+                moveVector = new Vector3(inputX, 0, inputZ);
                 moveVector = camScript.transform.rotation * moveVector;
 
                 if (vi.space)
@@ -155,46 +182,46 @@ public class FlyingState : State
 
                 moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
                 moveVector *= moveSpeed;
-
-                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-                inputs.motion = moveVector;
-                inputs.cameraPlanarDirection = cameraPlanarDirection;
-                inputs.maxSpeed = moveSpeed;
-                inputs.decelRate = decelRate;
-
-                if (moveVector != Vector3.zero)
-                    cr.Motor.ForceUnground(0.1f);
-
-                cr.SetInputs(inputs);
             }
 
-            #endregion
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+            inputs.cameraPlanarDirection = cameraPlanarDirection;
+            inputs.maxSpeed = moveSpeed;
+            inputs.decelRate = (moveVector == Vector3.zero) ? stopDecelRate * 2f : moveDecelRate;
 
-            #region Fly Key
+            if (moveVector != Vector3.zero)
+                cr.Motor.ForceUnground(0.1f);
 
-            if (vi.fDown)
-            {
-                Machine.SetState<FallingState>();
-            }
-
-            #endregion
-
-            #region Charge Key
-
-            if (vi.eDown || vi.e && stats.GetEnergy < stats.maxEnergy)
-            {
-                Machine.SetState<ChargeState>();
-            }
-            #endregion
-
-            #region Guard Key
-
-            if (vi.q)
-            {
-                Machine.SetState<GuardState>();
-            }
-            #endregion
+            cr.SetInputs(inputs);
         }
+
+        #endregion
+
+        #region Fly Key
+
+        if (vi.fDown)
+        {
+            Machine.SetState<FallingState>();
+        }
+
+        #endregion
+
+        #region Charge Key
+
+        if (vi.eDown || vi.e && stats.GetEnergy < stats.maxEnergy)
+        {
+            Machine.SetState<ChargeState>();
+        }
+        #endregion
+
+        #region Guard Key
+
+        if (vi.q)
+        {
+            Machine.SetState<GuardState>();
+        }
+        #endregion
 
     }
 
@@ -297,7 +324,7 @@ public class FlyingState : State
     {
 
     }
-
+    /*
     private void TechCharge()
     {
         Technique t = techManager.GetSelected;
@@ -345,12 +372,12 @@ public class FlyingState : State
         techManager.ExitTechCharge();
 
     }
-
+    */
     private void AnimationUpdate()
     {
         anim.SetFloat("Speed", vi.vertical);
     }
-
+    /*
     void AnimateCharge(Technique t)
     {
         anim.SetInteger("ChargeAnim", t.chargeAnimation);
@@ -367,7 +394,7 @@ public class FlyingState : State
             anim.SetBool("ChargingAttack", false);
 
         anim.SetBool("FiringAttack", true);
-    }
+    }*/
 
     public override void OnStateExit()
     {

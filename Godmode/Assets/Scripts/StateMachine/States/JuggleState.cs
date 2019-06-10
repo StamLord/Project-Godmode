@@ -10,6 +10,7 @@ public class JuggleState : State
 
     public AnimationCurve yCurve;
     public float timer;
+    public float decelRate = 2;
 
     public Vector3 attackPoint;
     public Vector3 pushback;
@@ -41,6 +42,8 @@ public class JuggleState : State
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = direction;
         inputs.motion += pushback;
+        inputs.overrideY = true;
+        inputs.decelRate = decelRate;
         inputs.maxSpeed = yCurve.keys[0].value;
         inputs.ignoreOrientation = true;
         inputs.lookAt = attackPoint;

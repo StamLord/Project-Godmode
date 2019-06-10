@@ -58,12 +58,12 @@ MonoBehaviour:
   fovTransitionDuration: 0.5
   restDistance: 5
   currentDistance: 5
-  minDistance: 0.2
+  minDistance: 0.5
   disTransitionTimer: 0.5
   disTransitionDuration: 0.5
   minOffsetY: 0.35
-  offsetY: 0.9
-  maxOffsetY: 0.65
+  offsetY: 0.35
+  maxOffsetY: 0.55
   currentX: 0
   currentY: 0
   sensX: 4
@@ -82,7 +82,7 @@ MonoBehaviour:
   strength2: 1
   strong: 1
   freq: 0.025
-  Transform: {fileID: 0}
+  Transform: {fileID: 922976531786880907}
   CurrentRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!20 &922976531786880905
 Camera:

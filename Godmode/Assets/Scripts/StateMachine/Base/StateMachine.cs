@@ -145,10 +145,10 @@ public class StateMachine : MonoBehaviour
 
     public bool Hit(int damage, StateMachine owner, Vector3 worldPosition)
     {
-        return Hit(damage, owner, 0.25f, false, 0, worldPosition);
+        return Hit(damage, owner, 0.25f, MoveAttribute.None, 0, worldPosition);
     }
 
-    public bool Hit(int damage, StateMachine owner, float stunTime, bool juggle, float pushback, Vector3 worldPosition)
+    public bool Hit(int damage, StateMachine owner, float stunTime, MoveAttribute attribute, float pushback, Vector3 worldPosition)
     {
         if(currentState.GetType() == typeof(GuardState))
         {
@@ -168,32 +168,58 @@ public class StateMachine : MonoBehaviour
         
         else
         {
-            if (currentState.GetType() == typeof(DashState) || currentState.GetType() == typeof(CrashState))
+            switch(attribute)
             {
-                SetState<CrashState>();
+                case MoveAttribute.None:
+
+                    if (currentState.GetType() == typeof(DashState) || currentState.GetType() == typeof(CrashState))
+                    {
+                        SetState<CrashState>();
+                    }
+                    else if (currentState.GetType() == typeof(JuggleState))
+                    {
+                        (currentState as JuggleState).ResetJuggle();
+                        JuggleState juggleState = GetCurrentState as JuggleState;
+                        juggleState.attackPoint = owner.transform.position;
+                        juggleState.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                    }
+                    else if (currentState.GetType() != typeof(LayingState) && currentState.GetType() != typeof(CrashState))
+                    {
+                        SetState<HitState>();
+                        HitState hitState = GetCurrentState as HitState;
+                        hitState.attackPoint = owner.transform.position;
+                        hitState.stunTime = stunTime;
+                        hitState.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                    }
+
+                    break;
+                case MoveAttribute.Juggle:
+                    if (currentState is JuggleState)
+                        (currentState as JuggleState).ResetJuggle();
+                    else
+                        SetState<JuggleState>();
+
+                    JuggleState juggleState2 = GetCurrentState as JuggleState;
+                    juggleState2.attackPoint = owner.transform.position;
+                    juggleState2.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                    break;
+                case MoveAttribute.TossUp:
+                    EnterToss(Vector3.up * pushback);
+                    ts.hardLock = true;
+                    ShockwaveManager.instance.Create(transform.position);
+                    break;
+                case MoveAttribute.TossDown:
+                    EnterToss(-Vector3.up * pushback);
+                    ts.hardLock = true;
+                    ShockwaveManager.instance.Create(transform.position);
+                    break;
+                case MoveAttribute.TossForward:
+                    EnterToss(owner.transform.forward * pushback);
+                    ts.hardLock = true;
+                    ShockwaveManager.instance.Create(transform.position);
+                    break;
             }
-            else if (currentState.GetType() == typeof(JuggleState))
-            {
-                (currentState as JuggleState).ResetJuggle();
-                JuggleState juggleState = GetCurrentState as JuggleState;
-                juggleState.attackPoint = owner.transform.position;
-                juggleState.pushback = (transform.position - owner.transform.position).normalized * pushback;
-            }
-            else if (juggle)
-            {
-                SetState<JuggleState>();
-                JuggleState juggleState = GetCurrentState as JuggleState;
-                juggleState.attackPoint = owner.transform.position;
-                juggleState.pushback = (transform.position - owner.transform.position).normalized * pushback;
-            }
-            else
-            {
-                SetState<HitState>();
-                HitState hitState = GetCurrentState as HitState;
-                hitState.attackPoint = owner.transform.position;
-                hitState.stunTime = stunTime;
-                hitState.pushback = (transform.position - owner.transform.position).normalized * pushback;
-            }
+            
         }
 
         stats.UpdateHealth(-damage);

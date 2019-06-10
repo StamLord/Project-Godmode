@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Debugger : MonoBehaviour
 {
     public GameObject debugCanvas;
-    public InputField timeScale;
+    public TMP_InputField timeScale;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +28,7 @@ public class Debugger : MonoBehaviour
         }
     }
 
-    void SetTimeScale(InputField input)
+    void SetTimeScale(TMP_InputField input)
     {
         Time.timeScale = float.Parse(input.text);
     }

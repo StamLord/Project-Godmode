@@ -49,7 +49,7 @@ public class Explosion : MonoBehaviour
                     ratioByRange = (_range - distance) / _range;
 
                     int newDamage = Mathf.RoundToInt(_damage * ratioByRange);
-                    if (cr.Hit(newDamage, _owner, 0, juggle, _force, transform.position))
+                    if (cr.Hit(newDamage, _owner, 0, MoveAttribute.Juggle, _force, transform.position))
                     {
                         _owner.hits++;
                         _owner.tempDamage += newDamage;

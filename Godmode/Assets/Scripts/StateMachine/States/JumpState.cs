@@ -144,6 +144,7 @@ public class JumpState : State
 
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = moveVector;
+            inputs.overrideY = true;
             inputs.cameraPlanarDirection = cameraFlatDirection;
             inputs.maxSpeed = 30f;
             inputs.decelRate = decelRate;
@@ -202,15 +203,6 @@ public class JumpState : State
         }
         #endregion
 
-    }
-
-    private void Movement(Vector3 direction)
-    {
-        //float verticalY = jumpVelocity.Evaluate(jumpTimer);
-        //Vector3 speedVector = direction * jumpControlSpeed;
-        //speedVector += Vector3.up * verticalY;
-
-        //cr.Move(speedVector * Time.deltaTime);
     }
 
     void DoubleTapCheck()
@@ -328,7 +320,7 @@ public class JumpState : State
         anim.SetFloat("Speed", vi.vertical);
         anim.SetFloat("ySpeed", jumpVelocity.Evaluate(jumpTimer));
     }
-
+    /*
     private void TechCharge()
     {
         isChargingTech = true;
@@ -377,7 +369,7 @@ public class JumpState : State
         techManager.ExitTechCharge();
 
     }
-
+    
     void AnimateCharge(Technique t)
     {
         anim.SetInteger("ChargeAnim", t.chargeAnimation);
@@ -395,7 +387,7 @@ public class JumpState : State
 
         anim.SetBool("FiringAttack", true);
     }
-
+    */
 
     RaycastHit RunnableWallCheck()
     {

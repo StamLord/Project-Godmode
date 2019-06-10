@@ -13,6 +13,7 @@ public class DashState : State
     protected TechManager techManager;
 
     [Header("Settings")]
+    public float decelRate = 4f;
     public float staminaDepleteRate = 100f;
     protected float staminaTimer;
     public float moveSpeed = 35f;
@@ -142,19 +143,46 @@ public class DashState : State
             if (vi.localPlayer)
             {
                 Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
-                Vector3 moveVector = new Vector3(inputX, 0, inputZ);
-                moveVector = camScript.transform.rotation * moveVector;
+                Vector3 moveVector = new Vector3();
 
-                if (vi.space)
-                    moveVector.y +=1;
-                if (vi.lShift)
-                    moveVector.y -=1;
+                if (ts.lockOn != null)
+                {
+                    Vector3 enemyPos = ts.lockOn.position;
+                    Vector3 playerPos = transform.position;
 
-                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
-                moveVector *= moveSpeed;
+                    Vector3 dir = (enemyPos - playerPos).normalized;
+
+                    if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
+                    {
+                        moveVector += dir * inputZ;
+                    }
+
+                    moveVector += Vector3.Cross(transform.up, dir) * inputX;
+
+                    if (vi.space)
+                        moveVector.y += 1;
+                    if (vi.lShift)
+                        moveVector.y -= 1;
+
+                    moveVector *= moveSpeed;
+                }
+                else
+                {
+                    moveVector = new Vector3(inputX, 0, inputZ);
+                    moveVector = camScript.transform.rotation * moveVector;
+
+                    if (vi.space)
+                        moveVector.y += 1;
+                    if (vi.lShift)
+                        moveVector.y -= 1;
+
+                    moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+                    moveVector *= moveSpeed;
+                }
 
                 PlayerCharacterInputs inputs = new PlayerCharacterInputs();
                 inputs.motion = moveVector;
+                inputs.decelRate = decelRate;
                 inputs.cameraPlanarDirection = cameraPlanarDirection;
                 inputs.maxSpeed = moveSpeed;
 
@@ -193,11 +221,6 @@ public class DashState : State
         }
 
         DestructionSphere();
-    }
-
-    private void Movement(Vector3 direction)
-    {
-        //cr.Move(((direction * moveSpeed)) * Time.deltaTime);
     }
 
     void DestructionSphere()
@@ -269,76 +292,11 @@ public class DashState : State
 
     }
 
-    private void TechCharge()
-    {
-        Technique t = techManager.GetSelected;
-
-        //Animations
-        if (t.type == HitType.Melee)
-        {
-            if (techManager.techChargeTimer > 0.25f)
-            {
-                if (vi.space)
-                {
-                    anim.SetBool("ChargeKick", true);
-                    anim.SetBool("ChargePunch", false);
-                }
-                else
-                {
-                    anim.SetBool("ChargePunch", true);
-                    anim.SetBool("ChargeKick", false);
-                }
-            }
-        }
-        else if (anim.GetBool("ChargingAttack") == false)
-        {
-            AnimateCharge(t);
-
-            if (t.type == HitType.Beam && techManager.techChargeTimer > 0.1f)
-                if (camScript && camScript.view != ThirdPersonCam.camView.RightZoomBeam)
-                    camScript.TransitionView(ThirdPersonCam.camView.RightZoomBeam);
-        }
-
-        techManager.TechCharge();
-    }
-
-    private void ExitTechCharge()
-    {
-        isChargingTech = false;
-
-        anim.SetBool("ChargingAttack", false);
-        anim.SetBool("ChargePunch", false);
-        anim.SetBool("ChargeKick", false);
-
-        if (camScript && camScript.view != ThirdPersonCam.camView.InstantFront)
-            camScript.TransitionView(ThirdPersonCam.camView.TransitionFront);
-
-        techManager.ExitTechCharge();
-
-    }
-
     private void AnimationUpdate()
     {
         anim.SetFloat("Speed", vi.vertical);
     }
 
-    void AnimateCharge(Technique t)
-    {
-        anim.SetInteger("ChargeAnim", t.chargeAnimation);
-        anim.SetBool("ChargingAttack", true);
-    }
-
-    private void AnimateAttack(Technique t)
-    {
-        techManager.attackAnimating = t;
-
-        anim.SetInteger("AttackAnim", t.attackAnimation);
-
-        if (anim.GetBool("ChargingAttack"))
-            anim.SetBool("ChargingAttack", false);
-
-        anim.SetBool("FiringAttack", true);
-    }
 
     public override void OnStateExit()
     {

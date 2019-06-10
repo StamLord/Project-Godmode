@@ -219,7 +219,7 @@ public class ThirdPersonCam : MonoBehaviour
         }
         else if(character.GetCurrentState is FlyingState || character.GetCurrentState is DashState)
         {
-            character.transform.rotation = Quaternion.Euler(currentY, currentX, 0);
+            //character.transform.rotation = Quaternion.Euler(currentY, currentX, 0);
         }
         /*
         if (targetSys.lockOn != null)

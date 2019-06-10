@@ -12,6 +12,7 @@ public enum OrientationMethod
 public struct PlayerCharacterInputs
 {
     public Vector3 motion;
+    public bool overrideY;
     public Vector3 cameraPlanarDirection;
     public float maxSpeed;
     public float decelRate;
@@ -28,13 +29,19 @@ public struct AICharacterInputs
 
 public class AdvancedController : MonoBehaviour, ICharacterController
 {
+    [Header("Settings")]
+    public bool _overrideY = true;
+
     public TargetingSystem Targeting;
     public KinematicCharacterMotor Motor;
     public bool grounded;
     public Vector3 lastVector;
-    [SerializeField] protected float _maxSpeed;
-    [SerializeField] protected float _decelRate;
+    [SerializeField] private float _maxSpeed;
+    [SerializeField] private float _decelRate;
     public float GetLastMaxSpeed { get { return this._maxSpeed; } }
+    public float GetSpeed { get { return this.speed; } }
+    private float speed;
+
 
     [Header("Stable Movement")]
     public float MaxStableMoveSpeed = 10f;
@@ -82,13 +89,13 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     public void SetInputs(PlayerCharacterInputs inputs)
     {
         _moveInputVector = inputs.motion;
+        _overrideY = inputs.overrideY;
         _maxSpeed = inputs.maxSpeed;
         _decelRate = inputs.decelRate;
 
         if (inputs.ignoreOrientation)
         {
-            Debug.Log(inputs.ignoreOrientation);
-            _lookInputVector = Utility.FlatDirection(transform.position,inputs.lookAt).normalized;
+            _lookInputVector = Utility.FlatDirection(transform.position,inputs.lookAt);
         }
         else
         {
@@ -151,7 +158,9 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     /// </summary>
     public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
     {
-        if(Targeting != null && Targeting.lockOn != null)
+        #region Locking Near Target
+
+        if (Targeting != null && Targeting.lockOn != null)
         {
             Vector3 playerPos = transform.position;
             Vector3 enemyPos = Targeting.lockOn.position;
@@ -166,24 +175,60 @@ public class AdvancedController : MonoBehaviour, ICharacterController
                 lastVector = currentVelocity = Vector3.zero;
 
                 Motor.SetPositionAndRotation(lockPoint, Quaternion.LookRotation(enemyPos - playerPos));
-                //Motor.SetRotation(Quaternion.LookRotation(enemyPos - playerPos));
                 return;
             }
         }
 
+        #endregion
+
         currentVelocity = _moveInputVector;
 
-        if(_moveInputVector != Vector3.zero)
+        if (_overrideY)
         {
-            lastVector = _moveInputVector;
+            currentVelocity.y = 0;
+
+            //Add last vector for inertia
+            currentVelocity += new Vector3(lastVector.x, 0, lastVector.z);
+
+            currentVelocity = Vector3.ClampMagnitude(currentVelocity, _maxSpeed);
+
+            currentVelocity.y = _moveInputVector.y;
+        }
+        else
+        {
+
+            //Add last vector for inertia
+            currentVelocity += lastVector;
+            currentVelocity = Vector3.ClampMagnitude(currentVelocity, _maxSpeed);
         }
 
-        currentVelocity += lastVector;
-        currentVelocity = Vector3.ClampMagnitude(currentVelocity, _maxSpeed);
+        //Decelerate
         if (lastVector.magnitude > 0.25f)
             lastVector -= lastVector * _decelRate * Time.deltaTime;
         else
             lastVector = Vector3.zero;
+
+        //Save motion in all axis that are not 0 for inertia
+        if(_moveInputVector.x != 0f)
+        {
+            lastVector.x += _moveInputVector.x;
+        }
+
+        if (_moveInputVector.y != 0f)
+        {
+            if (_overrideY)
+                lastVector.y = _moveInputVector.y;
+            else
+                lastVector.y += _moveInputVector.y;
+        }
+
+        if (_moveInputVector.z != 0f)
+        {
+            lastVector.z += _moveInputVector.z;
+        }
+
+        //Set speedometer for outside reference
+        speed = currentVelocity.magnitude;
     }
 
     /// <summary>

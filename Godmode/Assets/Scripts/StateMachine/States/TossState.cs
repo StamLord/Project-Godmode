@@ -11,12 +11,12 @@ public class TossState : State
 
     public LayerMask tossColMask;
     public Vector3 direction;
-    public Vector3 currentVector;
+    private float speed;
 
     public AnimationCurve tossSpeed;
-    protected float curveLength;
 
-    public float tossTimer;
+    public float duration;
+    [SerializeField] private float tossTimer;
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
 
@@ -30,34 +30,30 @@ public class TossState : State
         anim.SetBool("Tossed", true);
 
         direction = Machine.tossDirection;
-        currentVector = direction;
+        speed = direction.magnitude;
 
-        curveLength = tossSpeed.keys[tossSpeed.length - 1].time;
-
-        transform.forward = -direction;
+        tossTimer = 0f;
     }
 
     void Update()
     {
-        float speed = tossSpeed.Evaluate(tossTimer);
-        currentVector = direction * speed;
-
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-        inputs.motion = currentVector;
+        inputs.motion = direction;
+        inputs.maxSpeed = speed;
+        inputs.ignoreOrientation = true;
 
         cr.SetInputs(inputs);
-        //Movement(currentVector);
 
         AnimationUpdate();
 
         if(vi.lmbDown)
         {
-            tossTimer += 0.02f * curveLength;
+            tossTimer += 0.02f * duration;
         }
 
         //DestructionSphere();
 
-        if (tossTimer >= curveLength * 0.75f)
+        if (tossTimer >= duration)
         {
             if(GroundCheck())
                 Machine.SetState<GroundedState>();
@@ -66,6 +62,7 @@ public class TossState : State
             else
                 Machine.SetState<FallingState>();
         }
+
         tossTimer += Time.deltaTime;
     }
 
@@ -77,7 +74,7 @@ public class TossState : State
             Destructable d = h.collider.GetComponent<Destructable>();
             if (d)
             {
-                tossTimer += 0.2f * curveLength;
+                tossTimer += 0.2f * duration;
                 d.Destruction(direction, destructionForce);
             }
             else
@@ -91,18 +88,12 @@ public class TossState : State
 
     void AnimationUpdate()
     {
-        anim.SetFloat("TossMag", currentVector.magnitude);
+        anim.SetFloat("TossMag", speed);
     }
 
     private bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
-    }
-
-    private void Movement(Vector3 direction)
-    {
-        
-        //cr.Move(direction * Time.deltaTime);
+        return cr.grounded;
     }
 
     void DestructionSphere()
@@ -135,10 +126,9 @@ public class TossState : State
     public override void OnStateExit()
     {
         base.OnStateExit();
-        tossTimer = 0f;
+        
         anim.SetBool("Tossed", false);
         Machine.tossDirection = Vector3.zero;
-        currentVector = Vector3.zero;
     }
 
 }

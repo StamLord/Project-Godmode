@@ -15,7 +15,10 @@ public class GroundedState : State
 
     [Header("Settings")]
     public float moveSpeed = 15f;
-    public float decelRate = 4f;
+    [Tooltip("Deceleration that comes into effect when stopping")]
+    public float stopDecelRate = 10f;
+    [Tooltip("Deceleration that comes into effect on turns")]
+    public float moveDecelRate = 5f;
     protected float groundedTimer;
 
     [Header("Animation")]
@@ -108,141 +111,138 @@ public class GroundedState : State
 
         DoubleTapCheck();
 
-        if (anim.GetInteger("Combo") == 0)
+        #region Movement Input
+
+        float inputX = vi.horizontal;
+        float inputZ = vi.vertical;
+
+        /*
+        //If no target, create from own forward and right
+        if (ts.lockOn == false)
         {
-            #region Movement Input
+            inputVec = (transform.forward * inputZ) + (transform.right * inputX);
+            inputVec = inputVec.normalized;
+        }
+        else //Find the direction to the target (clamped to magnitude of 1)
+        {
+            Vector3 dirToTarget = ts.bodyCenter.transform.position - transform.position;
+            dirToTarget = dirToTarget / dirToTarget.magnitude;
 
-            float inputX = vi.horizontal;
-            float inputZ = vi.vertical;
+            float angleZX = Mathf.Atan2(dirToTarget.z, dirToTarget.x);
+            float zLength = Mathf.Sin(angleZX);
+            float xLength = Mathf.Cos(angleZX);
 
-            /*
-            //If no target, create from own forward and right
-            if (ts.lockOn == false)
+            float angleZY = Mathf.Atan2(dirToTarget.z, dirToTarget.y);
+            float yLength = Mathf.Cos(angleZY);
+
+            Vector3 newDir = new Vector3(xLength, yLength, zLength);
+
+            inputVec = (newDir * inputZ) + (transform.right * inputX);
+        }
+
+        if (inputVec == Vector3.zero)
+        {
+            currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
+            Movement(currentVector);
+            decelTimer += Time.deltaTime;
+        }
+        else
+        {
+            decelTimer = 0;
+            Movement(inputVec);
+            lastInputVector = ((inputVec * moveSpeed) + -Vector3.up * 10f ) * Time.deltaTime;
+        }*/
+
+        if (vi.localPlayer)
+        {
+            Vector3 moveVector = Vector3.zero;
+            Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
+            Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
+
+            if (ts.lockOn != null)
             {
-                inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-                inputVec = inputVec.normalized;
-            }
-            else //Find the direction to the target (clamped to magnitude of 1)
-            {
-                Vector3 dirToTarget = ts.bodyCenter.transform.position - transform.position;
-                dirToTarget = dirToTarget / dirToTarget.magnitude;
+                Vector3 enemyPos = ts.lockOn.position;
+                Vector3 playerPos = transform.position;
 
-                float angleZX = Mathf.Atan2(dirToTarget.z, dirToTarget.x);
-                float zLength = Mathf.Sin(angleZX);
-                float xLength = Mathf.Cos(angleZX);
+                enemyPos.y = playerPos.y = 0f;
 
-                float angleZY = Mathf.Atan2(dirToTarget.z, dirToTarget.y);
-                float yLength = Mathf.Cos(angleZY);
+                Vector3 dir = (enemyPos - playerPos).normalized;
 
-                Vector3 newDir = new Vector3(xLength, yLength, zLength);
+                if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
+                {
+                    moveVector += dir * inputZ;
+                }
 
-                inputVec = (newDir * inputZ) + (transform.right * inputX);
-            }
-
-            if (inputVec == Vector3.zero)
-            {
-                currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-                Movement(currentVector);
-                decelTimer += Time.deltaTime;
+                moveVector += Vector3.Cross(transform.up, dir) * inputX;
+                moveVector *= moveSpeed;
             }
             else
-            {
-                decelTimer = 0;
-                Movement(inputVec);
-                lastInputVector = ((inputVec * moveSpeed) + -Vector3.up * 10f ) * Time.deltaTime;
-            }*/
+            { 
+                moveVector = cameraFlatDirection * inputZ;
+                moveVector += cameraRight * inputX;
+                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
 
-            if (vi.localPlayer)
-            {
-                Vector3 moveVector = Vector3.zero;
-                Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
-                Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
-
-                if (ts.lockOn != null)
-                {
-                    Vector3 enemyPos = ts.lockOn.position;
-                    Vector3 playerPos = transform.position;
-
-                    enemyPos.y = playerPos.y = 0f;
-
-                    Vector3 dir = (enemyPos - playerPos).normalized;
-
-                    if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
-                    {
-                        moveVector += dir * inputZ;
-                    }
-
-                    moveVector += Vector3.Cross(transform.up, dir) * inputX;
-                    moveVector *= moveSpeed;
-                }
-                else
-                { 
-                    moveVector = cameraFlatDirection * inputZ;
-                    moveVector += cameraRight * inputX;
-                    moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
-
-                    Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
-                    moveVector = Vector3.Cross(transform.up,inputRight); //Compensating for the angle between camera and surface
-                    moveVector *= moveSpeed;
-                }
-
-                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-                inputs.motion = moveVector;
-                inputs.cameraPlanarDirection = cameraFlatDirection;
-                inputs.maxSpeed = moveSpeed;
-                inputs.decelRate = decelRate;
-
-                cr.SetInputs(inputs);
-            }
-            else if (ai != null)
-            {
-                Vector3 moveVector = ai.currentDirection * inputZ;
-                moveVector += Vector3.Cross(transform.up, ai.currentDirection) * inputX;
+                Vector3 inputRight = Vector3.Cross(moveVector, transform.up);
+                moveVector = Vector3.Cross(transform.up,inputRight); //Compensating for the angle between camera and surface
                 moveVector *= moveSpeed;
-
-                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-                inputs.motion = moveVector;
-
-                cr.SetInputs(inputs);
             }
 
-            #endregion
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+            inputs.cameraPlanarDirection = cameraFlatDirection;
+            inputs.maxSpeed = moveSpeed;
+            inputs.decelRate = (moveVector == Vector3.zero) ? stopDecelRate * 2f : moveDecelRate;
 
-            #region Fly Key
-
-            if (Machine.canFly && vi.fDown)
-            {
-                Machine.SetState<FlyingState>();
-            }
-
-            #endregion
-
-            #region Jump Key
-
-            if (vi.spaceDown)
-            {
-                Machine.SetState<JumpState>();
-            }
-
-            #endregion
-
-            #region Charge Key
-
-            if (vi.eDown || vi.e && stats.GetEnergy < stats.maxEnergy)
-            {
-                Machine.SetState<ChargeState>();
-            }
-
-            #endregion
-
-            #region Guard Key
-
-            if (vi.q)
-            {
-                Machine.SetState<GuardState>();
-            }
-            #endregion
+            cr.SetInputs(inputs);
         }
+        else if (ai != null)
+        {
+            Vector3 moveVector = ai.currentDirection * inputZ;
+            moveVector += Vector3.Cross(transform.up, ai.currentDirection) * inputX;
+            moveVector *= moveSpeed;
+
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+
+            cr.SetInputs(inputs);
+        }
+
+        #endregion
+
+        #region Fly Key
+
+        if (Machine.canFly && vi.fDown)
+        {
+            Machine.SetState<FlyingState>();
+        }
+
+        #endregion
+
+        #region Jump Key
+
+        if (vi.spaceDown)
+        {
+            Machine.SetState<JumpState>();
+        }
+
+        #endregion
+
+        #region Charge Key
+
+        if (vi.eDown || vi.e && stats.GetEnergy < stats.maxEnergy)
+        {
+            Machine.SetState<ChargeState>();
+        }
+
+        #endregion
+
+        #region Guard Key
+
+        if (vi.q)
+        {
+            Machine.SetState<GuardState>();
+        }
+        #endregion
     }
 
     void DoubleTapCheck()
@@ -359,7 +359,7 @@ public class GroundedState : State
     {
         anim.SetFloat("Speed", new Vector2(vi.horizontal, vi.vertical).normalized.magnitude);
     }
-
+    /*
     void AnimateCharge(Technique t)
     {
         anim.SetInteger("ChargeAnim", t.chargeAnimation);
@@ -379,7 +379,7 @@ public class GroundedState : State
 
         if (t.type == HitType.Beam)
             Machine.SetState<BeamState>();
-    }
+    }*/
 
     public override void OnStateExit()
     {

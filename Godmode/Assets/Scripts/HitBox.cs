@@ -13,10 +13,6 @@ public class HitBox : MonoBehaviour
 
     [Header("State")]
     public bool grab = false;
-    public bool tossUp = false;
-    public bool tossForward = false;
-    public bool tossDown = false;
-
 
     void Start()
     {
@@ -40,31 +36,7 @@ public class HitBox : MonoBehaviour
                     return;
             }
 
-            if (t.chargable && techManager.lastTechChargeTimer > t.minChageTime)
-            {
-                
-                float force = techManager.lastTechChargeTimer / t.fullChargeTime * t.fullChargeBlowBackForce;
-                int chargeDamage = Mathf.FloorToInt(techManager.lastTechChargeTimer / t.fullChargeTime * t.fullChargeDamge);
-
-                if (tossUp)
-                    c.EnterToss(Vector3.up * force);
-                else if (tossDown)
-                    c.EnterToss(-Vector3.up * force);
-                else if(tossForward)
-                    c.EnterToss(owner.transform.forward * force);
-
-                Debug.Log(owner + ":: Tossed " + owner.ts.lockOn + "with force " + force);
-                owner.ts.hardLock = true;
-
-                PerformHit(c, t.damage, t.stunTime, t.juggle, t.pushBack);
-
-                techManager.lastTechChargeTimer = 0f;
-                ShockwaveManager.instance.Create(transform.position);
-            }
-            else
-            {
-                PerformHit(c, t.damage, t.stunTime, t.juggle, t.pushBack);
-            }
+            PerformHit(c, t.damage, t.stunTime, t.attribute, t.pushBack);
 
             hits.Add(c);
 
@@ -83,9 +55,9 @@ public class HitBox : MonoBehaviour
             hits.Clear();
     }
 
-    void PerformHit(StateMachine c, int damage, float stunTime, bool juggle, float pushback)
+    void PerformHit(StateMachine c, int damage, float stunTime, MoveAttribute attribute, float pushback)
     {
-        bool success = c.Hit(damage, owner, stunTime, juggle, pushback, transform.position);
+        bool success = c.Hit(damage, owner, stunTime, attribute, pushback, transform.position);
 
         if (success)
         {

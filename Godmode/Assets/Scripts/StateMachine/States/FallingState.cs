@@ -125,6 +125,7 @@ public class FallingState : State
 
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = moveVector;
+            inputs.overrideY = true;
             inputs.cameraPlanarDirection = cameraFlatDirection;
             inputs.maxSpeed = 30f;
             inputs.decelRate = decelRate;
@@ -272,73 +273,6 @@ public class FallingState : State
     {
         anim.SetFloat("Speed", vi.vertical);
         anim.SetFloat("ySpeed", fallVelocity.Evaluate(fallTimer));
-    }
-
-    private void TechCharge()
-    {
-        isChargingTech = true;
-        Technique t = techManager.GetSelected;
-
-        //Animations
-        if (t.type == HitType.Melee)
-        {
-            if (techManager.techChargeTimer > 0.25f)
-            {
-                if (vi.space)
-                {
-                    anim.SetBool("ChargeKick", true);
-                    anim.SetBool("ChargePunch", false);
-                }
-                else
-                {
-                    anim.SetBool("ChargePunch", true);
-                    anim.SetBool("ChargeKick", false);
-                }
-            }
-        }
-        else if (anim.GetBool("ChargingAttack") == false)
-        {
-            AnimateCharge(t);
-        }
-
-        if (t.type == HitType.Beam && techManager.techChargeTimer > 0.1f)
-            if (camScript && camScript.view != ThirdPersonCam.camView.RightZoomBeam)
-                camScript.TransitionView(ThirdPersonCam.camView.RightZoomBeam);
-
-        techManager.TechCharge();
-    }
-
-    private void ExitTechCharge()
-    {
-        isChargingTech = false;
-
-        anim.SetBool("ChargingAttack", false);
-        anim.SetBool("ChargePunch", false);
-        anim.SetBool("ChargeKick", false);
-
-        if (camScript && camScript.view != ThirdPersonCam.camView.InstantFront)
-            camScript.TransitionView(ThirdPersonCam.camView.TransitionFront);
-
-        techManager.ExitTechCharge();
-
-    }
-
-    void AnimateCharge(Technique t)
-    {
-        anim.SetInteger("ChargeAnim", t.chargeAnimation);
-        anim.SetBool("ChargingAttack", true);
-    }
-
-    private void AnimateAttack(Technique t)
-    {
-        techManager.attackAnimating = t;
-
-        anim.SetInteger("AttackAnim", t.attackAnimation);
-
-        if (anim.GetBool("ChargingAttack"))
-            anim.SetBool("ChargingAttack", false);
-
-        anim.SetBool("FiringAttack", true);
     }
 
     public override void OnStateExit()

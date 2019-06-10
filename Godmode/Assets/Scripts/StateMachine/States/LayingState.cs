@@ -9,7 +9,7 @@ public class LayingState : State
     protected AdvancedController cr;
 
     public float decelRate = 4f;
-    protected float lastSpeed;
+    private float lastSpeed;
 
     public float duration = 3f;
     public float timer = 0f;
@@ -17,8 +17,11 @@ public class LayingState : State
     [Header("Particles")]
     public float plowThreshold = 10f;
     public ParticleSystem plowTrail;
-    protected ParticleSystem[] subSystems;
-    protected bool trailActivated;
+    private ParticleSystem[] subSystems;
+    private bool trailActivated;
+
+    private ParticleSystem trailHead;
+    public float maxHeadParticleSpeed;
 
     [Header("Animation")]
     public string animStateUp = "LayingFaceUp";
@@ -58,6 +61,9 @@ public class LayingState : State
             }
 
             trailActivated = true;
+
+            trailHead = subSystems[1];
+            maxHeadParticleSpeed = trailHead.main.startSpeed.constant;
         }
     }
 
@@ -82,6 +88,12 @@ public class LayingState : State
         {
             Machine.SetState<GroundedState>();
         }
+
+        if (trailHead)
+        {
+            var ss = trailHead.main.startSpeed;
+            ss = Mathf.Lerp(0, trailHead.main.startSpeed.constantMax, (cr.GetSpeed / lastSpeed));
+        }
     }
 
     public override void OnStateExit()
@@ -101,6 +113,10 @@ public class LayingState : State
                 var em = p.emission;
                 em.enabled = false;
             }
+
+            var ss = trailHead.main.startSpeed;
+            ss = maxHeadParticleSpeed;
+           
 
             trailActivated = false;
         }

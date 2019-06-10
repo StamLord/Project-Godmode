@@ -6,6 +6,12 @@ using UnityEngine;
 
 public class MartialArt : Technique
 {
-    [Header("Martial Art")]
+    [Header("Combo")]
     public Move[] moveArray = new Move[5];
+
+    [Header("Dash")]
+    public Move dashAttack;
+
+    [Header("Grab")]
+    public Move grab;
 }

@@ -11,6 +11,6 @@ public class Utility : MonoBehaviour
 
         fFrom.y = fTo.y = 0f;
 
-        return fTo - fFrom;
+        return (fTo - fFrom).normalized;
     }
 }
