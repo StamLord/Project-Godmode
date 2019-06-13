@@ -14,7 +14,7 @@ public class SpecialArt : Technique
 
     [Header("Cast Type")]
     public bool chargable;
-    public bool releaseBeforeChargeEnd;
+    //public bool releaseBeforeChargeEnd;
     public float minChargeTime;
     public float fullChargeTime;
     public bool autoFire;

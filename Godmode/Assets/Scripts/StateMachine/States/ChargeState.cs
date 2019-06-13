@@ -9,6 +9,7 @@ public class ChargeState : State
     protected ThirdPersonCam camScript;
     protected AdvancedController cr;
     protected Animator anim;
+    protected TechManager techManager;
     //protected State originState;
 
     [Header("References")]
@@ -49,6 +50,11 @@ public class ChargeState : State
             fullAura.Play();
         else
             chargeAura.Play();
+
+        techManager = Machine.techManager;
+        if (techManager.isChargingTech)
+            techManager.ExitTechCharge(false);
+
     }
 
     void Update()

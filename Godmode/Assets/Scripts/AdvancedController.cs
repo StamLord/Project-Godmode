@@ -38,9 +38,14 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     public Vector3 lastVector;
     [SerializeField] private float _maxSpeed;
     [SerializeField] private float _decelRate;
+
+    //Refernces
     public float GetLastMaxSpeed { get { return this._maxSpeed; } }
     public float GetSpeed { get { return this.speed; } }
     private float speed;
+
+    public float GetDirectionDelta { get { return this.directionDelta; } }
+    private float directionDelta;
 
 
     [Header("Stable Movement")]
@@ -179,6 +184,14 @@ public class AdvancedController : MonoBehaviour, ICharacterController
             }
         }
 
+        #endregion
+
+        #region Direction Delta
+
+        Vector3 flatLast = Vector3.ProjectOnPlane(currentVelocity, Vector3.up);
+        Vector3 flatCurrent = Vector3.ProjectOnPlane(_moveInputVector, Vector3.up);
+
+        directionDelta = Vector3.SignedAngle(flatLast, flatCurrent, Vector3.up);
         #endregion
 
         currentVelocity = _moveInputVector;

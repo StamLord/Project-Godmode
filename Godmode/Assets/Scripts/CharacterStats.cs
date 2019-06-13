@@ -9,8 +9,9 @@ using UnityEngine.UI;
 public class CharacterStats : MonoBehaviour
 {
     [Header("References")]
-    public StateMachine machine;
-    public VirtualInput vi;
+    private StateMachine machine;
+    private VirtualInput vi;
+    private TechManager techManager;
 
     [Header("Stats")]
     public int maxHealth = 1000;
@@ -46,6 +47,7 @@ public class CharacterStats : MonoBehaviour
     {
         machine = GetComponent<StateMachine>();
         vi = GetComponent<VirtualInput>();
+        techManager = machine.techManager;
     }
 
     void Update()
@@ -85,10 +87,10 @@ public class CharacterStats : MonoBehaviour
             return;
         }
 
-        if (energyRegenTimer >= 1f / energyRegenRate)
+        if (staminaRegenTimer >= 1f / staminaRegenRate)
         {
-            UpdateEnergy(1);
-            energyRegenTimer -= 1f / energyRegenRate;
+            UpdateStamina(1);
+            staminaRegenTimer -= 1f / staminaRegenRate;
         }
 
         staminaRegenTimer += Time.deltaTime;
@@ -96,16 +98,16 @@ public class CharacterStats : MonoBehaviour
 
     void RegenEnergy()
     {
-        if (ContainState(machine.GetCurrentState, skipEnergyRegen))
+        if (ContainState(machine.GetCurrentState, skipEnergyRegen) || techManager.isChargingTech)
         {
             energyRegenTimer = 0;
             return;
         }
 
-        if (staminaRegenTimer >= 1f / staminaRegenRate)
+        if (energyRegenTimer >= 1f / energyRegenRate)
         {
-            UpdateStamina(1);
-            staminaRegenTimer -= 1f / staminaRegenRate;
+            UpdateEnergy(1);
+            energyRegenTimer -= 1f / energyRegenRate;
         }
 
         energyRegenTimer += Time.deltaTime;

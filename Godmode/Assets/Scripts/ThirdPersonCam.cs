@@ -61,6 +61,13 @@ public class ThirdPersonCam : MonoBehaviour
     float completionPercent = 0;
     float duration = 0;
 
+    [Header("Rotations")]
+    public float maxRollAngle = 25f;
+    public float rollSpeed = .1f;
+    public float speedDependency = 0.1f;
+    private float rollAngle = 0f;
+
+
     Vector3 previousWaypoint = Vector3.zero;
     Vector3 currentWaypoint = Vector3.zero;
     Vector3 shakeOffset;
@@ -261,6 +268,8 @@ public class ThirdPersonCam : MonoBehaviour
         }*/
 
         Shake();
+
+        RotateRoll(character.cr.GetDirectionDelta * character.cr.GetSpeed * speedDependency);
     }
 
     public void SetMaxFov(bool state)
@@ -362,5 +371,17 @@ public class ThirdPersonCam : MonoBehaviour
 
         shakeOffset = Vector3.Lerp(shakeOffset, currentWaypoint, .1f);
         transform.position += shakeOffset;
+    }
+
+    void RotateRoll(float amount)
+    {
+        float targetAngle = amount / 180 * maxRollAngle;
+        float angle = Mathf.Lerp(rollAngle, targetAngle, rollSpeed);
+
+        Quaternion targetRot = Quaternion.Euler(0, 0, angle);
+
+        transform.rotation *= targetRot;
+
+        rollAngle = angle;
     }
 }

@@ -48,7 +48,7 @@ public class TargetingSystem : MonoBehaviour
     void Init()
     {
         allTargets = FindObjectsOfType<StateMachine>();
-        canvas = FindObjectOfType<Canvas>();
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
     }
 
     void Scan()

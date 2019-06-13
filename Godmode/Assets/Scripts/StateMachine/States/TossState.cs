@@ -63,10 +63,12 @@ public class TossState : State
                 Machine.SetState<FallingState>();
         }
 
+        CollideCheck();
+
         tossTimer += Time.deltaTime;
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    void CollideCheck()
     {
         RaycastHit h;
         if (Physics.SphereCast(transform.position, .5f, direction.normalized, out h, 1f, tossColMask))
@@ -84,6 +86,11 @@ public class TossState : State
                 Machine.SetState<GroundedState>();
             }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(transform.position + direction.normalized, .5f);
     }
 
     void AnimationUpdate()

@@ -16,7 +16,8 @@ public class TechManager : MonoBehaviour
     public Transform currentProjectileSpot;
 
     [Header("UI")]
-    public Image chargeParent;
+    public GameObject chargeParent;
+    public Image emptyBar;
     public Image chargeBar;
     public Image minCharge;
 
@@ -40,6 +41,10 @@ public class TechManager : MonoBehaviour
 
     public float techChargeTimer;
     public float lastTechChargeTimer;
+
+    private int healthHolder;
+    private int energyHolder;
+    private int staminaHolder;
 
     public Technique GetSelected
     {
@@ -162,13 +167,11 @@ public class TechManager : MonoBehaviour
             return;
         }
 
-        if (t.energyCost > stats.GetEnergy || t.healthCost > stats.GetHealth)
-            return;
-        else
+        if(t.chargable == false)
         {
             stats.UpdateHealth(-t.healthCost);
             stats.UpdateEnergy(-t.energyCost);
-            //UpdateUI();
+            stats.UpdateStamina(-t.staminaCost);
         }
 
         GameObject go;
@@ -177,6 +180,10 @@ public class TechManager : MonoBehaviour
         switch (t.type)
         {
             case HitType.Projectile:
+
+                if (chargeObject != null)
+                    Destroy(chargeObject);
+
                 go = Instantiate(t.projectile, currentProjectileSpot.position, Quaternion.identity) as GameObject;
                 go.transform.forward = (character.cam) ? character.cam.transform.forward : transform.forward;
 
@@ -200,6 +207,10 @@ public class TechManager : MonoBehaviour
 
                 break;
             case HitType.Beam:
+
+                if (chargeObject != null)
+                    Destroy(chargeObject);
+
                 go = Instantiate(t.projectile, currentProjectileSpot.position + transform.forward, Quaternion.identity) as GameObject;
                 beamHead = go;
 
@@ -330,26 +341,41 @@ public class TechManager : MonoBehaviour
         UpdateUI();
 
         Technique t = GetSelected;
-
+        MartialArt martial = t as MartialArt;
+        SpecialArt special = t as SpecialArt;
 
         float fullChargeTime = 0;
         float minChargeTime = 0;
 
-        if (t is MartialArt)
+        if (martial != null)
         {
-            fullChargeTime = (t as MartialArt).moveArray[punchNum].fullChargeTime;
-            minChargeTime = (t as MartialArt).moveArray[punchNum].minChargeTime;
+            fullChargeTime = martial.moveArray[punchNum].fullChargeTime;
+            minChargeTime = martial.moveArray[punchNum].minChargeTime;
         }
-        else if (t is SpecialArt)
+        else if (special != null)
         {
-            fullChargeTime = (t as SpecialArt).fullChargeTime;
-            minChargeTime = (t as SpecialArt).minChargeTime;
+            fullChargeTime = special.fullChargeTime;
+            minChargeTime = special.minChargeTime;
         }
-
 
         //Timer
         if (techChargeTimer < fullChargeTime)
         {
+            if(special != null)
+            {
+                int tempHealth = Mathf.CeilToInt((special.healthCost / fullChargeTime) * Time.deltaTime);
+                healthHolder += tempHealth;
+                stats.UpdateHealth(-tempHealth);
+
+                int tempEnergy = Mathf.CeilToInt((special.energyCost / fullChargeTime) * Time.deltaTime);
+                energyHolder += tempEnergy;
+                stats.UpdateEnergy(-tempEnergy);
+
+                int tempStamina = Mathf.CeilToInt((special.staminaCost / fullChargeTime) * Time.deltaTime);
+                staminaHolder += tempStamina;
+                stats.UpdateStamina(-tempStamina);
+            }
+
             techChargeTimer += Time.deltaTime;
 
             if (techChargeTimer > fullChargeTime)
@@ -357,7 +383,7 @@ public class TechManager : MonoBehaviour
 
             
         }
-        else if (techChargeTimer >= minChargeTime && techChargeTimer > 1f && playedFullCharge == false)
+        else if (techChargeTimer >= minChargeTime && techChargeTimer > 0f && playedFullCharge == false)
         {
             fullCharge.Play();
             playedFullCharge = true;
@@ -404,7 +430,7 @@ public class TechManager : MonoBehaviour
         #endregion
     }
 
-    public void ExitTechCharge()
+    public void ExitTechCharge(bool executingAttack)
     {
         isChargingTech = false;
 
@@ -425,8 +451,10 @@ public class TechManager : MonoBehaviour
         techChargeTimer = 0f;
         playedFullCharge = false;
 
-        if (chargeObject)
+        if (!executingAttack && chargeObject)
             Destroy(chargeObject);
+
+        healthHolder = staminaHolder = energyHolder = 0;
     }
 
     public void ExitBeamMode()
@@ -443,26 +471,33 @@ public class TechManager : MonoBehaviour
 
     public void MousePressMain()
     {
-        if (clicked)
-            return;
-
         Technique t = GetSelected;
+        MartialArt martial = t as MartialArt;
+        SpecialArt special = t as SpecialArt;
 
-        if (t.GetType() == typeof(MartialArt))
+        if (martial != null)
         {
             //if ((t as MartialArt).moveArray[(punchNum + 1) % (t as MartialArt).moveArray.Length].chargable)
             //    TechCharge();
+            if (clicked)
+                return;
+
             UseMartialArt(t as MartialArt);
         }
 
-        else if (t.GetType() == typeof(SpecialArt))
+        else if (special != null)
         {
-            if ((t as SpecialArt).chargable)
+            if (special.energyCost > stats.GetEnergy ||
+                    special.healthCost > stats.GetHealth ||
+                    special.staminaCost > stats.GetStamina)
+                return;
+
+            if (special.chargable)
                 TechCharge();
-        }
-        else if (anim.GetCurrentAnimatorStateInfo(1).IsName("New State"))
-        {
-            AnimateAttack(t as SpecialArt);
+            else if (anim.GetCurrentAnimatorStateInfo(1).IsName("New State"))
+            {
+                AnimateAttack(special);
+            }
         }
 
         clicked = true;
@@ -476,23 +511,28 @@ public class TechManager : MonoBehaviour
 
         if (t is MartialArt)
         {
-            ExitTechCharge();
+            ExitTechCharge(false);
             //UseMartialArt(t as MartialArt);
         }
         else if (t is SpecialArt)
         {
             if (techChargeTimer >= (t as SpecialArt).minChargeTime)
             {
-                ExitTechCharge();
+                ExitTechCharge(true);
                 AnimateAttack(t as SpecialArt);
                 if ((t as SpecialArt).type == HitType.Beam)
                     character.SetState<BeamState>();
             }
+            else
+            {
+                stats.UpdateHealth(healthHolder);
+                stats.UpdateEnergy(energyHolder);
+                stats.UpdateStamina(staminaHolder);
+
+                ExitTechCharge(false);                
+            }
         }
-        else
-        {
-            ExitTechCharge();
-        }
+        
     }
 
     void AnimateCharge(SpecialArt t)
@@ -578,10 +618,10 @@ public class TechManager : MonoBehaviour
         SpecialArt art = GetSelected as SpecialArt;
         if (art != null)
         {
-            chargeParent.gameObject.SetActive(isChargingTech && art.minChargeTime > 1);
+            chargeParent.SetActive(isChargingTech && art.minChargeTime > 0);
 
             chargeBar.fillAmount = techChargeTimer / art.fullChargeTime;
-            float x = art.minChargeTime / art.fullChargeTime * chargeParent.rectTransform.rect.width;
+            float x = art.minChargeTime / art.fullChargeTime * emptyBar.rectTransform.rect.width;
             minCharge.rectTransform.anchoredPosition = new Vector2(x, 0);
         }
     }

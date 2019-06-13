@@ -10,30 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89699d0f120164e4bac64cf3668a4c1e, type: 3}
-  m_Name: Blast
+  m_Name: Cherry Bomb
   m_EditorClassIdentifier: 
-  Name: Blast
+  Name: Cherry Bomb
   Icon: {fileID: 0}
   healthCost: 0
-  energyCost: 20
+  energyCost: 50
   staminaCost: 0
   type: 0
   chargable: 1
-  minChargeTime: 0
-  fullChargeTime: 2
+  minChargeTime: 1
+  fullChargeTime: 1
   autoFire: 0
   timeBetweenFire: 0
   castRadius: 0
   secondary: 0
-  damage: 30
-  fullChargeDamge: 60
-  speed: 30
-  blowBackForce: 1
+  damage: 100
+  fullChargeDamge: 100
+  speed: 60
+  blowBackForce: 5
   fullChargeBlowBackForce: 0
-  fullChargeScale: 2
-  projectile: {fileID: 1692316609309176731, guid: 559bce93906893742998c1ab70e97d55,
+  fullChargeScale: 1
+  projectile: {fileID: 2955920231621686536, guid: 87f396936ec14cf46a91c8baa055c196,
     type: 3}
-  chargePrefab: {fileID: 2705235219596495829, guid: a2fb6f69efcb32647947e3d94d9f0781,
+  chargePrefab: {fileID: 1689758086285548998, guid: 74d66b6bffa66fd4f85672d8b6a5c556,
     type: 3}
-  chargeAnimation: 2
+  chargeAnimation: 4
   attackAnimation: 2

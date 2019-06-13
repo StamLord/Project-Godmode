@@ -115,44 +115,7 @@ public class GroundedState : State
 
         float inputX = vi.horizontal;
         float inputZ = vi.vertical;
-
-        /*
-        //If no target, create from own forward and right
-        if (ts.lockOn == false)
-        {
-            inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-            inputVec = inputVec.normalized;
-        }
-        else //Find the direction to the target (clamped to magnitude of 1)
-        {
-            Vector3 dirToTarget = ts.bodyCenter.transform.position - transform.position;
-            dirToTarget = dirToTarget / dirToTarget.magnitude;
-
-            float angleZX = Mathf.Atan2(dirToTarget.z, dirToTarget.x);
-            float zLength = Mathf.Sin(angleZX);
-            float xLength = Mathf.Cos(angleZX);
-
-            float angleZY = Mathf.Atan2(dirToTarget.z, dirToTarget.y);
-            float yLength = Mathf.Cos(angleZY);
-
-            Vector3 newDir = new Vector3(xLength, yLength, zLength);
-
-            inputVec = (newDir * inputZ) + (transform.right * inputX);
-        }
-
-        if (inputVec == Vector3.zero)
-        {
-            currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-            Movement(currentVector);
-            decelTimer += Time.deltaTime;
-        }
-        else
-        {
-            decelTimer = 0;
-            Movement(inputVec);
-            lastInputVector = ((inputVec * moveSpeed) + -Vector3.up * 10f ) * Time.deltaTime;
-        }*/
-
+        
         if (vi.localPlayer)
         {
             Vector3 moveVector = Vector3.zero;
@@ -195,14 +158,22 @@ public class GroundedState : State
 
             cr.SetInputs(inputs);
         }
-        else if (ai != null)
+        else
         {
-            Vector3 moveVector = ai.currentDirection * inputZ;
-            moveVector += Vector3.Cross(transform.up, ai.currentDirection) * inputX;
-            moveVector *= moveSpeed;
+            Vector3 moveVector = Vector3.zero;
+
+            if (ai != null)
+            {
+                moveVector = ai.currentDirection * inputZ;
+                moveVector += Vector3.Cross(transform.up, ai.currentDirection) * inputX;
+                moveVector *= moveSpeed;
+            }
 
             PlayerCharacterInputs inputs = new PlayerCharacterInputs();
             inputs.motion = moveVector;
+            inputs.maxSpeed = moveSpeed;
+            inputs.decelRate = (moveVector == Vector3.zero) ? stopDecelRate * 2f : moveDecelRate;
+            inputs.ignoreOrientation = true;
 
             cr.SetInputs(inputs);
         }
@@ -358,6 +329,10 @@ public class GroundedState : State
     private void AnimationUpdate()
     {
         anim.SetFloat("Speed", new Vector2(vi.horizontal, vi.vertical).normalized.magnitude);
+
+        float smoothDelta = Mathf.Lerp(anim.GetFloat("DirectionDelta"), cr.GetDirectionDelta/90, .1f);
+
+        anim.SetFloat("DirectionDelta", smoothDelta);
     }
     /*
     void AnimateCharge(Technique t)

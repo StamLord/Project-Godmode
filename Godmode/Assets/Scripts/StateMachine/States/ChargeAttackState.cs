@@ -72,6 +72,8 @@ public class ChargeAttackState : State
         inputs.motion = dir * moveAmount;
         inputs.decelRate = decelRate;
         inputs.maxSpeed = moveAmount;
+        inputs.ignoreOrientation = true;
+        inputs.lookAt = transform.position + transform.forward;
 
         cr.SetInputs(inputs);
 
@@ -88,6 +90,9 @@ public class ChargeAttackState : State
 
     public void ExitAttackState()
     {
+        Machine.SetState<DashState>();
+        return;
+
         if (GroundCheck())
             Machine.SetState<GroundedState>();
         else
