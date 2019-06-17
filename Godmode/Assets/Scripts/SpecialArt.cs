@@ -37,8 +37,8 @@ public class SpecialArt : Technique
     public GameObject chargePrefab;
 
     [Header("Animation")]
-    [Range(1, 4)] public int chargeAnimation = 1;
-    [Range(1, 4)] public int attackAnimation = 1;
+    [Range(1, 5)] public int chargeAnimation = 1;
+    [Range(1, 5)] public int attackAnimation = 1;
 }
 
 public enum HitType {Projectile, Beam, Hitscan, Cast, Other };

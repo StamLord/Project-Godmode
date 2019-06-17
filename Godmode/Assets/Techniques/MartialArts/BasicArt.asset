@@ -18,7 +18,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a558b51a355557e46ad69d8e7402562c, type: 2}
   - {fileID: 11400000, guid: 554923fdc8dd2604a8d1aab3fa9108c1, type: 2}
   - {fileID: 11400000, guid: de0c12f85a2d4dd4ba0929029ee94554, type: 2}
-  - {fileID: 11400000, guid: a558b51a355557e46ad69d8e7402562c, type: 2}
+  - {fileID: 11400000, guid: 60d6fbc77fa243a478b6cf774480783d, type: 2}
   - {fileID: 11400000, guid: 7840ee485bb45e941b03916c373d2c81, type: 2}
   dashAttack: {fileID: 11400000, guid: ce2006e8274441f43b1f8f9d98c4816b, type: 2}
   grab: {fileID: 0}

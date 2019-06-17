@@ -218,6 +218,16 @@ public class StateMachine : MonoBehaviour
                     ts.hardLock = true;
                     ShockwaveManager.instance.Create(transform.position);
                     break;
+                case MoveAttribute.CancleJuggle:
+                    if (currentState.GetType() != typeof(LayingState) && currentState.GetType() != typeof(CrashState))
+                    {
+                        SetState<HitState>();
+                        HitState hitState = GetCurrentState as HitState;
+                        hitState.attackPoint = owner.transform.position;
+                        hitState.stunTime = stunTime;
+                        hitState.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                    }
+                    break;
             }
             
         }

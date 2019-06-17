@@ -4,18 +4,17 @@ using UnityEngine;
 
 public class DashState : State
 {
-    protected ThirdPersonCam camScript;
-    protected VirtualInput vi;
-    protected CharacterStats stats;
-    protected AdvancedController cr;
-    protected TargetingSystem ts;
-    protected Animator anim;
-    protected TechManager techManager;
+    private ThirdPersonCam camScript;
+    private VirtualInput vi;
+    private CharacterStats stats;
+    private AdvancedController cr;
+    private TargetingSystem ts;
+    private Animator anim;
+    private TechManager techManager;
 
     [Header("Settings")]
     public float decelRate = 4f;
     public float staminaDepleteRate = 100f;
-    protected float staminaTimer;
     public float moveSpeed = 35f;
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
@@ -24,8 +23,8 @@ public class DashState : State
     public string animState = "DashBlend";
     public float transitionSpeed = 0.1f;
 
-    [Header("Melee")]
-    public bool isChargingTech;
+    //Private
+    private float staminaTimer;
 
     public override void OnStateEnter()
     {
@@ -82,142 +81,95 @@ public class DashState : State
 
         #endregion
 
-        if (anim.GetInteger("Combo") == 0)
+        #region Movement Input
+
+        float inputX = vi.horizontal;
+        float inputZ = vi.vertical;
+                        
+        if (inputZ == 0f && inputX==0f &&!vi.lShift && !vi.space)
         {
-            #region Movement Input
+            Machine.SetState<FlyingState>();
+        }
 
-            float inputX = vi.horizontal;
-            float inputZ = vi.vertical;
+        if (vi.localPlayer)
+        {
+            Vector3 moveVector = new Vector3();
+            Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
 
-            /*Vector3 inputVec;
-
-            //If no target, create from own forward and right
-            if (ts.lockOn == false)
+            //If locked on target will move in relation to it
+            if (ts.lockOn != null)
             {
-                inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-                inputVec = inputVec.normalized;
-            }
-            else //Find the direction to the target (clamped to magnitude of 1)
-            {
-                Vector3 dirToTarget = ts.bodyCenter.transform.position - transform.position;
-                dirToTarget = dirToTarget / dirToTarget.magnitude;
+                Vector3 enemyPos = ts.lockOn.position;
+                Vector3 playerPos = transform.position;
 
-                float angleZX = Mathf.Atan2(dirToTarget.z, dirToTarget.x);
-                float zLength = Mathf.Sin(angleZX);
-                float xLength = Mathf.Cos(angleZX);
+                Vector3 dir = (enemyPos - playerPos).normalized;
 
-                float angleZY = Mathf.Atan2(dirToTarget.z, dirToTarget.y);
-                float yLength = Mathf.Cos(angleZY);
+                if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
+                {
+                    moveVector += dir * inputZ;
+                }
 
-                Vector3 newDir = new Vector3(xLength, yLength, zLength);
+                moveVector += Vector3.Cross(transform.up, dir) * inputX;
 
-                inputVec = (newDir * inputZ) + (transform.right * inputX);
-            }
+                if (vi.space)
+                    moveVector.y += 1;
+                if (vi.lShift)
+                    moveVector.y -= 1;
 
-            if (vi.space)
-            {
-                inputVec += Vector3.up;
-            }
-
-            if (vi.lShift)
-            {
-                inputVec -= Vector3.up;
-            }
-
-            if (inputVec == Vector3.zero)
-            {
-                Machine.SetState<FlyingState>();
+                moveVector *= moveSpeed;
             }
             else
             {
-                lastInputVector = (inputVec * moveSpeed) * Time.deltaTime;
+                moveVector = new Vector3(inputX, 0, inputZ);
+                moveVector = camScript.transform.rotation * moveVector;
+
+                if (vi.space)
+                    moveVector.y += 1;
+                if (vi.lShift)
+                    moveVector.y -= 1;
+
+                moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
+                moveVector *= moveSpeed;
             }
 
-            Movement(inputVec);*/
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+            inputs.decelRate = decelRate;
+            inputs.cameraPlanarDirection = cameraPlanarDirection;
+            inputs.maxSpeed = moveSpeed;
 
-            if (inputZ == 0f && inputX==0f &&!vi.lShift && !vi.space)
-            {
-                Machine.SetState<FlyingState>();
-            }
+            if (moveVector != Vector3.zero)
+                cr.Motor.ForceUnground(0.1f);
 
-            if (vi.localPlayer)
-            {
-                Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.rotation * Vector3.forward, transform.up).normalized;
-                Vector3 moveVector = new Vector3();
-
-                if (ts.lockOn != null)
-                {
-                    Vector3 enemyPos = ts.lockOn.position;
-                    Vector3 playerPos = transform.position;
-
-                    Vector3 dir = (enemyPos - playerPos).normalized;
-
-                    if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
-                    {
-                        moveVector += dir * inputZ;
-                    }
-
-                    moveVector += Vector3.Cross(transform.up, dir) * inputX;
-
-                    if (vi.space)
-                        moveVector.y += 1;
-                    if (vi.lShift)
-                        moveVector.y -= 1;
-
-                    moveVector *= moveSpeed;
-                }
-                else
-                {
-                    moveVector = new Vector3(inputX, 0, inputZ);
-                    moveVector = camScript.transform.rotation * moveVector;
-
-                    if (vi.space)
-                        moveVector.y += 1;
-                    if (vi.lShift)
-                        moveVector.y -= 1;
-
-                    moveVector = moveVector.normalized; //Clean normalized vector of the input in relation to Camera
-                    moveVector *= moveSpeed;
-                }
-
-                PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-                inputs.motion = moveVector;
-                inputs.decelRate = decelRate;
-                inputs.cameraPlanarDirection = cameraPlanarDirection;
-                inputs.maxSpeed = moveSpeed;
-
-                if (moveVector != Vector3.zero)
-                    cr.Motor.ForceUnground(0.1f);
-
-                cr.SetInputs(inputs);
-            }
+            cr.SetInputs(inputs);
 
             #endregion
 
-            #region Fly Key
+        #region Fly Key
 
-            if (vi.fDown)
-            {
-                Machine.SetState<FallingState>();
-            }
+        if (vi.fDown)
+        {
+            Machine.SetState<FallingState>();
+        }
 
-            #endregion
+        #endregion
 
-            #region Charge Key
+        #region Charge Key
 
-            if (vi.e)
-            {
-                Machine.SetState<ChargeState>();
-            }
-            #endregion
+        if (vi.e)
+        {
+            Machine.SetState<ChargeState>();
+        }
+        #endregion
 
-            #region Guard Key
+        #region Guard Key
 
-            if (vi.q)
-            {
-                Machine.SetState<FlyingState>();
-            }
-            #endregion
+        if (vi.q)
+        {
+            Machine.SetState<FlyingState>();
+        }
+        #endregion
+
         }
 
         DestructionSphere();

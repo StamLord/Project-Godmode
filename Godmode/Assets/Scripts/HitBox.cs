@@ -7,18 +7,16 @@ public class HitBox : MonoBehaviour
     public StateMachine owner;
     public TechManager techManager;
     public List<StateMachine> hits = new List<StateMachine>();
-    public ParticleSystem particles;
+    public ParticleSystem effect;
     
-    Collider col;
-
-    [Header("State")]
-    public bool grab = false;
+    private Collider col;
 
     void Start()
     {
         owner = transform.root.GetComponent<StateMachine>();
         techManager = transform.root.GetComponent<TechManager>();
         col = GetComponent<Collider>();
+        effect = GetComponentInChildren<ParticleSystem>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,13 +37,6 @@ public class HitBox : MonoBehaviour
             PerformHit(c, t.damage, t.stunTime, t.attribute, t.pushBack);
 
             hits.Add(c);
-
-            if (grab)
-            {
-                //c.Grabbed(owner);
-                owner.anim.SetBool("Grab", false);
-                owner.anim.SetBool("Grabbing", true);
-            }
         }
     }
     
@@ -63,8 +54,8 @@ public class HitBox : MonoBehaviour
         {
             owner.hits++;
             owner.tempDamage += damage;
-            particles.Play();
-            Debug.Log(owner + ":: Hit: " + c.gameObject + "With: " + gameObject + "for damage: " + damage);
+            effect.Play();
+            //Debug.Log(owner + ":: Hit: " + c.gameObject + "With: " + gameObject + "for damage: " + damage);
         }
     }
 }

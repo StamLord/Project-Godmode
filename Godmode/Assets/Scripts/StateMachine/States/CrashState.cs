@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class CrashState : State
 {
-    protected AdvancedController cr;
-    protected ThirdPersonCam camScript;
-    protected Animator anim;
+    private AdvancedController cr;
+    private ThirdPersonCam camScript;
+    private Animator anim;
 
+    [Header("Settings")]
     public LayerMask crashColMask;
     public Vector3 direction;
 
@@ -43,10 +44,6 @@ public class CrashState : State
 
         cr.SetInputs(inputs);
         
-        //Movement((direction * crashSpeed) - vectorGrav);
-
-        //DestructionSphere();
-
         if(GroundCheck())
         {
             Machine.layingFaceDown = true;
@@ -81,12 +78,7 @@ public class CrashState : State
         return Machine.groundCheck.grounded;
     }
 
-    private void Movement(Vector3 direction)
-    {
-
-        //cr.Move(direction * Time.deltaTime);
-    }
-
+    [System.Obsolete("This state only destroys objects it collided with at the moment.")]
     void DestructionSphere()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, destructionRadius);

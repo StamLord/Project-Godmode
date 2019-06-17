@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Explosion
-  m_Shader: {fileID: 4800000, guid: 528c2ac83137e6b41858b83032194fe9, type: 3}
+  m_Name: FlamScroll
+  m_Shader: {fileID: 4800000, guid: 16fe4f8f55ca39e43b9c7af740385c09, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -18,11 +18,11 @@ Material:
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs:
-    - _SampleTexture2D_19C8D808_Texture:
-        m_Texture: {fileID: 2800000, guid: 31629f1867c083c429cba9bd56e90362, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+    m_TexEnvs: []
     m_Floats:
-    - Vector1_E7BDD174: 5
-    m_Colors: []
+    - Vector1_5D14A250: 1.5
+    - Vector1_EA9DF589: 1.5
+    m_Colors:
+    - Color_90063BEB: {r: 0, g: 0.68062824, b: 2.6701567, a: 0}
+    - Vector2_8664BE9D: {r: 0.2, g: -0.1, b: 0, a: 0}
+    - Vector2_F7A33CB2: {r: 0.1, g: -0.05, b: 0, a: 0}

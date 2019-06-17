@@ -9,16 +9,21 @@ public class TargetingSystem : MonoBehaviour
     public Camera cam;
     public StateMachine[] allTargets;
 
+    [Header("Colors")]
+    public Color scanning;
+    public Color center;
+    public Color locked;
+
     [Header("Scanning")]
     public bool isScanning;
     public float scanTimer;
     public LayerMask scanLayerMask;
-    public List<Transform> scanned = new List<Transform>();
+    public List<Transform> inSight = new List<Transform>();
 
     [Header("Locking")]
     public float maxOffCenter = 0.1f;
     public Transform lockOn;
-    public TargetCenter bodyCenter;
+    //public TargetCenter bodyCenter;
     public bool hardLock;
     public float outOfSightLoseTime = 1f;
     public float outOfSightTimer = 0f;
@@ -75,7 +80,7 @@ public class TargetingSystem : MonoBehaviour
         {
             scanTimer += Time.deltaTime;
 
-            scanned.Clear();
+            inSight.Clear();
 
             foreach (StateMachine c in allTargets)
             {
@@ -83,14 +88,13 @@ public class TargetingSystem : MonoBehaviour
                 RaycastHit hit;
                 
                 Physics.Raycast(transform.position, dir, out hit, Mathf.Infinity, scanLayerMask);
-                //Debug.Log(hit.transform);
-                //Debug.DrawRay(transform.position, dir, Color.blue);
+
                 if (hit.transform != null)
                 {
                     StateMachine cr = hit.transform.GetComponent<StateMachine>();
                     if (cr)
                     {
-                        scanned.Add(c.gameObject.transform);
+                        inSight.Add(c.gameObject.transform);
                     }
                 }
 
@@ -110,12 +114,12 @@ public class TargetingSystem : MonoBehaviour
 
         isScanning = false;
         scanTimer = 0f;
-        scanned.Clear();
+        inSight.Clear();
     }
 
     void DebugRay()
     {
-        foreach(Transform c in scanned)
+        foreach(Transform c in inSight)
         {
             Vector3 dir = c.transform.position - transform.position;
             Debug.DrawRay(transform.position, dir, Color.red);
@@ -127,15 +131,15 @@ public class TargetingSystem : MonoBehaviour
         List<Vector3> positions = new List<Vector3>();
 
         //Loop through targets in line of sight to see who's on screen
-        for (int i = 0; i < scanned.Count; i++)
+        for (int i = 0; i < inSight.Count; i++)
         {
-            Vector3 viewPos = cam.WorldToViewportPoint(scanned[i].position);
+            Vector3 viewPos = cam.WorldToViewportPoint(inSight[i].position);
 
             bool onScreen = viewPos.z > 0 && viewPos.x > 0 && viewPos.x < 1 && viewPos.y > 0 && viewPos.y < 1;
 
             if (onScreen)
             {
-                Vector3 screenPos = cam.WorldToScreenPoint(scanned[i].position);
+                Vector3 screenPos = cam.WorldToScreenPoint(inSight[i].position);
                 positions.Add(screenPos);
             }
         }
@@ -157,16 +161,37 @@ public class TargetingSystem : MonoBehaviour
         for (int i = 0; i < targetsOnScreen.Count; i++)
         {
             targetsOnScreen[i].transform.position = positions[i];
+
+            Vector3 viewPos = cam.ScreenToViewportPoint(positions[i]);
+            viewPos -= new Vector3(0.5f, 0.5f, 0);
+
+            if (Mathf.Abs(viewPos.x) < maxOffCenter && Mathf.Abs(viewPos.y) < maxOffCenter)
+            {
+                targetsOnScreen[i].color = center;
+            }
+            else
+                targetsOnScreen[i].color = scanning;
         }
 
         //
         if(lockOn != null)
         {
-            if(lockedTarget == null)
+            if (lockedTarget == null)
+            {
                 lockedTarget = Instantiate(targetPrefab, canvas.transform);
-            
+                lockedTarget.color = locked;
+            }
+
             Vector3 screenPos = cam.WorldToScreenPoint(lockOn.position);
-            lockedTarget.transform.position = screenPos;
+            Vector3 viewPos = cam.WorldToViewportPoint(lockOn.position);
+
+            if (viewPos.z > 0 && viewPos.x > 0 && viewPos.x < 1 && viewPos.y < 1 && viewPos.y > 0)
+            {
+                lockedTarget.transform.position = screenPos;
+                lockedTarget.color = new Color(locked.r, locked.g, locked.b, 255);
+            }
+            else
+                lockedTarget.color = new Color(locked.r, locked.g, locked.b, 0);
         }
         else if (lockedTarget != null)
         {
@@ -180,17 +205,15 @@ public class TargetingSystem : MonoBehaviour
         List<Transform> nearCenter = new List<Transform>();
         Transform closestTarget = null;
 
-        foreach (Transform t in scanned)
+        foreach (Transform t in inSight)
         {
             Vector3 viewPos = cam.WorldToViewportPoint(t.position);
             viewPos -= new Vector3 (0.5f, 0.5f, 0);
-            //Debug.Log(viewPos);
 
             if(Mathf.Abs(viewPos.x) < maxOffCenter && Mathf.Abs(viewPos.y) < maxOffCenter)
             {
                 nearCenter.Add(t);
             }
-
         }
 
         foreach(Transform t in nearCenter)
@@ -213,7 +236,7 @@ public class TargetingSystem : MonoBehaviour
 
         lockOn = closestTarget;
         if(lockOn)
-            bodyCenter = closestTarget.GetComponentInChildren<TargetCenter>();
+            //bodyCenter = closestTarget.GetComponentInChildren<TargetCenter>();
 
         hardLock = lockOn != null;
     }
@@ -221,7 +244,7 @@ public class TargetingSystem : MonoBehaviour
     public void LockOn(Transform target, bool hard)
     {
         lockOn = target;
-        bodyCenter = lockOn.GetComponentInChildren<TargetCenter>();
+        //bodyCenter = lockOn.GetComponentInChildren<TargetCenter>();
         hardLock = hard;
     }
 
@@ -247,6 +270,30 @@ public class TargetingSystem : MonoBehaviour
         {
             lockOn = null;
             outOfSightTimer = 0;
+        }
+    }
+
+    public void LockOnNearest(float radius)
+    {
+        StateMachine closest = null;
+        float distance = radius;
+
+        foreach(StateMachine target in allTargets)
+        {
+            if (target.ts == this)
+                continue;
+
+            float d = Vector3.Distance(target.transform.position, transform.position);
+            if (d <= distance)
+            {
+                closest = target;
+                distance = d;
+            }
+        }
+
+        if(closest)
+        {
+            LockOn(closest.transform, false);
         }
     }
 

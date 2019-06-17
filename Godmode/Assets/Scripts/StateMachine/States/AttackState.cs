@@ -16,6 +16,7 @@ public class AttackState : State
     public float moveDuration = 0.1f;
     public float moveAmount = 7.5f;
     public float decelRate = 0.4f;
+    public float lockRadius = 5f;
     
     public override void OnStateEnter()
     {
@@ -23,6 +24,7 @@ public class AttackState : State
         vi = Machine.vi;
         cr = Machine.cr;
         ts = Machine.ts;
+        ts.LockOnNearest(lockRadius);
         techManager = Machine.techManager;
         camScript = Machine.camScript;
 

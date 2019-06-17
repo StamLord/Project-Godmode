@@ -29,7 +29,9 @@ public class Explosion : MonoBehaviour
         Rigidbody rb = null;
         Destructable de = null;
         StateMachine cr = null;
+
         Vector3 dir = Vector3.zero;
+
         float ratioByRange;
         float distance;
 
@@ -41,11 +43,13 @@ public class Explosion : MonoBehaviour
             if (c.CompareTag("Player"))
                 cr = c.GetComponent<StateMachine>();
 
-            if(cr && _damage != 0)
+
+            distance = Vector3.Distance(transform.position, c.transform.position);
+
+            if (cr && _damage != 0)
             {
                 if (!hits.Contains(cr))
                 {
-                    distance = Vector3.Distance(transform.position, c.transform.position);
                     ratioByRange = (_range - distance) / _range;
 
                     int newDamage = Mathf.RoundToInt(_damage * ratioByRange);
@@ -62,16 +66,14 @@ public class Explosion : MonoBehaviour
 
             else if(rb)
             {
-                distance = Vector3.Distance(transform.position, c.transform.position);
                 ratioByRange = (_range - distance) / _range;
-                dir = c.transform.position - transform.position;
+                dir = -(transform.position - c.transform.position);
                 dir.Normalize();
 
                 rb.AddForce(dir * _force * ratioByRange, ForceMode.Impulse);
             }
             else if (de)
             {
-                distance = Vector3.Distance(transform.position, c.transform.position);
                 ratioByRange = (_range - distance) / _range;
                 dir = c.transform.position - transform.position;
                 dir.Normalize();

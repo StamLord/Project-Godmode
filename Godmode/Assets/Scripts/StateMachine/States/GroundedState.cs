@@ -119,9 +119,10 @@ public class GroundedState : State
         if (vi.localPlayer)
         {
             Vector3 moveVector = Vector3.zero;
-            Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
+            Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up); //Camera forward projected on flat surface to avoid speed loss when not parallel to ground.
             Vector3 cameraRight = Vector3.Cross(cameraFlatDirection, transform.up) * -1;
 
+            //If locked on target will move in relation to it
             if (ts.lockOn != null)
             {
                 Vector3 enemyPos = ts.lockOn.position;
@@ -296,11 +297,6 @@ public class GroundedState : State
         }
     }
 
-    private void Movement(Vector3 direction)
-    {
-        //cr.Move(((direction * moveSpeed) + -Vector3.up * 10f) * Time.deltaTime);
-    }
-
     private void MousePressMain()
     {
         techManager.MousePressMain();
@@ -313,12 +309,12 @@ public class GroundedState : State
 
     private void MousePressSecondary()
     {
-
+        //To be added after TechManager is updated
     }
 
     private void MouseReleaseSecondary()
     {
-
+        //To be added after TechManager is updated
     }
 
     private void TechCharge()
@@ -330,31 +326,11 @@ public class GroundedState : State
     {
         anim.SetFloat("Speed", new Vector2(vi.horizontal, vi.vertical).normalized.magnitude);
 
-        float smoothDelta = Mathf.Lerp(anim.GetFloat("DirectionDelta"), cr.GetDirectionDelta/90, .1f);
+        float animDelta = anim.GetFloat("DirectionDelta");
+        float smoothDelta = Mathf.Lerp(animDelta, cr.GetDirectionDelta / 90 * 2, .1f);
 
         anim.SetFloat("DirectionDelta", smoothDelta);
     }
-    /*
-    void AnimateCharge(Technique t)
-    {
-        anim.SetInteger("ChargeAnim", t.chargeAnimation);
-        anim.SetBool("ChargingAttack", true);
-    }
-
-    private void AnimateAttack(Technique t)
-    {
-        techManager.attackAnimating = t;
-
-        anim.SetInteger("AttackAnim", t.attackAnimation);
-
-        if(anim.GetBool("ChargingAttack"))
-            anim.SetBool("ChargingAttack", false);
-
-        anim.SetBool("FiringAttack", true);
-
-        if (t.type == HitType.Beam)
-            Machine.SetState<BeamState>();
-    }*/
 
     public override void OnStateExit()
     {

@@ -772,7 +772,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5664525003920337626}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: pillarDest
   m_TagString: Untagged
   m_Icon: {fileID: 0}

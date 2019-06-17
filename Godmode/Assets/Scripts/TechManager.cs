@@ -22,52 +22,48 @@ public class TechManager : MonoBehaviour
     public Image minCharge;
 
     [Header("Instantiated")]
-    public GameObject chargeObject;
-    public GameObject beamHead;
-    public float beamStartTime;
+    [SerializeField] private GameObject chargeObject;
+    [SerializeField] private GameObject beamHead;
+    [SerializeField] private float beamStartTime;
 
     [Header("Particle Systems")]
     public ParticleSystem fullCharge;
-    public bool playedFullCharge;
+    private bool playedFullCharge;
 
     [Header("Melee")]
-    public bool canClick = true;
-    public int punchNum;
-    public Move currentMove;
+    [SerializeField] private bool canClick = true;
+    [SerializeField] private int punchNum;
+
+    public Move currentMove { get; private set; } //The move currently being executed
+    private Move _nextMove;                       //Next move to be executed
+    private bool clicked;                         //Flag to avoid executing combo infinitely when holding LMB
 
     [Header("Techniques")]
     public List<Technique> techniques;
-    public int activeSlot = 1;
 
-    public float techChargeTimer;
-    public float lastTechChargeTimer;
+    [SerializeField] private int activeSlot = 1;
+    [SerializeField] private float techChargeTimer;
+    [SerializeField] private float lastTechChargeTimer;
+
+    public Technique GetSelected { get { return this.techniques[activeSlot - 1]; } }
+
+    [Header("Animation")]
+    public Technique attackAnimating;
+
+    #region Flags for outside references
+
+    public bool isChargingTech { get; private set; }
+    public bool isFiringBeam { get; private set; }
+
+    #endregion
+
+    #region Temporary holders for charging attack
 
     private int healthHolder;
     private int energyHolder;
     private int staminaHolder;
 
-    public Technique GetSelected
-    {
-        get
-        {
-            //if (this.techniques[activeSlot - 1] is MartialArt)
-            //    return GetCurrentMove;
-            //else
-                return this.techniques[activeSlot - 1];
-        }
-    }
-
-    private Move GetCurrentMove { get { return (this.techniques[activeSlot - 1] as MartialArt).moveArray[punchNum]; } }
-
-    [Header("Animation")]
-    public Technique attackAnimating;
-
-    [Header("Conditions")]
-    public bool isChargingTech;
-    public bool isFiringBeam;
-
-
-    public bool clicked;
+    #endregion
 
     private void Start()
     {
@@ -139,7 +135,7 @@ public class TechManager : MonoBehaviour
 
     public void OnChangeActiveSlot()
     {
-
+        ExitTechCharge(false);
     }
 
     public void UseTechnique()
@@ -263,7 +259,10 @@ public class TechManager : MonoBehaviour
         {
             currentMove = m.dashAttack;
             character.SetState<ChargeAttackState>();
-            Debug.Log("true");
+
+            stats.UpdateHealth(-m.dashAttack.healthCost);
+            stats.UpdateStamina(-m.dashAttack.staminaCost);
+            stats.UpdateEnergy(-m.dashAttack.energyCost);
             return;
         }
 
@@ -294,11 +293,9 @@ public class TechManager : MonoBehaviour
                     punchNum++; //If on last punch, no need to go back to 0 so instead go to first punch
                 }
 
-                currentMove = m.moveArray[punchNum - 1];
+                _nextMove = m.moveArray[punchNum - 1];
 
-                stats.UpdateHealth(-currentMove.healthCost);
-                stats.UpdateStamina(-currentMove.staminaCost);
-                stats.UpdateEnergy(-currentMove.energyCost);
+                
 
                 anim.SetInteger("Combo", punchNum);
                 canClick = false;
@@ -325,7 +322,6 @@ public class TechManager : MonoBehaviour
 
     public void ResetCombo()
     {
-        //Debug.Log("Called reset");
         punchNum = 0;
         anim.SetInteger("Combo", punchNum);
         EnableClick();
@@ -333,7 +329,9 @@ public class TechManager : MonoBehaviour
 
     #endregion
 
-
+    /// <summary>
+    /// Called each frame while holding a button and a chargable Technique is selected
+    /// </summary>
     public void TechCharge()
     {
         isChargingTech = true;
@@ -430,6 +428,9 @@ public class TechManager : MonoBehaviour
         #endregion
     }
 
+    /// <summary>
+    /// Called to stop charging: updates UI, animations and resets temporary holders. 
+    /// </summary>
     public void ExitTechCharge(bool executingAttack)
     {
         isChargingTech = false;
@@ -451,8 +452,15 @@ public class TechManager : MonoBehaviour
         techChargeTimer = 0f;
         playedFullCharge = false;
 
-        if (!executingAttack && chargeObject)
-            Destroy(chargeObject);
+        if(executingAttack == false)
+        {
+            stats.UpdateHealth(healthHolder);
+            stats.UpdateEnergy(energyHolder);
+            stats.UpdateStamina(staminaHolder);
+
+            if (chargeObject)
+                Destroy(chargeObject);
+        }
 
         healthHolder = staminaHolder = energyHolder = 0;
     }
@@ -469,6 +477,9 @@ public class TechManager : MonoBehaviour
         ExitAnimationCheck();
     }
 
+    /// <summary>
+    /// Called from States that allow Main Mouse Button to be pressed
+    /// </summary>
     public void MousePressMain()
     {
         Technique t = GetSelected;
@@ -503,6 +514,9 @@ public class TechManager : MonoBehaviour
         clicked = true;
     }
 
+    /// <summary>
+    /// Called from States that allow Main Mouse Button to be pressed
+    /// </summary>
     public void MouseReleaseMain()
     {
         clicked = false;
@@ -512,7 +526,6 @@ public class TechManager : MonoBehaviour
         if (t is MartialArt)
         {
             ExitTechCharge(false);
-            //UseMartialArt(t as MartialArt);
         }
         else if (t is SpecialArt)
         {
@@ -525,9 +538,7 @@ public class TechManager : MonoBehaviour
             }
             else
             {
-                stats.UpdateHealth(healthHolder);
-                stats.UpdateEnergy(energyHolder);
-                stats.UpdateStamina(staminaHolder);
+                
 
                 ExitTechCharge(false);                
             }
@@ -535,12 +546,18 @@ public class TechManager : MonoBehaviour
         
     }
 
-    void AnimateCharge(SpecialArt t)
+    /// <summary>
+    /// Sets Animator state to the charging Animation Clip of the Technique
+    /// </summary>
+    private void AnimateCharge(SpecialArt t)
     {
         anim.SetInteger("ChargeAnim", t.chargeAnimation);
         anim.SetBool("ChargingAttack", true);
     }
 
+    /// <summary>
+    /// Sets Animator state to the attack Animation Clip of the Technique
+    /// </summary>
     private void AnimateAttack(SpecialArt t)
     {
         attackAnimating = t;
@@ -556,36 +573,49 @@ public class TechManager : MonoBehaviour
             character.SetState<BeamState>();
     }
 
+    /// <summary>
+    /// Called by an Animation Event Trigger and sets Projectile origin to left hand.
+    /// </summary>
     public void FireAttackLeft()
     {
         currentProjectileSpot = leftProjectileSpot;
         UseTechnique(attackAnimating);
 
-        //attackStandby = false;
         attackAnimating = null;
     }
 
+    /// <summary>
+    /// Called by an Animation Event Trigger and sets Projectile origin to right hand.
+    /// </summary>
     public void FireAttackRight()
     {
         currentProjectileSpot = rightProjectileSpot;
         UseTechnique(attackAnimating);
 
-        //attackStandby = false;
         attackAnimating = null;
     }
 
+    /// <summary>
+    /// Called by an Animation Event Trigger as a part of multiple attacks and sets Projectile origin to left hand.
+    /// </summary>
     public void FireAttackPartLeft()
     {
         currentProjectileSpot = leftProjectileSpot;
         UseTechnique(attackAnimating);
     }
 
+    /// <summary>
+    /// Called by an Animation Event Trigger as a part of multiple attacks and sets Projectile origin to right hand.
+    /// </summary>
     public void FireAttackPartRight()
     {
         currentProjectileSpot = rightProjectileSpot;
         UseTechnique(attackAnimating);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void ExitAnimationCheck()
     {
         if (isFiringBeam)
@@ -597,9 +627,18 @@ public class TechManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called by an Animation Event Trigger at the start of each melee animation.
+    /// </summary>
     public void DoneAnim()
     {
         anim.SetBool("DoneAnim", true);
+
+        currentMove = _nextMove;
+
+        stats.UpdateHealth(-currentMove.healthCost);
+        stats.UpdateStamina(-currentMove.staminaCost);
+        stats.UpdateEnergy(-currentMove.energyCost);
     }
 
     public void ResetDoneAnim()
@@ -609,11 +648,14 @@ public class TechManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        if (!vi.localPlayer)
+        if (vi.localPlayer == false)
             return;
 
-        if (!chargeParent)
+        if (chargeParent == false)
+        {
+            Debug.LogWarning("Missing UI element in :: " + this + " :: chargeParent");
             return;
+        }
 
         SpecialArt art = GetSelected as SpecialArt;
         if (art != null)

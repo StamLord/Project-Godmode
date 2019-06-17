@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class TossState : State
 {
-    protected AdvancedController cr;
-    protected ThirdPersonCam camScript;
-    protected VirtualInput vi;
-    protected Animator anim;
+    private AdvancedController cr;
+    private ThirdPersonCam camScript;
+    private VirtualInput vi;
+    private Animator anim;
 
+    [Header("Settings")]
     public LayerMask tossColMask;
     public Vector3 direction;
-    private float speed;
-
-    public AnimationCurve tossSpeed;
-
     public float duration;
-    [SerializeField] private float tossTimer;
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
+    private float speed;
+    [SerializeField] private float tossTimer;
 
     public override void OnStateEnter()
     {
@@ -51,8 +49,6 @@ public class TossState : State
             tossTimer += 0.02f * duration;
         }
 
-        //DestructionSphere();
-
         if (tossTimer >= duration)
         {
             if(GroundCheck())
@@ -81,7 +77,7 @@ public class TossState : State
             }
             else
             {
-                ImpactManager.instance.Create(transform.position, -direction);
+                ImpactManager.instance.Create(transform.position, Vector3.up);
                 anim.SetTrigger("Impact");
                 Machine.SetState<GroundedState>();
             }
@@ -103,6 +99,7 @@ public class TossState : State
         return cr.grounded;
     }
 
+    [System.Obsolete("This state only destroys objects it collided with at the moment.")]
     void DestructionSphere()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, destructionRadius);

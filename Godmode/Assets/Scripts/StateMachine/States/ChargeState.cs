@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class ChargeState : State
 {
-    protected VirtualInput vi;
-    protected CharacterStats stats;
-    protected ThirdPersonCam camScript;
-    protected AdvancedController cr;
-    protected Animator anim;
-    protected TechManager techManager;
-    //protected State originState;
+    private VirtualInput vi;
+    private CharacterStats stats;
+    private ThirdPersonCam camScript;
+    private AdvancedController cr;
+    private Animator anim;
+    private TechManager techManager;
 
     [Header("References")]
     public ParticleSystem chargeAura;
@@ -27,8 +26,8 @@ public class ChargeState : State
     public string animState = "Charge";
     public float transitionSpeed = 0.1f;
 
-    protected float lastShockwave;
-    protected bool startedWithFullEnergy;
+    private float lastShockwave;
+    private bool startedWithFullEnergy;
 
     public override void OnStateEnter()
     {

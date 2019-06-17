@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MoveAttribute { None, Juggle, TossForward, TossUp, TossDown};
+public enum MoveAttribute { None, Juggle, TossForward, TossUp, TossDown, CancleJuggle};
 
 [CreateAssetMenu(fileName = "NewMove", menuName = "Move")]
 

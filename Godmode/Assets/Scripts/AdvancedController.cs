@@ -9,18 +9,23 @@ public enum OrientationMethod
     TowardsMovement,
 }
 
+/// <summary>
+/// Contains player's input relevant for the controller to move in a single frame.
+/// </summary>
 public struct PlayerCharacterInputs
 {
-    public Vector3 motion;
-    public bool overrideY;
-    public Vector3 cameraPlanarDirection;
-    public float maxSpeed;
-    public float decelRate;
-    public Vector3 Gravity;
-    public bool ignoreOrientation;
-    public Vector3 lookAt;
+    public Vector3 motion;                // The vector by which the controller will move each second. Should come multiplied by speed from the any State.
+    public bool overrideY;                // When true will use the (motion.y) as an absolute and will not add inertia to it.
+    public Vector3 cameraPlanarDirection; // The Camera's forward, which the controller will move in relation to.
+    public float maxSpeed;                // This will be used to clamp the speed after adding inertia from last frame's movement (lastVector).
+    public float decelRate;               // Rate by which the (lastVector) will be slowed down each frame.
+    public bool ignoreOrientation;        // Will decide controller will be rotated to match (cameraPlanarDirection) / (motion) direction; 
+    public Vector3 lookAt;                // While (ignoreOrientation) is True, controller will look at this position. Note: This is a point in World Space and NOT a direction**
 }
 
+/// <summary>
+/// Contains an AI's input relevant for the controller to move in a single frame.
+/// </summary>
 public struct AICharacterInputs
 {
     public Vector3 MoveVector;
@@ -29,53 +34,44 @@ public struct AICharacterInputs
 
 public class AdvancedController : MonoBehaviour, ICharacterController
 {
-    [Header("Settings")]
-    public bool _overrideY = true;
-
-    public TargetingSystem Targeting;
+    [Header("References")]
     public KinematicCharacterMotor Motor;
-    public bool grounded;
-    public Vector3 lastVector;
-    [SerializeField] private float _maxSpeed;
+    [SerializeField] private TargetingSystem Targeting;
+    public bool grounded { get; private set; }
+
+    [Header("Current Settings")]
+    [SerializeField] private bool _overrideY = true;  
+    [SerializeField] private float _maxSpeed;         
     [SerializeField] private float _decelRate;
+    public Vector3 lastVector;
+    [SerializeField] private float speed;
+    [SerializeField] private float directionDelta;
 
-    //Refernces
-    public float GetLastMaxSpeed { get { return this._maxSpeed; } }
-    public float GetSpeed { get { return this.speed; } }
-    private float speed;
+    [Header("Fixed Settings")]
 
-    public float GetDirectionDelta { get { return this.directionDelta; } }
-    private float directionDelta;
-
-
-    [Header("Stable Movement")]
-    public float MaxStableMoveSpeed = 10f;
-    public float StableMovementSharpness = 15f;
+    [Tooltip("How fast controll will rotate to a direction")]
     public float OrientationSharpness = 10f;
+
+    [Tooltip("Controller will rotate to face this by default")]
     public OrientationMethod OrientationMethod = OrientationMethod.TowardsCamera;
 
-    [Header("Misc")]
+    [Tooltip("Will ignore a collision with these")]
     public List<Collider> IgnoredColliders = new List<Collider>();
+
+    [Tooltip("If controller should orient according to Gravity")]
     public bool OrientTowardsGravity = false;
     public Vector3 Gravity = new Vector3(0, -30f, 0);
-    public Transform MeshRoot;
-    public Transform CameraFollowPoint;
 
-    private Collider[] _probedColliders = new Collider[8];
     private Vector3 _moveInputVector;
     private Vector3 _lookInputVector;
-    private bool _jumpRequested = false;
-    private bool _jumpConsumed = false;
-    private bool _jumpedThisFrame = false;
-    private float _timeSinceJumpRequested = Mathf.Infinity;
-    private float _timeSinceLastAbleToJump = 0f;
-    private Vector3 _internalVelocityAdd = Vector3.zero;
-    private bool _shouldBeCrouching = false;
-    private bool _isCrouching = false;
 
-    private Vector3 lastInnerNormal = Vector3.zero;
-    private Vector3 lastOuterNormal = Vector3.zero;
+    #region Get Functions
 
+    public float GetLastMaxSpeed { get { return this._maxSpeed; } }
+    public float GetSpeed { get { return this.speed; } }
+    public float GetDirectionDelta { get { return this.directionDelta; } }
+
+    #endregion
 
     private void OnValidate()
     {
@@ -89,7 +85,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     }
 
     /// <summary>
-    /// This is called every frame by ExamplePlayer in order to tell the character what its inputs are
+    /// This is called every frame by other States in order to tell the controller how to behave.
     /// </summary>
     public void SetInputs(PlayerCharacterInputs inputs)
     {
@@ -117,7 +113,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     }
 
     /// <summary>
-    /// This is called every frame by the AI script in order to tell the character what its inputs are
+    /// This is called every frame by an AI script in order to tell the controller how to behave.
     /// </summary>
     public void SetInputs(ref AICharacterInputs inputs)
     {
@@ -171,12 +167,10 @@ public class AdvancedController : MonoBehaviour, ICharacterController
             Vector3 enemyPos = Targeting.lockOn.position;
             enemyPos.y = playerPos.y;
 
-            Vector3 lockPoint = enemyPos + (playerPos - enemyPos).normalized * .8f;
+            Vector3 lockPoint = enemyPos + (playerPos - enemyPos).normalized * .8f; // Closest point a controller can reach to it's target
 
             if (Vector3.Distance(playerPos, enemyPos) < Vector3.Distance(enemyPos, lockPoint))
             {
-                Debug.Log("Distance smaller than lockpoint");
-                
                 lastVector = currentVelocity = Vector3.zero;
 
                 Motor.SetPositionAndRotation(lockPoint, Quaternion.LookRotation(enemyPos - playerPos));
@@ -200,16 +194,16 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         {
             currentVelocity.y = 0;
 
-            //Add last vector for inertia
             currentVelocity += new Vector3(lastVector.x, 0, lastVector.z);
 
+            //Clamping only x and z
             currentVelocity = Vector3.ClampMagnitude(currentVelocity, _maxSpeed);
 
+            //The y is added after clamping
             currentVelocity.y = _moveInputVector.y;
         }
         else
         {
-
             //Add last vector for inertia
             currentVelocity += lastVector;
             currentVelocity = Vector3.ClampMagnitude(currentVelocity, _maxSpeed);
@@ -221,26 +215,17 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         else
             lastVector = Vector3.zero;
 
-        //Save motion in all axis that are not 0 for inertia
-        if(_moveInputVector.x != 0f)
-        {
-            lastVector.x += _moveInputVector.x;
-        }
+        //Save motion in all axis
+        lastVector.x += _moveInputVector.x;
 
-        if (_moveInputVector.y != 0f)
-        {
-            if (_overrideY)
-                lastVector.y = _moveInputVector.y;
-            else
-                lastVector.y += _moveInputVector.y;
-        }
+        if (_overrideY)
+            lastVector.y = _moveInputVector.y;
+        else
+            lastVector.y += _moveInputVector.y;
 
-        if (_moveInputVector.z != 0f)
-        {
-            lastVector.z += _moveInputVector.z;
-        }
+        lastVector.z += _moveInputVector.z;
 
-        //Set speedometer for outside reference
+        //Set speedometer for outside Editor
         speed = currentVelocity.magnitude;
     }
 
@@ -280,21 +265,13 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         return true;
     }
 
-    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
-    {
+    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport){
     }
 
-    public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
-    {
+    public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport){
     }
 
-    public void AddVelocity(Vector3 velocity)
-    {
-        _internalVelocityAdd += velocity;
-    }
-
-    public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
-    {
+    public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport){
     }
 
     protected void OnLanded()
@@ -307,8 +284,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         grounded = false;
     }
 
-    public void OnDiscreteCollisionDetected(Collider hitCollider)
-    {
+    public void OnDiscreteCollisionDetected(Collider hitCollider){
     }
 
     public void ResetInput()
@@ -316,6 +292,5 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
         inputs.motion = Vector3.zero;
         SetInputs(inputs);
-        
     }
 }
