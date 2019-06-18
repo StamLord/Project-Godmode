@@ -9,13 +9,11 @@ public class Debugger : MonoBehaviour
     public GameObject debugCanvas;
     public TMP_InputField timeScale;
 
-    // Start is called before the first frame update
     void Start()
     {
         timeScale.onEndEdit.AddListener(delegate { SetTimeScale(timeScale); });
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.F12))

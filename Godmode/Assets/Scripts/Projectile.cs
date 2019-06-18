@@ -15,33 +15,34 @@ public class Projectile : MonoBehaviour
     [Header("Behaviour")]
     public float lifeTime;
     public float followDuration;
-    public bool continousBeam;
-    private bool beamHit;
-    private float beamHitTimer;
-        
-    public bool explodeOnTerrain = true;
     public int maxBounces;
-    protected int bounce;
+    public bool explodeOnTerrain = true;
     public bool absorbProjectiles;
     public bool destroyOnDestructable;
 
     [Header("Slow Down")]
     public float minSlowdownTime;
     public float maxSlowdownTime;
-    protected float _slowdownTime;
 
-    float followTimer;
-    [HideInInspector] public int damage;
-    [HideInInspector] public float speed;
-    [HideInInspector] public float blowBack;
-    public Vector3 dir;
-    public float originalYRot;
-    public Vector3 lastDir;
-
+    [Header("X Axis over Time")]
     public AnimationCurve xCurve;
-    public float timer;
 
-    protected bool _stopped;
+    #region Private
+
+    [Header("Timer")]
+    [SerializeField] private float timer;
+
+    private int damage;
+    private float speed;
+    private float blowBack;
+
+    private Vector3 dir;
+    private float originalYRot;
+    private bool _stopped;
+    private int bounce;
+    private float _slowdownTime;
+    
+    #endregion
 
     private void Start()
     {
@@ -50,14 +51,27 @@ public class Projectile : MonoBehaviour
         _slowdownTime = Random.Range(minSlowdownTime, maxSlowdownTime);
     }
 
+    /// <summary>
+    /// Sets necessary values for a projectlie. Should be called from TechManager when instantiating new projectile.
+    /// </summary>
+    /// <param name="blowBack">The amount it will push a character back when on hit</param>
+    public void Initialize(StateMachine owner, Transform target, int damage, float speed, float blowBack)
+    {
+        this.owner = owner;
+        this.target = target;
+        this.damage = damage;
+        this.speed = speed;
+        this.blowBack = blowBack;
+    }
+
     void Update()
     {
-        if (followTimer <= followDuration && target != null)
+        if (timer <= followDuration && target != null)
         {
             transform.LookAt(target);
             dir = (target.position - transform.position).normalized;
         }
-        else if(!beamHit)
+        else
         {
             dir = transform.forward;
         }
@@ -71,9 +85,6 @@ public class Projectile : MonoBehaviour
         //Move
         if(!_stopped)
             transform.position += dir * speed * Time.deltaTime;
-
-        followTimer += Time.deltaTime;
-        timer += Time.deltaTime;
 
         if(_slowdownTime > 0)
         {
@@ -91,15 +102,7 @@ public class Projectile : MonoBehaviour
             }
         }
 
-        //RaycastHit hit;
-        //Physics.Raycast(transform.position, dir, out hit, 50f);
-
-        //if (hit.collider  && bounce < maxBounces)
-        //{
-        //    Debug.Log("Hit ray");
-        //    dir = -dir;
-        //    bounce++;
-        //}
+        timer += Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -115,8 +118,7 @@ public class Projectile : MonoBehaviour
             {
                 if (owner)
                 {
-                    owner.hits++;
-                    owner.tempDamage += damage;
+                    owner.AddToCombo(1, damage);
                 }
                 hits.Add(c);
                 Explode();
@@ -169,36 +171,16 @@ public class Projectile : MonoBehaviour
             _stopped = true;
         }
 
-        if (continousBeam)
-        {
-            lastDir = dir;
-            dir = Vector3.zero;
-            beamHit = true;
-        }
-
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (beamHit)
-        {
-            beamHitTimer += Time.deltaTime;
-            if (beamHitTimer >= 0.5f)
-            {
-                Explode();
-                beamHitTimer = 0f;
-            }
 
-        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (beamHit)
-        {
-            dir = lastDir;
-            beamHit = false;
-        }
+       
     }
 
     void Explode()
@@ -206,7 +188,6 @@ public class Projectile : MonoBehaviour
         if (explosion)
         {
             GameObject go = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
-            //go.transform.localScale = transform.localScale;
             go.GetComponent<Explosion>().Init(damage, hits, owner);
 
             Destroy(go, 5f);

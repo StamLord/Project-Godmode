@@ -7,7 +7,6 @@ public class ThirdPersonCam : MonoBehaviour
     [Header("References")]
     public StateMachine character;
     public Transform target;
-    //public CharController target;
     public Camera cam;
     public Projector castProj;
     public TargetingSystem targetSys;
@@ -35,11 +34,11 @@ public class ThirdPersonCam : MonoBehaviour
     public float sensX = 4f;
     public float sensY = 1f;
 
-    public enum camView {InstantFront, InstantBack, LeftZoomFlight, RightZoomFlight, LeftZoomBeam, RightZoomBeam, TransitionFront, TransitionBack, LockedOn};
     [Header("Views")]
     public bool useCamera = true;
-    public camView view;
+    public CamView view;
     public float startTime;
+    public enum CamView {InstantFront, InstantBack, LeftZoomFlight, RightZoomFlight, LeftZoomBeam, RightZoomBeam, TransitionFront, TransitionBack, LockedOn};
 
     [Header("Zoom Beam Corners")]
     public float zbDistance;
@@ -57,16 +56,16 @@ public class ThirdPersonCam : MonoBehaviour
     public float strength2;
     public bool strong;
     public float freq = 1f;
-    float shakeStartTime;
-    float completionPercent = 0;
-    float duration = 0;
+
+    private float shakeStartTime;
+    private float completionPercent = 0;
+    private float duration = 0;
 
     [Header("Rotations")]
     public float maxRollAngle = 25f;
     public float rollSpeed = .1f;
     public float speedDependency = 0.1f;
     private float rollAngle = 0f;
-
 
     Vector3 previousWaypoint = Vector3.zero;
     Vector3 currentWaypoint = Vector3.zero;
@@ -94,6 +93,7 @@ public class ThirdPersonCam : MonoBehaviour
         currentX += Input.GetAxis("Mouse X") * sensX;
         currentY += Input.GetAxis("Mouse Y") * sensY;
 
+        //Keep values in a cirlce
         currentX %= 360f;
         currentY %= 360f;
 
@@ -107,36 +107,35 @@ public class ThirdPersonCam : MonoBehaviour
         {
             currentY = -80f;
         }
-        
-        #region Camera Views Controls
-        if (Input.GetMouseButtonDown(2))
+
+        #region Camera Views Control for testing
+        if (Application.isEditor)
         {
-            TransitionView(camView.InstantBack);
+            if (Input.GetMouseButtonDown(2))
+                TransitionView(CamView.InstantBack);
+
+            else if (Input.GetMouseButtonUp(2))
+                TransitionView(CamView.InstantFront);
+
+            if (Input.GetKeyDown(KeyCode.Keypad4))
+                TransitionView(CamView.LeftZoomBeam);
+
+            if (Input.GetKeyDown(KeyCode.Keypad6))
+                TransitionView(CamView.RightZoomBeam);
+
+            if (Input.GetKeyDown(KeyCode.Keypad1))
+                TransitionView(CamView.LeftZoomFlight);
+
+            if (Input.GetKeyDown(KeyCode.Keypad3))
+                TransitionView(CamView.RightZoomFlight);
+
+            if (Input.GetKeyDown(KeyCode.Keypad8))
+                TransitionView(CamView.TransitionFront);
+
+            if (Input.GetKeyDown(KeyCode.Keypad2))
+                TransitionView(CamView.TransitionBack);
         }
-        else if(Input.GetMouseButtonUp(2))
-        {
-            TransitionView(camView.InstantFront);
-        }
-
-        if(Input.GetKeyDown(KeyCode.Keypad4))
-            TransitionView(camView.LeftZoomBeam);
-
-        if (Input.GetKeyDown(KeyCode.Keypad6))
-            TransitionView(camView.RightZoomBeam);
-
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-            TransitionView(camView.LeftZoomFlight);
-
-        if (Input.GetKeyDown(KeyCode.Keypad3))
-            TransitionView(camView.RightZoomFlight);
-
-        if (Input.GetKeyDown(KeyCode.Keypad8))
-            TransitionView(camView.TransitionFront);
-
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-            TransitionView(camView.TransitionBack);
         #endregion
-        
     }
 
     void LateUpdate()
@@ -152,59 +151,59 @@ public class ThirdPersonCam : MonoBehaviour
         {
             switch (view)
             {
-                case camView.InstantBack:
+                case CamView.InstantBack:
                     dir = new Vector3(0, 0, currentDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = nextPos;
                     transform.LookAt(target.transform.position);
                     break;
-                case camView.InstantFront:
+                case CamView.InstantFront:
                     dir = new Vector3(0, offsetY, -currentDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = nextPos;
                     transform.rotation = Quaternion.Euler(currentY, currentX, 0);
                     break;
-                case camView.LeftZoomFlight:
+                case CamView.LeftZoomFlight:
                     dir = new Vector3(-zfOffsetX, zfOffsetY, -zfDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / .5f);
                     transform.rotation = Quaternion.Euler(currentY, currentX, 0);
                     break;
-                case camView.RightZoomFlight:
+                case CamView.RightZoomFlight:
                     dir = new Vector3(zfOffsetX, zfOffsetY, -zfDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / .5f);
                     transform.rotation = Quaternion.Euler(currentY, currentX, 0);
                     break;
-                case camView.LeftZoomBeam:
+                case CamView.LeftZoomBeam:
                     dir = new Vector3(-zbOffsetX, zbOffsetY, -zbDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / .5f);
                     transform.rotation = Quaternion.Euler(currentY, currentX, 0);
                     break;
-                case camView.RightZoomBeam:
+                case CamView.RightZoomBeam:
                     dir = new Vector3(zbOffsetX, zbOffsetY, -zbDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / .5f);
                     transform.rotation = Quaternion.Euler(currentY, currentX, 0);
                     break;
-                case camView.TransitionBack:
+                case CamView.TransitionBack:
                     dir = new Vector3(0, offsetY, currentDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / 1);
                     if (Time.time - startTime >= 1)
-                        view = camView.InstantBack;
+                        view = CamView.InstantBack;
                     transform.LookAt(target.transform.position);
                     break;
-                case camView.TransitionFront:
+                case CamView.TransitionFront:
                     dir = new Vector3(0, offsetY, -currentDistance);
                     nextPos = target.transform.position + rot * dir;
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / 1);
                     if (Time.time - startTime >= 1)
-                        view = camView.InstantFront;
+                        view = CamView.InstantFront;
                     transform.rotation = Quaternion.Euler(currentY, currentX, 0);
                     break;
-                case camView.LockedOn:
+                case CamView.LockedOn:
                     dir = new Vector3(0, offsetY, currentDistance);
                     Vector3 dif = targetSys.lockOn.position - transform.position;
 
@@ -214,59 +213,7 @@ public class ThirdPersonCam : MonoBehaviour
                     break;
             }
         }
-        //transform.LookAt(target.transform.position);
-        //transform.rotation = Quaternion.Euler(currentY, currentX, 0);
-
-        //Rotate Player
-
-        if (character.GetCurrentState is GroundedState || character.GetCurrentState is JumpState || character.GetCurrentState is FallingState)
-        {
-            //if(character.anim.GetCurrentAnimatorStateInfo(1).IsName("New State"))
-            //   target.transform.rotation = Quaternion.Euler(0, currentX, 0);
-        }
-        else if(character.GetCurrentState is FlyingState || character.GetCurrentState is DashState)
-        {
-            //character.transform.rotation = Quaternion.Euler(currentY, currentX, 0);
-        }
-        /*
-        if (targetSys.lockOn != null)
-        {
-            //Find point adjacent to enemy to treat as destination
-            Vector3 toPlayer = (character.transform.position - targetSys.lockOn.transform.position);
-
-            float angle = Mathf.Atan2(toPlayer.z, toPlayer.x) ; //Rads
-            float zLength = Mathf.Sin(angle) * targetSys.bodyCenter.radius;
-            float xLength = Mathf.Cos(angle) * targetSys.bodyCenter.radius;
-            Vector3 offset = new Vector3(xLength, 0, zLength);
-
-            targetSys.bodyCenter.transform.position = targetSys.lockOn.transform.position + offset;
-
-            //if (Vector3.Distance(target.transform.position, targetSys.lockOn.transform.position) <= targetSys.bodyCenter.radius + .1f)
-            //    target.transform.LookAt(targetSys.lockOn);
-            //else
-            //    target.transform.LookAt(targetSys.bodyCenter.transform);
-
-            //Find where enemy is in relation to player
-
-            Vector3 toEnemy = targetSys.lockOn.transform.position - character.transform.position;
-            float angleY = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
-            //Debug.Log(angleY);
-            if ((character.GetCurrentState is FlyingState) == false)
-            {
-                //Vector3 euler = target.transform.rotation.eulerAngles;
-                //euler.y = angleY;
-                //target.transform.eulerAngles = euler;
-                toEnemy = toEnemy / toEnemy.magnitude;
-                toEnemy.y = 0;
-                character.transform.forward = toEnemy;
-            }
-            else
-            {
-                character.transform.LookAt(targetSys.lockOn.transform);
-            }
-
-        }*/
-
+        
         Shake();
 
         RotateRoll(character.cr.GetDirectionDelta * character.cr.GetSpeed * speedDependency);
@@ -320,7 +267,7 @@ public class ThirdPersonCam : MonoBehaviour
         }
     }
 
-    public void TransitionView(camView v)
+    public void TransitionView(CamView v)
     {
         startTime = Time.time;
         view = v;

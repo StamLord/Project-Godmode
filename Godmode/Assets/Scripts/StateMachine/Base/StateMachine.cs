@@ -26,8 +26,10 @@ public class StateMachine : MonoBehaviour
     public SimpleAI ai;
 
     [Header("Combo")]
-    public int hits;
-    public int tempDamage;
+    private int hits;
+    private int tempDamage;
+    public delegate void OnComboUpdateDelegate(int hits, int totalDamage);
+    public event OnComboUpdateDelegate OnComboUpdate;
 
     [Header("Permissions")]
     public bool canFly = true;
@@ -241,6 +243,14 @@ public class StateMachine : MonoBehaviour
     {
         tossDirection = direction;
         SetState<TossState>();
+    }
+
+    public void AddToCombo(int hitChange, int damageChange)
+    {
+        hits += hitChange;
+        tempDamage += damageChange;
+
+        OnComboUpdate(hits, tempDamage);
     }
 
 }

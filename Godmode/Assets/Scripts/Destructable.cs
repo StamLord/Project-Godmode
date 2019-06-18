@@ -4,12 +4,22 @@ using UnityEngine;
 
 public class Destructable : MonoBehaviour
 {
+    [Tooltip("Prefab to instantiate on destruction")]
     public GameObject destroyedPrefab;
+
+    [Tooltip("The force that will affect the chunks on destruction")]
     public float forceMod = 1;
 
-    public float updateRate = .5f;
+    [Tooltip("Is it suspended in the air")]
     public bool suspended = true;
+
+    [Tooltip("Connected destructable object it depends on")]
     public List<Destructable> connected = new List<Destructable>();
+
+    [Tooltip("How many seconds before a connection check will be made")]
+    public float updateRate = .5f;
+
+    [Tooltip("Below this amount of connections object will destroy itself")]
     public int connectionsNeeded = 1;
 
     private void Start()
@@ -20,7 +30,7 @@ public class Destructable : MonoBehaviour
         }
     }
 
-    public virtual void Destruction()
+    public void Destruction()
     {
         if (destroyedPrefab == null)
         {
@@ -37,7 +47,7 @@ public class Destructable : MonoBehaviour
         Instantiate(destroyedPrefab, transform.position, transform.rotation);
     }
 
-    public virtual void Destruction(Vector3 direction, float force)
+    public void Destruction(Vector3 direction, float force)
     {
         if(destroyedPrefab == null)
         {

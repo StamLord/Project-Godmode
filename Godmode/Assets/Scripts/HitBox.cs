@@ -52,8 +52,7 @@ public class HitBox : MonoBehaviour
 
         if (success)
         {
-            owner.hits++;
-            owner.tempDamage += damage;
+            owner.AddToCombo(1, damage);
             effect.Play();
             //Debug.Log(owner + ":: Hit: " + c.gameObject + "With: " + gameObject + "for damage: " + damage);
         }

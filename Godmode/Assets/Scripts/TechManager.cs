@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(StateMachine))]
+
 public class TechManager : MonoBehaviour
 {
     [Header("References")]
@@ -138,6 +140,8 @@ public class TechManager : MonoBehaviour
         ExitTechCharge(false);
     }
 
+    #region Special
+
     public void UseTechnique()
     {
         UseTechnique(GetSelected, 0);
@@ -194,11 +198,12 @@ public class TechManager : MonoBehaviour
 
                 if (po != null)
                 {
-                    po.damage = t.damage;
-                    po.speed = t.speed;
-                    po.blowBack = t.blowBackForce;
-                    po.owner = character;
-                    po.target = character.ts.lockOn ? character.ts.lockOn : null;
+                    po.Initialize(
+                        character,
+                        character.ts.lockOn ? character.ts.lockOn : null,
+                        t.damage,
+                        t.speed,
+                        t.blowBackForce);
                 }
 
                 break;
@@ -224,10 +229,12 @@ public class TechManager : MonoBehaviour
 
                 if (po != null)
                 {
-                    po.damage = t.damage;
-                    po.speed = t.speed;
-                    po.blowBack = t.blowBackForce;
-                    po.owner = character;
+                    po.Initialize(
+                        character,
+                        null,
+                        t.damage,
+                        t.speed,
+                        t.blowBackForce);
                 }
 
                 beamStartTime = Time.time;
@@ -241,6 +248,10 @@ public class TechManager : MonoBehaviour
                 break;
         }
     }
+
+    #endregion
+
+    #region Melee
 
     public void UseMartialArt()
     {
@@ -257,6 +268,11 @@ public class TechManager : MonoBehaviour
     {
         if (character.GetCurrentState is DashState)
         {
+            if (m.dashAttack.energyCost > stats.GetEnergy ||
+                m.dashAttack.healthCost > stats.GetHealth ||
+                 m.dashAttack.staminaCost > stats.GetStamina)
+                return;
+
             currentMove = m.dashAttack;
             character.SetState<ChargeAttackState>();
 
@@ -307,8 +323,6 @@ public class TechManager : MonoBehaviour
             }
         }
     }
-
-    #region Melee
 
     public void EnableClick()
     {
@@ -418,8 +432,8 @@ public class TechManager : MonoBehaviour
         else if (t is SpecialArt)
         {
             if ((t as SpecialArt).type == HitType.Beam && techChargeTimer > 0.1f)
-                if (camScript && camScript.view != ThirdPersonCam.camView.RightZoomBeam)
-                    camScript.TransitionView(ThirdPersonCam.camView.RightZoomBeam);
+                if (camScript && camScript.view != ThirdPersonCam.CamView.RightZoomBeam)
+                    camScript.TransitionView(ThirdPersonCam.CamView.RightZoomBeam);
 
             if (anim.GetBool("ChargingAttack") == false)
                 AnimateCharge(t as SpecialArt);
@@ -443,8 +457,8 @@ public class TechManager : MonoBehaviour
         anim.SetBool("ChargePunch", false);
         anim.SetBool("ChargeKick", false);
 
-        if (camScript && camScript.view != ThirdPersonCam.camView.InstantFront)
-            camScript.TransitionView(ThirdPersonCam.camView.TransitionFront);
+        if (camScript && camScript.view != ThirdPersonCam.CamView.InstantFront)
+            camScript.TransitionView(ThirdPersonCam.CamView.TransitionFront);
 
         #endregion
 
@@ -490,6 +504,8 @@ public class TechManager : MonoBehaviour
         {
             //if ((t as MartialArt).moveArray[(punchNum + 1) % (t as MartialArt).moveArray.Length].chargable)
             //    TechCharge();
+
+            //Avoids repetedly attacking when holding mouse button 
             if (clicked)
                 return;
 
@@ -506,9 +522,7 @@ public class TechManager : MonoBehaviour
             if (special.chargable)
                 TechCharge();
             else if (anim.GetCurrentAnimatorStateInfo(1).IsName("New State"))
-            {
                 AnimateAttack(special);
-            }
         }
 
         clicked = true;

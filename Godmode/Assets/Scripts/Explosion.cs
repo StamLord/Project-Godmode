@@ -55,8 +55,7 @@ public class Explosion : MonoBehaviour
                     int newDamage = Mathf.RoundToInt(_damage * ratioByRange);
                     if (cr.Hit(newDamage, _owner, 0, MoveAttribute.Juggle, _force, transform.position))
                     {
-                        _owner.hits++;
-                        _owner.tempDamage += newDamage;
+                        _owner.AddToCombo(1, newDamage);
                     }
 
                     //Debug.Log(cr + "is hit for: " + newDamage);

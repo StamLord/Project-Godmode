@@ -18,6 +18,11 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI hitCounter;
     public TextMeshProUGUI damageCounter;
 
+    private void Start()
+    {
+        machine.OnComboUpdate += UpdateCombo;
+    }
+
     void Update()
     {
         UpdateUI();
@@ -82,12 +87,12 @@ public class UIManager : MonoBehaviour
 
         #endregion
 
-        #region Combo
-        comboText.SetActive(machine.hits > 0);
-        hitCounter.text = machine.hits.ToString();
-        damageCounter.text = machine.tempDamage.ToString();
+    }
 
-        #endregion
-
+    void UpdateCombo(int hits, int totalDamage)
+    {
+        comboText.SetActive(hits > 0);
+        hitCounter.text = hits.ToString();
+        damageCounter.text = totalDamage.ToString();
     }
 }
