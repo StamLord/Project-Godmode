@@ -6,7 +6,9 @@ using TMPro;
 
 public class Debugger : MonoBehaviour
 {
+    public GameObject hud;
     public GameObject debugCanvas;
+    public GameObject info;
     public TMP_InputField timeScale;
 
     void Start()
@@ -23,6 +25,12 @@ public class Debugger : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
             else
                 Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        if(Input.GetKeyDown(KeyCode.F1))
+        {
+            info.SetActive(!info.activeSelf);
+            hud.SetActive(!info.activeSelf);
         }
     }
 

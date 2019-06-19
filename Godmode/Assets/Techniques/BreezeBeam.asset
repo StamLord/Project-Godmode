@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89699d0f120164e4bac64cf3668a4c1e, type: 3}
+  m_Name: BreezeBeam
+  m_EditorClassIdentifier: 
+  Name: BreezeBeam
+  Icon: {fileID: 0}
+  healthCost: 0
+  energyCost: 20
+  staminaCost: 0
+  type: 1
+  chargable: 1
+  minChargeTime: 3
+  fullChargeTime: 5
+  autoFire: 0
+  timeBetweenFire: 0
+  castRadius: 0
+  secondary: 0
+  damage: 30
+  fullChargeDamge: 60
+  speed: 30
+  blowBackForce: 1
+  fullChargeBlowBackForce: 0
+  fullChargeScale: 2
+  projectile: {fileID: 3723967962815535053, guid: f9421b28d59d0234c89154628cca47ef,
+    type: 3}
+  chargePrefab: {fileID: 2705235219596495829, guid: a2fb6f69efcb32647947e3d94d9f0781,
+    type: 3}
+  chargeAnimation: 3
+  attackAnimation: 3

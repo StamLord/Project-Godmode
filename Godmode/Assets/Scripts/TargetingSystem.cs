@@ -35,13 +35,14 @@ public class TargetingSystem : MonoBehaviour
     public List<Image> targetsOnScreen;
     public Image lockedTarget;
 
-    // Start is called before the first frame update
+    public delegate void OnChangeTargetDelegate(StateMachine newTarget);
+    public event OnChangeTargetDelegate OnChangeTargetEvent;
+
     void Start()
     {
         Init();
     }
 
-    // Update is called once per frame
     void Update()
     {
         Scan();
@@ -234,18 +235,18 @@ public class TargetingSystem : MonoBehaviour
             }
         }
 
-        lockOn = closestTarget;
-        if(lockOn)
-            //bodyCenter = closestTarget.GetComponentInChildren<TargetCenter>();
-
-        hardLock = lockOn != null;
+        LockOn(closestTarget, true);
     }
 
     public void LockOn(Transform target, bool hard)
     {
         lockOn = target;
-        //bodyCenter = lockOn.GetComponentInChildren<TargetCenter>();
-        hardLock = hard;
+        hardLock = (lockOn)? hard : false;
+
+        OnChangeTargetEvent(
+            (lockOn != null) ? lockOn.GetComponent<StateMachine>() :
+            null
+            );
     }
 
     void CheckTarget()
@@ -268,7 +269,7 @@ public class TargetingSystem : MonoBehaviour
 
         if(outOfSightTimer > outOfSightLoseTime)
         {
-            lockOn = null;
+            LockOn(null, false);
             outOfSightTimer = 0;
         }
     }

@@ -18,6 +18,7 @@ public class DashState : State
     public float moveSpeed = 35f;
     public float destructionRadius = 1f;
     public float destructionForce = 1f;
+    public int obstacleCost = 100;
 
     [Header("Animation")]
     public string animState = "DashBlend";
@@ -191,8 +192,12 @@ public class DashState : State
             Rigidbody r = (c.transform != transform) ? c.GetComponent<Rigidbody>() : null;
             if (d)
             {
-                d.Destruction(transform.forward, destructionForce);
-                camScript.StartShake(.75f, true);
+                if (stats.GetStamina >= obstacleCost)
+                {
+                    d.Destruction(transform.forward, destructionForce);
+                    camScript.StartShake(.75f, true);
+                    stats.UpdateStamina(-obstacleCost);
+                }
             }
 
             if (r)

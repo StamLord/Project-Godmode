@@ -24,6 +24,7 @@ public class StateMachine : MonoBehaviour
     public TechManager techManager;
     public GroundCheck groundCheck;
     public SimpleAI ai;
+    public Camera headCam;
 
     [Header("Combo")]
     private int hits;
@@ -206,17 +207,17 @@ public class StateMachine : MonoBehaviour
                     juggleState2.pushback = (transform.position - owner.transform.position).normalized * pushback;
                     break;
                 case MoveAttribute.TossUp:
-                    EnterToss(Vector3.up * pushback);
+                    EnterToss(Vector3.up * pushback, owner.transform.position);
                     ts.hardLock = true;
                     ShockwaveManager.instance.Create(transform.position);
                     break;
                 case MoveAttribute.TossDown:
-                    EnterToss(-Vector3.up * pushback);
+                    EnterToss(-Vector3.up * pushback, owner.transform.position);
                     ts.hardLock = true;
                     ShockwaveManager.instance.Create(transform.position);
                     break;
                 case MoveAttribute.TossForward:
-                    EnterToss(owner.transform.forward * pushback);
+                    EnterToss(owner.transform.forward * pushback, owner.transform.position);
                     ts.hardLock = true;
                     ShockwaveManager.instance.Create(transform.position);
                     break;
@@ -239,10 +240,11 @@ public class StateMachine : MonoBehaviour
         return true;
     }
 
-    public void EnterToss(Vector3 direction)
+    public void EnterToss(Vector3 direction, Vector3 origin)
     {
         tossDirection = direction;
         SetState<TossState>();
+        (GetCurrentState as TossState).attackPoint = origin;
     }
 
     public void AddToCombo(int hitChange, int damageChange)
@@ -253,4 +255,8 @@ public class StateMachine : MonoBehaviour
         OnComboUpdate(hits, tempDamage);
     }
 
+    public void SetHeadCamTexture(RenderTexture texture)
+    {
+        headCam.targetTexture = texture;
+    }
 }

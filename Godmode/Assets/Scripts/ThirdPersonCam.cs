@@ -10,6 +10,7 @@ public class ThirdPersonCam : MonoBehaviour
     public Camera cam;
     public Projector castProj;
     public TargetingSystem targetSys;
+    private Cinemachine.CinemachineVirtualCamera vCam;
 
     [Header("FOV")]
     public float restFov;
@@ -17,6 +18,9 @@ public class ThirdPersonCam : MonoBehaviour
     public bool transitionToMaxFov;
     public float fovTransitionTimer;
     public float fovTransitionDuration = 0.25f;
+
+    [Header("Additional Cameras")]
+    public List<Cinemachine.CinemachineVirtualCamera> externalCams;
 
     [Header("Distance")]
     public float restDistance = 5f;
@@ -86,6 +90,7 @@ public class ThirdPersonCam : MonoBehaviour
         currentDistance = restDistance;
         Cursor.lockState = CursorLockMode.Locked;
         targetSys = target.GetComponent<TargetingSystem>();
+        vCam = GetComponent<Cinemachine.CinemachineVirtualCamera>();
     }
 
     private void Update()
@@ -256,12 +261,16 @@ public class ThirdPersonCam : MonoBehaviour
         if (transitionToMaxFov)
         {
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, maxFov, t);
+            if (vCam)
+                vCam.m_Lens.FieldOfView = cam.fieldOfView;
             currentDistance = Mathf.Lerp(currentDistance, minDistance, d);
             offsetY = Mathf.Lerp(minOffsetY, maxOffsetY, t);
         }
         else
         {
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, restFov, t);
+            if (vCam)
+                vCam.m_Lens.FieldOfView = cam.fieldOfView;
             currentDistance = Mathf.Lerp(currentDistance, restDistance, d);
             offsetY = Mathf.Lerp(maxOffsetY, minOffsetY, t);
         }
@@ -330,5 +339,18 @@ public class ThirdPersonCam : MonoBehaviour
         transform.rotation *= targetRot;
 
         rollAngle = angle;
+    }
+
+    public void SetExternalCamera(int camera, bool active)
+    {
+        externalCams[camera].gameObject.SetActive(active);
+    }
+
+    public void ResetAllExternalCams()
+    {
+        foreach(var ec in externalCams)
+        {
+            ec.gameObject.SetActive(false);
+        }
     }
 }

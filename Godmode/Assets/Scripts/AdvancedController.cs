@@ -5,8 +5,8 @@ using UnityEngine;
 
 public enum OrientationMethod
 {
-    TowardsCamera,
     TowardsMovement,
+    TowardsCamera,
 }
 
 /// <summary>
@@ -14,13 +14,15 @@ public enum OrientationMethod
 /// </summary>
 public struct PlayerCharacterInputs
 {
-    public Vector3 motion;                // The vector by which the controller will move each second. Should come multiplied by speed from the any State.
-    public bool overrideY;                // When true will use the (motion.y) as an absolute and will not add inertia to it.
-    public Vector3 cameraPlanarDirection; // The Camera's forward, which the controller will move in relation to.
-    public float maxSpeed;                // This will be used to clamp the speed after adding inertia from last frame's movement (lastVector).
-    public float decelRate;               // Rate by which the (lastVector) will be slowed down each frame.
-    public bool ignoreOrientation;        // Will decide controller will be rotated to match (cameraPlanarDirection) / (motion) direction; 
-    public Vector3 lookAt;                // While (ignoreOrientation) is True, controller will look at this position. Note: This is a point in World Space and NOT a direction**
+    public Vector3 motion;                      // The vector by which the controller will move each second. Should come multiplied by speed from the any State.
+    public bool faceY;                          // When True, (OrientationMethod.TowardsMovement) will also face the Y value of (motion)
+    public bool overrideY;                      // When True will use the (motion.y) as an absolute and will not add inertia to it.
+    public Vector3 cameraPlanarDirection;       // The Camera's forward, which the controller will move in relation to.
+    public OrientationMethod orientationMethod; //
+    public float maxSpeed;                      // This will be used to clamp the speed after adding inertia from last frame's movement (lastVector).
+    public float decelRate;                     // Rate by which the (lastVector) will be slowed down each frame.
+    public bool ignoreOrientation;              // Will decide controller will be rotated to match (cameraPlanarDirection) / (motion) direction; 
+    public Vector3 lookAt;                      // While (ignoreOrientation) is True, controller will look at this position. Note: This is a point in World Space and NOT a direction**
 }
 
 /// <summary>
@@ -43,9 +45,9 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     [SerializeField] private bool _overrideY = true;  
     [SerializeField] private float _maxSpeed;         
     [SerializeField] private float _decelRate;
-    public Vector3 lastVector;
     [SerializeField] private float speed;
     [SerializeField] private float directionDelta;
+    public Vector3 lastVector;
 
     [Header("Fixed Settings")]
 
@@ -93,6 +95,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         _overrideY = inputs.overrideY;
         _maxSpeed = inputs.maxSpeed;
         _decelRate = inputs.decelRate;
+        OrientationMethod = inputs.orientationMethod;
 
         if (inputs.ignoreOrientation)
         {
@@ -106,7 +109,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
                     _lookInputVector = inputs.cameraPlanarDirection;
                     break;
                 case OrientationMethod.TowardsMovement:
-                    _lookInputVector = new Vector3(_moveInputVector.x, 0, _moveInputVector.z).normalized;
+                    _lookInputVector = new Vector3(_moveInputVector.x, (inputs.faceY) ? _moveInputVector.y : 0, _moveInputVector.z).normalized;
                     break;
             }
         }
@@ -141,7 +144,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
         {
             // Smoothly interpolate from current to target look direction
             Vector3 smoothedLookInputDirection = Vector3.Slerp(Motor.CharacterForward, _lookInputVector, 1 - Mathf.Exp(-OrientationSharpness * deltaTime)).normalized;
-
+            
             // Set the current rotation (which will be used by the KinematicCharacterMotor)
             currentRotation = Quaternion.LookRotation(smoothedLookInputDirection, Motor.CharacterUp);
         }
@@ -287,6 +290,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     public void OnDiscreteCollisionDetected(Collider hitCollider){
     }
 
+    [System.Obsolete("No need to reset input from states the can't move. Simply not calling SetInput() is enough.")]
     public void ResetInput()
     {
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();

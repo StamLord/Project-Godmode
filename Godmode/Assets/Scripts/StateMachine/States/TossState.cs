@@ -10,6 +10,7 @@ public class TossState : State
     private Animator anim;
 
     [Header("Settings")]
+    public Vector3 attackPoint;
     public LayerMask tossColMask;
     public Vector3 direction;
     public float duration;
@@ -31,6 +32,7 @@ public class TossState : State
         speed = direction.magnitude;
 
         tossTimer = 0f;
+
     }
 
     void Update()
@@ -39,10 +41,9 @@ public class TossState : State
         inputs.motion = direction;
         inputs.maxSpeed = speed;
         inputs.ignoreOrientation = true;
+        inputs.lookAt = attackPoint;
 
         cr.SetInputs(inputs);
-
-        AnimationUpdate();
 
         if(vi.lmbDown)
         {
@@ -87,11 +88,6 @@ public class TossState : State
     private void OnDrawGizmos()
     {
         Gizmos.DrawSphere(transform.position + direction.normalized, .5f);
-    }
-
-    void AnimationUpdate()
-    {
-        anim.SetFloat("TossMag", speed);
     }
 
     private bool GroundCheck()

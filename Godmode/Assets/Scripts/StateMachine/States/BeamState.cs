@@ -4,22 +4,35 @@ using UnityEngine;
 
 public class BeamState : State
 {
-    protected AdvancedController cr;
-    protected ThirdPersonCam camScript;
-    protected Animator anim;
-    protected TechManager techManager;
-    protected VirtualInput vi;
+    private AdvancedController cr;
+    private CharacterStats stats;
+    private ThirdPersonCam camScript;
+    private Animator anim;
+    private TechManager techManager;
+    private VirtualInput vi;
+
+    [SerializeField] private SpecialArt beam;
+
+    private float tempHealthDeplete;
+    private float tempEnergyDeplete;
+    private float tempStaminaDeplete;
 
     public override void OnStateEnter()
     {
         base.OnStateEnter();
         cr = Machine.cr;
+        stats = Machine.stats;
         camScript = Machine.camScript;
         camScript.StartShake(false);
         anim = Machine.anim;
-        anim.SetFloat("Speed", 0f);
+        
         techManager = Machine.techManager;
         vi = Machine.vi;
+    }
+
+    public void InitializeBeam(SpecialArt special)
+    {
+        beam = special;
     }
 
     void Update()
@@ -36,7 +49,42 @@ public class BeamState : State
             }
         }
 
-        cr.ResetInput();
+        anim.SetFloat("Speed", 0f);
+
+        PlayerCharacterInputs inputs = new PlayerCharacterInputs()
+        {
+            cameraPlanarDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up),
+            orientationMethod = OrientationMethod.TowardsCamera
+        };
+
+        cr.SetInputs(inputs);
+
+        DepleteStats();
+    }
+
+    void DepleteStats()
+    {
+        tempHealthDeplete += beam.healthCost * 0.1f * Time.deltaTime;
+        if (tempHealthDeplete >= 1)
+        {
+            stats.UpdateHealth(-1);
+            tempHealthDeplete -= 1f;
+        }
+
+        tempEnergyDeplete += beam.energyCost * 0.1f * Time.deltaTime;
+        if (tempEnergyDeplete >= 1)
+        {
+            stats.UpdateEnergy(-1);
+            tempEnergyDeplete -= 1f;
+        }
+
+        tempStaminaDeplete += beam.staminaCost * 0.1f * Time.deltaTime;
+        if (tempStaminaDeplete >= 1)
+        {
+            stats.UpdateStamina(-1);
+            tempStaminaDeplete -= 1f;
+        }
+
     }
 
     bool GroundCheck()

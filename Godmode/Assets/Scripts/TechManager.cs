@@ -22,6 +22,7 @@ public class TechManager : MonoBehaviour
     public Image emptyBar;
     public Image chargeBar;
     public Image minCharge;
+    public Image overCharge;
 
     [Header("Instantiated")]
     [SerializeField] private GameObject chargeObject;
@@ -51,6 +52,7 @@ public class TechManager : MonoBehaviour
 
     [Header("Animation")]
     public Technique attackAnimating;
+    public bool animatedCam;
 
     #region Flags for outside references
 
@@ -177,12 +179,12 @@ public class TechManager : MonoBehaviour
         GameObject go;
         Projectile po;
 
+        if (chargeObject != null)
+            Destroy(chargeObject);
+
         switch (t.type)
         {
             case HitType.Projectile:
-
-                if (chargeObject != null)
-                    Destroy(chargeObject);
 
                 go = Instantiate(t.projectile, currentProjectileSpot.position, Quaternion.identity) as GameObject;
                 go.transform.forward = (character.cam) ? character.cam.transform.forward : transform.forward;
@@ -209,13 +211,12 @@ public class TechManager : MonoBehaviour
                 break;
             case HitType.Beam:
 
-                if (chargeObject != null)
-                    Destroy(chargeObject);
-
                 go = Instantiate(t.projectile, currentProjectileSpot.position + transform.forward, Quaternion.identity) as GameObject;
                 beamHead = go;
 
                 beamHead.transform.forward = transform.forward;
+
+                go.GetComponent<Beam>().Initialize(character.cam, currentProjectileSpot, 20f);
 
                 po = beamHead.GetComponent<Projectile>();
 
@@ -224,9 +225,8 @@ public class TechManager : MonoBehaviour
                     float currentScale = beamHead.transform.localScale.x;
                     float chargedScale = Mathf.Lerp(currentScale, t.fullChargeScale, techChargeTimer / t.fullChargeTime);
                     beamHead.transform.localScale = new Vector3(chargedScale, chargedScale, chargedScale);
-                    TrailRenderer tr = beamHead.GetComponent<TrailRenderer>();
                 }
-
+                
                 if (po != null)
                 {
                     po.Initialize(
@@ -432,9 +432,23 @@ public class TechManager : MonoBehaviour
         else if (t is SpecialArt)
         {
             if ((t as SpecialArt).type == HitType.Beam && techChargeTimer > 0.1f)
+            {
                 if (camScript && camScript.view != ThirdPersonCam.CamView.RightZoomBeam)
                     camScript.TransitionView(ThirdPersonCam.CamView.RightZoomBeam);
 
+                //If not moving activates 360 rotating camera
+                if (vi.vertical == 0 && vi.horizontal == 0)
+                {
+                    if (animatedCam == false)
+                        camScript.SetExternalCamera(0, true);
+                }
+                else
+                {
+                    camScript.ResetAllExternalCams();
+                }
+
+                animatedCam = true; //Sets flag regardless if cam was activated or not so it will only rotate if standing still in the begining
+            }
             if (anim.GetBool("ChargingAttack") == false)
                 AnimateCharge(t as SpecialArt);
         }
@@ -448,6 +462,7 @@ public class TechManager : MonoBehaviour
     public void ExitTechCharge(bool executingAttack)
     {
         isChargingTech = false;
+        animatedCam = false;
 
         UpdateUI();
 
@@ -458,7 +473,10 @@ public class TechManager : MonoBehaviour
         anim.SetBool("ChargeKick", false);
 
         if (camScript && camScript.view != ThirdPersonCam.CamView.InstantFront)
+        {
             camScript.TransitionView(ThirdPersonCam.CamView.TransitionFront);
+            camScript.ResetAllExternalCams();
+        }
 
         #endregion
 
@@ -483,9 +501,7 @@ public class TechManager : MonoBehaviour
     {
         if(beamHead)
         {
-            TrailRenderer tr = beamHead.GetComponent<TrailRenderer>();
-            tr.time = Time.time - beamStartTime;
-            tr.endWidth = 0f;
+            Destroy(beamHead);
             beamHead = null;
         }
         ExitAnimationCheck();
@@ -536,24 +552,27 @@ public class TechManager : MonoBehaviour
         clicked = false;
 
         Technique t = GetSelected;
+        MartialArt martial = t as MartialArt;
+        SpecialArt special = t as SpecialArt;
 
-        if (t is MartialArt)
+        if (martial)
         {
             ExitTechCharge(false);
         }
-        else if (t is SpecialArt)
+        else if (special)
         {
-            if (techChargeTimer >= (t as SpecialArt).minChargeTime)
+            if (techChargeTimer >= special.minChargeTime)
             {
                 ExitTechCharge(true);
-                AnimateAttack(t as SpecialArt);
-                if ((t as SpecialArt).type == HitType.Beam)
+                AnimateAttack(special);
+                if (special.type == HitType.Beam)
+                {
                     character.SetState<BeamState>();
+                    character.GetCurrentState.BroadcastMessage("InitializeBeam", special);
+                }
             }
             else
             {
-                
-
                 ExitTechCharge(false);                
             }
         }
@@ -676,9 +695,14 @@ public class TechManager : MonoBehaviour
         {
             chargeParent.SetActive(isChargingTech && art.minChargeTime > 0);
 
-            chargeBar.fillAmount = techChargeTimer / art.fullChargeTime;
-            float x = art.minChargeTime / art.fullChargeTime * emptyBar.rectTransform.rect.width;
-            minCharge.rectTransform.anchoredPosition = new Vector2(x, 0);
+            chargeBar.fillAmount = techChargeTimer / art.minChargeTime;
+            overCharge.fillAmount = (techChargeTimer - art.minChargeTime) / (art.fullChargeTime - art.minChargeTime);
+
+            if (minCharge != null)
+            {
+                float x = art.minChargeTime / art.fullChargeTime * emptyBar.rectTransform.rect.width;
+                minCharge.rectTransform.anchoredPosition = new Vector2(x, 0);
+            }
         }
     }
 }

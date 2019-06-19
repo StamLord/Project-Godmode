@@ -16,9 +16,12 @@ public class Projectile : MonoBehaviour
     public float lifeTime;
     public float followDuration;
     public int maxBounces;
+
+    public bool dieOnExplosion = true;
     public bool explodeOnTerrain = true;
     public bool absorbProjectiles;
     public bool destroyOnDestructable;
+    public float timeBetweenExplosions = .5f;
 
     [Header("Slow Down")]
     public float minSlowdownTime;
@@ -33,9 +36,10 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float timer;
 
     private int damage;
-    private float speed;
+    [SerializeField]private float speed;
     private float blowBack;
 
+    private float lastExplosion;
     private Vector3 dir;
     private float originalYRot;
     private bool _stopped;
@@ -111,6 +115,7 @@ public class Projectile : MonoBehaviour
 
         if (c)
         {
+            //Ignore self for the first second and anybody that was already hit
             if (c == owner && timer < 1f || hits.Contains(c))
                 return;
 
@@ -185,13 +190,23 @@ public class Projectile : MonoBehaviour
 
     void Explode()
     {
+        if (Time.time - lastExplosion < timeBetweenExplosions)
+            return;
+
         if (explosion)
         {
             GameObject go = Instantiate(explosion, transform.position, Quaternion.identity) as GameObject;
             go.GetComponent<Explosion>().Init(damage, hits, owner);
 
-            Destroy(go, 5f);
-            Destroy(this.gameObject);
+            if (dieOnExplosion)
+            {
+                Destroy(go, 5f);
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                lastExplosion = Time.time;
+            }
         }
     }
 }
