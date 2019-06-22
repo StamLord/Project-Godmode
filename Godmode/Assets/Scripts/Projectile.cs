@@ -81,10 +81,13 @@ public class Projectile : MonoBehaviour
         }
 
         //Curve
-        float x = xCurve.Evaluate(timer);
-        Vector3 angles = transform.rotation.eulerAngles;
-        angles.y = originalYRot + x;
-        transform.rotation = Quaternion.Euler(angles);
+        if (xCurve.length > 0)
+        {
+            float x = xCurve.Evaluate(timer);
+            Vector3 angles = transform.rotation.eulerAngles;
+            angles.y = originalYRot + x;
+            transform.rotation = Quaternion.Euler(angles);
+        }
 
         //Move
         if(!_stopped)

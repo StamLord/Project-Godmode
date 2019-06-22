@@ -92,7 +92,7 @@ public class LayingState : State
         if (trailHead)
         {
             var ss = trailHead.main.startSpeed;
-            ss = Mathf.Lerp(0, trailHead.main.startSpeed.constantMax, (cr.GetSpeed / lastSpeed));
+            ss = Mathf.Lerp(0, trailHead.main.startSpeed.constantMax, (cr.GetSpeedValue / lastSpeed));
         }
     }
 

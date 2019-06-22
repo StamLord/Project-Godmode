@@ -55,11 +55,11 @@ public class ThirdPersonCam : MonoBehaviour
     public float zfOffsetX;
 
     [Header("Shake")]
-    public bool continousShake;
     public float strength1;
     public float strength2;
     public bool strong;
     public float freq = 1f;
+    public bool continousShake { get; private set; }
 
     private float shakeStartTime;
     private float completionPercent = 0;
@@ -221,7 +221,7 @@ public class ThirdPersonCam : MonoBehaviour
         
         Shake();
 
-        RotateRoll(character.cr.GetDirectionDelta * character.cr.GetSpeed * speedDependency);
+        RotateRoll(character.cr.GetDirectionDelta * character.cr.GetSpeedValue * speedDependency);
     }
 
     public void SetMaxFov(bool state)
@@ -284,6 +284,7 @@ public class ThirdPersonCam : MonoBehaviour
 
     public void StartShake(float time, bool hard)
     {
+        Debug.LogError("EE");
         completionPercent = 0;
         duration = time;
         strong = hard;

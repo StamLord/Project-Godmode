@@ -24,6 +24,11 @@ public class GroundedState : State
     [Header("Animation")]
     public string animState = "GroundBlend";
     public float transitionSpeed = 0.1f;
+    [Space(20)]
+    public string slideState = "SlideBack";
+    public float sTransitionSpeed = 0.1f;
+    public float sAnimationThreshold = 10;
+
 
     public Vector3 lastInputVector;
     public Vector3 currentVector;
@@ -67,7 +72,7 @@ public class GroundedState : State
 
     private void Update()
     {
-        if (GroundCheck() == false && groundedTimer >= 0.1f)
+        if (GroundCheck() == false)
         {
             Machine.SetState<FallingState>();
         }
@@ -82,7 +87,7 @@ public class GroundedState : State
 
     private bool GroundCheck()
     {
-        return cr.grounded;
+        return Machine.groundCheck.isGrounded();
     }
 
     private void InputCheck()
@@ -132,12 +137,18 @@ public class GroundedState : State
 
                 Vector3 dir = (enemyPos - playerPos).normalized;
 
-                if (Vector3.Distance(playerPos, enemyPos) > .8f || inputZ < 0f)
+                float distance = Vector3.Distance(playerPos, enemyPos);
+
+                //Prevent trying to move closer to Target than .8f
+                if (distance > .8f || inputZ < 0f)
                 {
                     moveVector += dir * inputZ;
                 }
 
-                moveVector += Vector3.Cross(transform.up, dir) * inputX;
+                //Lower horizontal movement when close to target
+                float mult = Mathf.Clamp(distance / 10, 0.1f, 1);
+                //Debug.Log(mult);
+                moveVector += Vector3.Cross(transform.up, dir) * inputX * mult;
                 moveVector *= moveSpeed;
             }
             else
@@ -330,6 +341,12 @@ public class GroundedState : State
         float smoothDelta = Mathf.Lerp(animDelta, cr.GetDirectionDelta / 90 * 2, .1f);
 
         anim.SetFloat("DirectionDelta", smoothDelta);
+
+        if(transform.InverseTransformVector(cr.GetSpeedVector).z < -sAnimationThreshold &&  cr.GetInputVector == Vector3.zero)
+        {
+            Debug.Log("Sliding back");
+            anim.CrossFade(slideState, sTransitionSpeed);
+        }
     }
 
     public override void OnStateExit()

@@ -57,7 +57,6 @@ public class TechManager : MonoBehaviour
     #region Flags for outside references
 
     public bool isChargingTech { get; private set; }
-    public bool isFiringBeam { get; private set; }
 
     #endregion
 
@@ -211,14 +210,12 @@ public class TechManager : MonoBehaviour
                 break;
             case HitType.Beam:
 
-                go = Instantiate(t.projectile, currentProjectileSpot.position + transform.forward, Quaternion.identity) as GameObject;
+                go = Instantiate(t.projectile, currentProjectileSpot.position + transform.forward, Quaternion.identity, character.transform) as GameObject;
                 beamHead = go;
 
                 beamHead.transform.forward = transform.forward;
 
-                go.GetComponent<Beam>().Initialize(character.cam, currentProjectileSpot, 20f);
-
-                po = beamHead.GetComponent<Projectile>();
+                Projectile[] pro = beamHead.GetComponentsInChildren<Projectile>();
 
                 if (t.chargable)
                 {
@@ -227,14 +224,17 @@ public class TechManager : MonoBehaviour
                     beamHead.transform.localScale = new Vector3(chargedScale, chargedScale, chargedScale);
                 }
                 
-                if (po != null)
+                foreach(Projectile p in pro)
                 {
-                    po.Initialize(
-                        character,
-                        null,
-                        t.damage,
-                        t.speed,
-                        t.blowBackForce);
+                    if (p != null)
+                    {
+                        p.Initialize(
+                            character,
+                            null,
+                            t.damage,
+                            0,
+                            t.blowBackForce);
+                    }
                 }
 
                 beamStartTime = Time.time;
@@ -651,7 +651,7 @@ public class TechManager : MonoBehaviour
     /// </summary>
     public void ExitAnimationCheck()
     {
-        if (isFiringBeam)
+        if (beamHead != null)
             return;
 
         if (anim.GetBool("FiringAttack"))

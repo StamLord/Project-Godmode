@@ -69,8 +69,10 @@ public class AdvancedController : MonoBehaviour, ICharacterController
 
     #region Get Functions
 
+    public Vector3 GetInputVector { get; private set; }
+    public Vector3 GetSpeedVector { get; private set; }
     public float GetLastMaxSpeed { get { return this._maxSpeed; } }
-    public float GetSpeed { get { return this.speed; } }
+    public float GetSpeedValue { get { return this.speed; } }
     public float GetDirectionDelta { get { return this.directionDelta; } }
 
     #endregion
@@ -214,7 +216,19 @@ public class AdvancedController : MonoBehaviour, ICharacterController
 
         //Decelerate
         if (lastVector.magnitude > 0.25f)
-            lastVector -= lastVector * _decelRate * Time.deltaTime;
+        {
+            //The closer player is to target the faster his inertia will decelerate
+            float mult = 1;
+            if (Targeting != null & Targeting.lockOn != null)
+            {
+                float dist = Vector3.Distance(Targeting.lockOn.position,transform.position);
+                mult = (20 / (dist + 1));
+               //Debug.Log(mult);
+            }
+
+            lastVector -= lastVector * (_decelRate + mult) * Time.deltaTime;
+
+        }
         else
             lastVector = Vector3.zero;
 
@@ -230,6 +244,8 @@ public class AdvancedController : MonoBehaviour, ICharacterController
 
         //Set speedometer for outside Editor
         speed = currentVelocity.magnitude;
+        GetInputVector = _moveInputVector;
+        GetSpeedVector = currentVelocity;
     }
 
     /// <summary>
@@ -238,7 +254,6 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     /// </summary>
     public void AfterCharacterUpdate(float deltaTime)
     {
-        ResetInput();
     }
 
     public void PostGroundingUpdate(float deltaTime)

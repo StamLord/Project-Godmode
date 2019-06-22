@@ -106,25 +106,6 @@ public class JumpState : State
         float inputX = vi.horizontal;
         float inputZ = vi.vertical;
 
-        /*
-        Vector3 inputVec;
-       
-        inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-        inputVec = inputVec.normalized;
-
-        if (inputVec == Vector3.zero)
-        {
-            currentVector = Vector3.Lerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-            Movement(currentVector);
-            decelTimer += Time.deltaTime;
-        }
-        else
-        {
-            decelTimer = 0;
-            Movement(inputVec);
-            lastInputVector = (inputVec * jumpControlSpeed) * Time.deltaTime;
-        }*/
-
         if (vi.localPlayer)
         {
             Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
@@ -287,13 +268,8 @@ public class JumpState : State
 
     private bool GroundCheck()
     {
-        return cr.grounded;
+        return Machine.groundCheck.isGrounded();
     }
-
-    /*private bool CeilingCheck()
-    {
-        return Physics.Raycast(Machine.topCheck.position, Vector3.up, 0.08f);
-    }*/
 
     private void MousePressMain()
     {

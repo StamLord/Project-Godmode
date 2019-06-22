@@ -252,6 +252,11 @@ public class DashState : State
     private void AnimationUpdate()
     {
         anim.SetFloat("Speed", vi.vertical);
+
+        float animDelta = anim.GetFloat("DirectionDelta");
+        float smoothDelta = Mathf.Lerp(animDelta, cr.GetDirectionDelta / 90 * 2, .1f);
+
+        anim.SetFloat("DirectionDelta", smoothDelta);
     }
 
 

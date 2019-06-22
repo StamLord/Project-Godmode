@@ -64,32 +64,43 @@ public class BeamState : State
 
     void DepleteStats()
     {
-        tempHealthDeplete += beam.healthCost * 0.1f * Time.deltaTime;
+        tempHealthDeplete += beam.healthCost * 0.2f * Time.deltaTime;
         if (tempHealthDeplete >= 1)
         {
             stats.UpdateHealth(-1);
             tempHealthDeplete -= 1f;
         }
 
-        tempEnergyDeplete += beam.energyCost * 0.1f * Time.deltaTime;
+        tempEnergyDeplete += beam.energyCost * 0.2f * Time.deltaTime;
         if (tempEnergyDeplete >= 1)
         {
             stats.UpdateEnergy(-1);
             tempEnergyDeplete -= 1f;
         }
 
-        tempStaminaDeplete += beam.staminaCost * 0.1f * Time.deltaTime;
+        tempStaminaDeplete += beam.staminaCost * 0.2f * Time.deltaTime;
         if (tempStaminaDeplete >= 1)
         {
             stats.UpdateStamina(-1);
             tempStaminaDeplete -= 1f;
         }
 
+        if(stats.GetEnergy <= 0)
+        {
+            if (GroundCheck())
+            {
+                Machine.SetState<GroundedState>();
+            }
+            else if (Machine.canFly)
+            {
+                Machine.SetState<FlyingState>();
+            }
+        }
     }
 
     bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
+        return Machine.groundCheck.isGrounded();
     }
 
     public override void OnStateExit()

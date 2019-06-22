@@ -88,25 +88,6 @@ public class FallingState : State
         float inputX = vi.horizontal;
         float inputZ = vi.vertical;
 
-
-        //Vector3 inputVec;
-
-        //inputVec = (transform.forward * inputZ) + (transform.right * inputX);
-        //inputVec = inputVec.normalized;
-
-        //if (inputVec == Vector3.zero)
-        //{
-        //    currentVector = Vector3.Slerp(lastInputVector, Vector3.zero, decelTimer / decelTime);
-        //    Movement(currentVector);
-        //    decelTimer += Time.deltaTime;
-        //}
-        //else
-        //{
-        //    decelTimer = 0;
-        //    Movement(inputVec);
-        //    lastInputVector = (inputVec * fallControlSpeed) * Time.deltaTime;
-        //}
-
         if (vi.localPlayer)
         {
             Vector3 cameraFlatDirection = Vector3.ProjectOnPlane(camScript.transform.forward, transform.up);
@@ -127,6 +108,20 @@ public class FallingState : State
             inputs.motion = moveVector;
             inputs.overrideY = true;
             inputs.cameraPlanarDirection = cameraFlatDirection;
+            inputs.maxSpeed = 30f;
+            inputs.decelRate = decelRate;
+
+            cr.SetInputs(inputs);
+        }
+        else
+        {
+            Vector3 moveVector = Vector3.zero;
+
+            moveVector.y = fallVelocity.Evaluate(fallTimer); //Downward velocity is seperate to all inputs
+
+            PlayerCharacterInputs inputs = new PlayerCharacterInputs();
+            inputs.motion = moveVector;
+            inputs.overrideY = true;
             inputs.maxSpeed = 30f;
             inputs.decelRate = decelRate;
 
@@ -246,7 +241,7 @@ public class FallingState : State
 
     private bool GroundCheck()
     {
-        return cr.grounded;
+        return Machine.groundCheck.isGrounded();
     }
 
     private void MousePressMain()

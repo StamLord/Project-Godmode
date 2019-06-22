@@ -15,23 +15,23 @@ MonoBehaviour:
   Name: BreezeBeam
   Icon: {fileID: 0}
   healthCost: 0
-  energyCost: 20
+  energyCost: 250
   staminaCost: 0
   type: 1
   chargable: 1
-  minChargeTime: 3
-  fullChargeTime: 5
+  minChargeTime: 1.99
+  fullChargeTime: 4
   autoFire: 0
   timeBetweenFire: 0
   castRadius: 0
   secondary: 0
   damage: 30
   fullChargeDamge: 60
-  speed: 30
+  speed: 45
   blowBackForce: 1
   fullChargeBlowBackForce: 0
   fullChargeScale: 2
-  projectile: {fileID: 3723967962815535053, guid: f9421b28d59d0234c89154628cca47ef,
+  projectile: {fileID: 7218610403019405298, guid: 2e6b213fca0af0140bd5f303a9218212,
     type: 3}
   chargePrefab: {fileID: 2705235219596495829, guid: a2fb6f69efcb32647947e3d94d9f0781,
     type: 3}
