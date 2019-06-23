@@ -284,7 +284,6 @@ public class ThirdPersonCam : MonoBehaviour
 
     public void StartShake(float time, bool hard)
     {
-        Debug.LogError("EE");
         completionPercent = 0;
         duration = time;
         strong = hard;

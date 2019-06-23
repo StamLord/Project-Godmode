@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class HitState : State
 {
-    protected AdvancedController cr;
-    protected Animator anim;
-    protected TechManager techManager;
+    private AdvancedController cr;
+    private Animator anim;
+    private TechManager techManager;
 
-    public Vector3 attackPoint;
-    public float stunTime;
-    public Vector3 pushback;
-    public float timer;
+    [SerializeField] private Vector3 attackPoint;
+    [SerializeField] private float _stunTime;
+    [SerializeField] private float _pushback;
+    [SerializeField] private float timer;
+    private Vector3 _direction;
 
     public float decelRate = 4f;
 
@@ -24,13 +25,22 @@ public class HitState : State
         techManager = Machine.techManager;
         techManager.ResetCombo();
         timer = 0f;
+    }
 
-        
+    public override void PassParameter(Vector3 origin)
+    {
+        _direction = (transform.position - attackPoint).normalized;
+    }
+
+    public override void PassParameter(float stunTime, float pushBack)
+    {
+        _stunTime = stunTime;
+        _pushback = pushBack;
     }
 
     void Update()
     {
-        if(timer > stunTime)
+        if(timer > _stunTime)
         {
             if(GroundCheck())
                 Machine.SetState<GroundedState>();
@@ -40,12 +50,12 @@ public class HitState : State
 
         timer += Time.deltaTime;
 
-        Movement(pushback);
+        Movement(_direction * _pushback);
     }
 
     bool GroundCheck()
     {
-        return Machine.groundCheck.grounded;
+        return Machine.groundCheck.isGrounded();
     }
 
     void Movement(Vector3 direction)
@@ -65,6 +75,6 @@ public class HitState : State
         base.OnStateExit();
         anim.SetBool("Hit", false);
         timer = 0f;
-        stunTime = 0f;
+        _stunTime = 0f;
     }
 }

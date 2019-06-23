@@ -19,6 +19,7 @@ public struct PlayerCharacterInputs
     public bool overrideY;                      // When True will use the (motion.y) as an absolute and will not add inertia to it.
     public Vector3 cameraPlanarDirection;       // The Camera's forward, which the controller will move in relation to.
     public OrientationMethod orientationMethod; //
+    public bool keepMaxSpeed;                   // When true will not override maxSpeed. Use when you want to keep last state's values;                  
     public float maxSpeed;                      // This will be used to clamp the speed after adding inertia from last frame's movement (lastVector).
     public float decelRate;                     // Rate by which the (lastVector) will be slowed down each frame.
     public bool ignoreOrientation;              // Will decide controller will be rotated to match (cameraPlanarDirection) / (motion) direction; 
@@ -95,7 +96,7 @@ public class AdvancedController : MonoBehaviour, ICharacterController
     {
         _moveInputVector = inputs.motion;
         _overrideY = inputs.overrideY;
-        _maxSpeed = inputs.maxSpeed;
+        _maxSpeed = (inputs.keepMaxSpeed) ? _maxSpeed : inputs.maxSpeed;
         _decelRate = inputs.decelRate;
         OrientationMethod = inputs.orientationMethod;
 

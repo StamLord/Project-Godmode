@@ -43,7 +43,6 @@ public class StateMachine : MonoBehaviour
     public Transform botCheck;
 
     [Header("Holders")]
-    public Vector3 tossDirection;
     public Vector3 crashDirection;
     public RaycastHit wallToRun;
     public bool layingFaceDown;
@@ -182,17 +181,17 @@ public class StateMachine : MonoBehaviour
                     else if (currentState.GetType() == typeof(JuggleState))
                     {
                         (currentState as JuggleState).ResetJuggle();
-                        JuggleState juggleState = GetCurrentState as JuggleState;
-                        juggleState.attackPoint = owner.transform.position;
-                        juggleState.pushback = (transform.position - owner.transform.position).normalized * pushback;
+
+                        GetCurrentState.PassParameter(owner.transform.position);
+                        GetCurrentState.PassParameter(pushback);
                     }
                     else if (currentState.GetType() != typeof(LayingState) && currentState.GetType() != typeof(CrashState))
                     {
-                        SetState<HitState>();
-                        HitState hitState = GetCurrentState as HitState;
-                        hitState.attackPoint = owner.transform.position;
-                        hitState.stunTime = stunTime;
-                        hitState.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                        if (SetState<HitState>())
+                        {
+                            GetCurrentState.PassParameter(stunTime, pushback);
+                            GetCurrentState.PassParameter(owner.transform.position);
+                        }
                     }
 
                     break;
@@ -202,9 +201,8 @@ public class StateMachine : MonoBehaviour
                     else
                         SetState<JuggleState>();
 
-                    JuggleState juggleState2 = GetCurrentState as JuggleState;
-                    juggleState2.attackPoint = owner.transform.position;
-                    juggleState2.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                    GetCurrentState.PassParameter(owner.transform.position);
+                    GetCurrentState.PassParameter(pushback);
                     break;
                 case MoveAttribute.TossUp:
                     EnterToss(Vector3.up * pushback, owner.transform.position);
@@ -224,11 +222,11 @@ public class StateMachine : MonoBehaviour
                 case MoveAttribute.CancleJuggle:
                     if (currentState.GetType() != typeof(LayingState) && currentState.GetType() != typeof(CrashState))
                     {
-                        SetState<HitState>();
-                        HitState hitState = GetCurrentState as HitState;
-                        hitState.attackPoint = owner.transform.position;
-                        hitState.stunTime = stunTime;
-                        hitState.pushback = (transform.position - owner.transform.position).normalized * pushback;
+                        if (SetState<HitState>())
+                        {
+                            GetCurrentState.PassParameter(owner.transform.position);
+                            GetCurrentState.PassParameter(stunTime, pushback);
+                        }
                     }
                     break;
             }
@@ -242,9 +240,11 @@ public class StateMachine : MonoBehaviour
 
     public void EnterToss(Vector3 direction, Vector3 origin)
     {
-        tossDirection = direction;
-        SetState<TossState>();
-        (GetCurrentState as TossState).attackPoint = origin;
+        if (SetState<TossState>())
+        {
+            //Direction comes multiplied by pushBack
+            GetCurrentState.PassParameter(origin, direction);
+        }
     }
 
     public void AddToCombo(int hitChange, int damageChange)

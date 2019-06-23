@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class JuggleState : State
 {
-    protected AdvancedController cr;
-    protected Animator anim;
-    protected TechManager techManager;
+    private AdvancedController cr;
+    private Animator anim;
+    private TechManager techManager;
 
     public AnimationCurve yCurve;
-    public float timer;
-    public float decelRate = 2;
+    [SerializeField] private float decelRate = 2;
+    [SerializeField] private float timer;
 
-    public Vector3 attackPoint;
-    public Vector3 pushback;
+    private Vector3 _attackPoint;
+    private float _pushBack;
+
+    private Vector3 _direction;
 
     public override void OnStateEnter()
     {
@@ -23,6 +25,17 @@ public class JuggleState : State
         anim.SetBool("Juggle", true);
         techManager = Machine.techManager;
         techManager.ResetCombo();
+    }
+
+    public override void PassParameter(float pushBack)
+    {
+        _pushBack = pushBack;
+    }
+
+    public override void PassParameter(Vector3 attackPoint)
+    {
+        _attackPoint = attackPoint;
+        _direction = (transform.position - _attackPoint).normalized;
     }
 
     void Update()
@@ -38,15 +51,15 @@ public class JuggleState : State
     void Movement()
     {
         float y = yCurve.Evaluate(timer);
-        Vector3 direction = new Vector3(0, y, 0);
+        Vector3 upVector = new Vector3(0, y, 0);
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-        inputs.motion = direction;
-        inputs.motion += pushback;
+        inputs.motion = upVector;
+        inputs.motion += _direction * _pushBack;
         inputs.overrideY = true;
         inputs.decelRate = decelRate;
         inputs.maxSpeed = yCurve.keys[0].value;
         inputs.ignoreOrientation = true;
-        inputs.lookAt = attackPoint;
+        inputs.lookAt = _attackPoint;
 
         cr.Motor.ForceUnground(0.1f);
         cr.SetInputs(inputs);

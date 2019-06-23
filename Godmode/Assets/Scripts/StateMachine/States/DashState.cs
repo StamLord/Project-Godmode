@@ -218,11 +218,13 @@ public class DashState : State
             staminaTimer = 0f;
 
             if (stats.GetStamina <= 0)
-            {
+            {/*
                 if(Machine.groundCheck.grounded)
                     Machine.SetState<GroundedState>();
                 else
-                    Machine.SetState<FlyingState>();
+                    Machine.SetState<FlyingState>();*/
+               // Machine.SetState<ExhaustedState>();
+
             }
         }
         staminaTimer += Time.deltaTime;
@@ -263,7 +265,6 @@ public class DashState : State
     public override void OnStateExit()
     {
         base.OnStateExit();
-        anim.SetBool("Dashing", false);
         camScript.SetMaxFov(false);
     }
 }

@@ -183,7 +183,7 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-
+        OnTriggerEnter(other);
     }
 
     private void OnTriggerExit(Collider other)

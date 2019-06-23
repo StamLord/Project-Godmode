@@ -19,6 +19,26 @@ public class State : MonoBehaviour
         OnStateInitialize(machine);
     }
 
+    public virtual void PassParameter (Vector3 v)
+    {
+
+    }
+
+    public virtual void PassParameter(Vector3 v1, Vector3 v2)
+    {
+
+    }
+
+    public virtual void PassParameter(float f)
+    {
+
+    }
+
+    public virtual void PassParameter(float f1, float f2)
+    {
+
+    }
+
     public virtual void OnStateInitialize(StateMachine machine = null)
     {
 

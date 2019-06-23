@@ -35970,6 +35970,7 @@ GameObject:
   - component: {fileID: 6053126127354055161}
   - component: {fileID: 1083734393420794322}
   - component: {fileID: 167851476289935733}
+  - component: {fileID: 9155242338060606084}
   - component: {fileID: 2092058495227674804}
   - component: {fileID: 2429367587876745025}
   - component: {fileID: 8506119734998030145}
@@ -36234,7 +36235,6 @@ MonoBehaviour:
   chargeAura: {fileID: 3419735886479244230}
   topCheck: {fileID: 0}
   botCheck: {fileID: 0}
-  tossDirection: {x: 0, y: 0, z: 0}
   crashDirection: {x: 0, y: 0, z: 0}
   layingFaceDown: 0
   statesList: []
@@ -36286,7 +36286,7 @@ MonoBehaviour:
   animationState: FlyKick
   exitState: New State
   moveDuration: 0.5
-  moveAmount: 35
+  moveAmount: 50
   decelRate: 0.4
 --- !u!114 &6053126127354055161
 MonoBehaviour:
@@ -36326,7 +36326,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   direction: {x: 0, y: 0, z: 0}
-  crashSpeed: 35
+  crashSpeed: 50
   gravity: -1000
   destructionRadius: 1
   destructionForce: 1
@@ -36353,6 +36353,26 @@ MonoBehaviour:
   obstacleCost: 100
   animState: DashBlend
   transitionSpeed: 0.1
+--- !u!114 &9155242338060606084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4631910735326438160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52b5fcdeac2a8b74db9531658c0c3d6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Machine: {fileID: 2525282719018889815}
+  groundDecelRate: 10
+  airDecelRate: 4
+  duration: 3
+  timer: 0
+  animationState: Exhausted
+  transitionSpeed: 0.1
+  particles: {fileID: 0}
 --- !u!114 &2092058495227674804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36437,7 +36457,7 @@ MonoBehaviour:
   transitionSpeed: 0.1
   slideState: SlideBack
   sTransitionSpeed: 0.1
-  sAnimationThreshold: 10
+  sAnimationThreshold: 20
   lastInputVector: {x: 0, y: 0, z: 0}
   currentVector: {x: 0, y: 0, z: 0}
   doubleTapWindow: 0.5
@@ -36472,8 +36492,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Machine: {fileID: 2525282719018889815}
   attackPoint: {x: 0, y: 0, z: 0}
-  stunTime: 0
-  pushback: {x: 0, y: 0, z: 0}
+  _stunTime: 0
+  _pushback: 0
   timer: 0
   decelRate: 4
 --- !u!114 &4172252571981950619
@@ -36522,10 +36542,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  timer: 0
   decelRate: 10
-  attackPoint: {x: 0, y: 0, z: 0}
-  pushback: {x: 0, y: 0, z: 0}
+  timer: 0
 --- !u!114 &4114581921293342648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36621,14 +36639,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Machine: {fileID: 2525282719018889815}
-  attackPoint: {x: 0, y: 0, z: 0}
   tossColMask:
     serializedVersion: 2
     m_Bits: 1
-  direction: {x: 0, y: 0, z: 0}
   duration: 1
   destructionRadius: 1
   destructionForce: 1
+  _speed: 0
   tossTimer: 0
 --- !u!114 &1965988068114742119
 MonoBehaviour:

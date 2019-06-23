@@ -16,10 +16,11 @@ MonoBehaviour:
   animation: {fileID: 7400000, guid: 88cfb31224c59ed4f99a6f6a205d44b1, type: 2}
   healthCost: 0
   energyCost: 0
-  staminaCost: 50
+  staminaCost: 20
+  dashAttack: 0
+  attribute: 0
   damage: 30
   stunTime: 0.2
-  juggle: 0
   pushBack: 0.1
   chargable: 0
   fullChargeDamge: 0

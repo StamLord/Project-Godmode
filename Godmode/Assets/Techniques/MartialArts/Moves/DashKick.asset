@@ -16,7 +16,7 @@ MonoBehaviour:
   animation: {fileID: 7400000, guid: d11bb9ef8531cd741ae5838da8ab07ed, type: 2}
   healthCost: 0
   energyCost: 0
-  staminaCost: 50
+  staminaCost: 20
   dashAttack: 1
   attribute: 2
   damage: 70

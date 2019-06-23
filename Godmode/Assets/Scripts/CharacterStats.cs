@@ -138,6 +138,13 @@ public class CharacterStats : MonoBehaviour
     {
         stamina += amount;
         stamina = Mathf.Clamp(stamina, 0, maxStamina);
+        if(stamina == 0)
+        {
+            if((machine.GetCurrentState is ExhaustedState) == false)
+            {
+                machine.SetState<ExhaustedState>();
+            }
+        }
     }
 
     public void UpdateEnergy(int amount)

@@ -10,14 +10,15 @@ public class TossState : State
     private Animator anim;
 
     [Header("Settings")]
-    public Vector3 attackPoint;
     public LayerMask tossColMask;
-    public Vector3 direction;
-    public float duration;
-    public float destructionRadius = 1f;
-    public float destructionForce = 1f;
-    private float speed;
+    [SerializeField] private float duration;
+    [SerializeField] private float destructionRadius = 1f;
+    [SerializeField] private float destructionForce = 1f;
+    [SerializeField] private float _speed;
     [SerializeField] private float tossTimer;
+
+    private Vector3 _attackPoint;
+    private Vector3 _direction;
 
     public override void OnStateEnter()
     {
@@ -28,20 +29,26 @@ public class TossState : State
         anim = Machine.anim;
         anim.SetBool("Tossed", true);
 
-        direction = Machine.tossDirection;
-        speed = direction.magnitude;
-
         tossTimer = 0f;
 
+    }
+
+    //Gets the point from which character was tossed to later look at
+    //Gets the vector in which will be tossed
+    public override void PassParameter(Vector3 origin, Vector3 direction)
+    {
+        _attackPoint = origin;
+        _direction = direction;
+        _speed = _direction.magnitude;
     }
 
     void Update()
     {
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();
-        inputs.motion = direction;
-        inputs.maxSpeed = speed;
+        inputs.motion = _direction;
+        inputs.maxSpeed = _speed;
         inputs.ignoreOrientation = true;
-        inputs.lookAt = attackPoint;
+        inputs.lookAt = _attackPoint;
 
         cr.SetInputs(inputs);
 
@@ -68,13 +75,13 @@ public class TossState : State
     void CollideCheck()
     {
         RaycastHit h;
-        if (Physics.SphereCast(transform.position, .5f, direction.normalized, out h, 1f, tossColMask))
+        if (Physics.SphereCast(transform.position, .5f, _direction.normalized, out h, 1f, tossColMask))
         {
             Destructable d = h.collider.GetComponent<Destructable>();
             if (d)
             {
                 tossTimer += 0.2f * duration;
-                d.Destruction(direction, destructionForce);
+                d.Destruction(_direction, destructionForce);
             }
             else
             {
@@ -87,7 +94,7 @@ public class TossState : State
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(transform.position + direction.normalized, .5f);
+        Gizmos.DrawSphere(transform.position + _direction.normalized, .5f);
     }
 
     private bool GroundCheck()
@@ -128,7 +135,6 @@ public class TossState : State
         base.OnStateExit();
         
         anim.SetBool("Tossed", false);
-        Machine.tossDirection = Vector3.zero;
     }
 
 }
