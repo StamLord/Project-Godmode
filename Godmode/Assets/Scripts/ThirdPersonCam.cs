@@ -12,6 +12,9 @@ public class ThirdPersonCam : MonoBehaviour
     public TargetingSystem targetSys;
     private Cinemachine.CinemachineVirtualCamera vCam;
 
+    [Header("Default")]
+    CamView defaultView = CamView.InstantBack;
+
     [Header("FOV")]
     public float restFov;
     public float maxFov = 90f;
@@ -42,7 +45,7 @@ public class ThirdPersonCam : MonoBehaviour
     public bool useCamera = true;
     public CamView view;
     public float startTime;
-    public enum CamView {InstantFront, InstantBack, LeftZoomFlight, RightZoomFlight, LeftZoomBeam, RightZoomBeam, TransitionFront, TransitionBack, LockedOn};
+    public enum CamView { InstantFront, InstantBack, LeftZoomFlight, RightZoomFlight, LeftZoomBeam, RightZoomBeam, TransitionFront, TransitionBack, LockedOn, FiringBeam };
 
     [Header("Zoom Beam Corners")]
     public float zbDistance;
@@ -53,6 +56,12 @@ public class ThirdPersonCam : MonoBehaviour
     public float zfDistance;
     public float zfOffsetY;
     public float zfOffsetX;
+
+    [Header("Firing Beam")]
+    public float zfbDistance;
+    public float zfbOffsetY;
+    public float zfbOffsetX;
+    public Vector3 zfbLookAtOffset = new Vector3(0, 2, 0);
 
     [Header("Shake")]
     public float strength1;
@@ -149,7 +158,7 @@ public class ThirdPersonCam : MonoBehaviour
 
         Vector3 dir = new Vector3(0, 0, -currentDistance);
         Quaternion rot = Quaternion.Euler(currentY, currentX, 0);
-        
+
 
         Vector3 nextPos;
         if (useCamera)
@@ -216,9 +225,15 @@ public class ThirdPersonCam : MonoBehaviour
                     transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / 1);
                     transform.LookAt(target.transform.position);
                     break;
+                case CamView.FiringBeam:
+                    dir = new Vector3(zfbOffsetX, zfbOffsetY, -zfbDistance);
+                    nextPos = target.transform.position + rot * dir;
+                    transform.position = Vector3.Slerp(transform.position, nextPos, (Time.time - startTime) / 1);
+                    transform.LookAt(target.transform.position + zfbLookAtOffset);
+                    break;
             }
         }
-        
+
         Shake();
 
         RotateRoll(character.cr.GetDirectionDelta * character.cr.GetSpeedValue * speedDependency);
@@ -276,11 +291,18 @@ public class ThirdPersonCam : MonoBehaviour
         }
     }
 
+    public void SetDefault()
+    {
+        TransitionView(defaultView);
+    }
+
     public void TransitionView(CamView v)
     {
         startTime = Time.time;
         view = v;
     }
+
+    #region Shake
 
     public void StartShake(float time, bool hard)
     {
@@ -329,6 +351,8 @@ public class ThirdPersonCam : MonoBehaviour
         transform.position += shakeOffset;
     }
 
+    #endregion
+
     void RotateRoll(float amount)
     {
         float targetAngle = amount / 180 * maxRollAngle;
@@ -340,6 +364,8 @@ public class ThirdPersonCam : MonoBehaviour
 
         rollAngle = angle;
     }
+
+    #region External
 
     public void SetExternalCamera(int camera, bool active)
     {
@@ -353,4 +379,6 @@ public class ThirdPersonCam : MonoBehaviour
             ec.gameObject.SetActive(false);
         }
     }
+
+    #endregion
 }

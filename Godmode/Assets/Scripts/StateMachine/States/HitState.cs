@@ -45,7 +45,7 @@ public class HitState : State
             if(GroundCheck())
                 Machine.SetState<GroundedState>();
             else
-                Machine.SetState<FallingState>();
+                Machine.SetState<FlyingState>();
         }
 
         timer += Time.deltaTime;

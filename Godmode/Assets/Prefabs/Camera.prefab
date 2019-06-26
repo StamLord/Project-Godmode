@@ -100,32 +100,36 @@ MonoBehaviour:
   transitionToMaxFov: 0
   fovTransitionTimer: 0.5
   fovTransitionDuration: 0.5
-  externalCams: []
+  externalCams:
+  - {fileID: 0}
   restDistance: 5
   currentDistance: 5
   minDistance: 0.5
   disTransitionTimer: 0.5
   disTransitionDuration: 0.5
   minOffsetY: 0.7
-  offsetY: 0.35
+  offsetY: 0.7
   maxOffsetY: 0.55
-  currentX: 0
-  currentY: 0
+  currentX: -188.2001
+  currentY: 21.59998
   sensX: 4
   sensY: 1
   useCamera: 1
   view: 0
-  startTime: 0
+  startTime: 21.30682
   zbDistance: 2
   zbOffsetY: 0.3
   zbOffsetX: 0.5
   zfDistance: 0
   zfOffsetY: 0.3
   zfOffsetX: 0.25
-  continousShake: 0
+  zfbDistance: 10
+  zfbOffsetY: 3
+  zfbOffsetX: 0
+  zfbLookAtOffset: {x: 0, y: 2, z: 0}
   strength1: 0.2
   strength2: 1
-  strong: 1
+  strong: 0
   freq: 0.025
   maxRollAngle: 10
   rollSpeed: 0.1

@@ -176,7 +176,7 @@ public class TechManager : MonoBehaviour
         }
 
         GameObject go;
-        Projectile po;
+        NewProjectile po;
 
         if (chargeObject != null)
             Destroy(chargeObject);
@@ -190,12 +190,12 @@ public class TechManager : MonoBehaviour
 
                 if (t.chargable)
                 {
-                    float currentScale = go.transform.localScale.x;
-                    float chargedScale = Mathf.Lerp(currentScale, t.fullChargeScale, techChargeTimer / t.fullChargeTime);
-                    go.transform.localScale = new Vector3(chargedScale, chargedScale, chargedScale);
+                    Vector3 currentScale = go.transform.localScale;
+                    Vector3 chargedScale = Vector3.Lerp(currentScale, t.fullChargeScale, techChargeTimer / t.fullChargeTime);
+                    go.transform.localScale = chargedScale;
                 }
 
-                po = go.GetComponent<Projectile>();
+                po = go.GetComponent<NewProjectile>();
 
                 if (po != null)
                 {
@@ -219,9 +219,9 @@ public class TechManager : MonoBehaviour
 
                 if (t.chargable)
                 {
-                    float currentScale = beamHead.transform.localScale.x;
-                    float chargedScale = Mathf.Lerp(currentScale, t.fullChargeScale, techChargeTimer / t.fullChargeTime);
-                    beamHead.transform.localScale = new Vector3(chargedScale, chargedScale, chargedScale);
+                    Vector3 currentScale = beamHead.transform.localScale;
+                    Vector3 chargedScale = Vector3.Lerp(currentScale, t.fullChargeScale, techChargeTimer / t.fullChargeTime);
+                    beamHead.transform.localScale = chargedScale;
                 }
                 
                 foreach(Projectile p in pro)

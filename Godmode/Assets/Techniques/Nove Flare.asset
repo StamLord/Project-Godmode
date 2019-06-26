@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89699d0f120164e4bac64cf3668a4c1e, type: 3}
+  m_Name: Nove Flare
+  m_EditorClassIdentifier: 
+  Name: Nove Flare
+  Icon: {fileID: 0}
+  healthCost: 0
+  energyCost: 250
+  staminaCost: 0
+  type: 0
+  chargable: 1
+  minChargeTime: 1
+  fullChargeTime: 1
+  autoFire: 0
+  timeBetweenFire: 0
+  castRadius: 0
+  secondary: 0
+  damage: 300
+  fullChargeDamge: 100
+  speed: 20
+  blowBackForce: 20
+  fullChargeBlowBackForce: 0
+  fullChargeScale: 1
+  projectile: {fileID: 5584160836921722001, guid: 225c27e83b5813b4d892963f2d0c007e,
+    type: 3}
+  chargePrefab: {fileID: 7444786393882248100, guid: 0b8d99cd655c7ed4dab985668b2505e5,
+    type: 3}
+  chargeAnimation: 6
+  attackAnimation: 2

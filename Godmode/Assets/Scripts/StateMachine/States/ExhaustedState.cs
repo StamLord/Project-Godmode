@@ -42,7 +42,7 @@ public class ExhaustedState : State
             if (GroundCheck())
                 Machine.SetState<GroundedState>();
             else
-                Machine.SetState<FallingState>();
+                Machine.SetState<FlyingState>();
         }
 
         PlayerCharacterInputs inputs = new PlayerCharacterInputs();

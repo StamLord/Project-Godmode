@@ -467,10 +467,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0.016758654
       objectReference: {fileID: 0}
-    - target: {fileID: 832487515, guid: 88af3955380c6cf4aa62085cc012e590, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4631910735326543528, guid: 88af3955380c6cf4aa62085cc012e590,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -531,10 +527,6 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: 0.92434835
       objectReference: {fileID: 0}
-    - target: {fileID: 832487518, guid: 88af3955380c6cf4aa62085cc012e590, type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: bde509ea4de96da45a85c9296d5a8034, type: 2}
     - target: {fileID: 4631910735326543534, guid: 88af3955380c6cf4aa62085cc012e590,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -675,11 +667,6 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: 0.8863531
       objectReference: {fileID: 0}
-    - target: {fileID: 5551632430812409267, guid: 88af3955380c6cf4aa62085cc012e590,
-        type: 3}
-      propertyPath: localPlayer
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4631910735326543540, guid: 88af3955380c6cf4aa62085cc012e590,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -760,11 +747,6 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: 0.94943863
       objectReference: {fileID: 0}
-    - target: {fileID: 4631910735329619864, guid: 88af3955380c6cf4aa62085cc012e590,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 87d86a190fcbba347848030a47867de2, type: 2}
     - target: {fileID: 4631910735326543608, guid: 88af3955380c6cf4aa62085cc012e590,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -779,6 +761,24 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0.00000004340942
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631910735329619864, guid: 88af3955380c6cf4aa62085cc012e590,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 87d86a190fcbba347848030a47867de2, type: 2}
+    - target: {fileID: 5551632430812409267, guid: 88af3955380c6cf4aa62085cc012e590,
+        type: 3}
+      propertyPath: localPlayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 832487518, guid: 88af3955380c6cf4aa62085cc012e590, type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: bde509ea4de96da45a85c9296d5a8034, type: 2}
+    - target: {fileID: 832487515, guid: 88af3955380c6cf4aa62085cc012e590, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88af3955380c6cf4aa62085cc012e590, type: 3}

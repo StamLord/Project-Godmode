@@ -19,9 +19,13 @@ public class Projectile : MonoBehaviour
 
     public bool dieOnExplosion = true;
     public bool explodeOnTerrain = true;
+    public bool explodeOnProjectile = true;
     public bool absorbProjectiles;
+    public bool ignoreSiblingProjectiles;
+    public bool ignoreOwner;
     public bool destroyOnDestructable;
     public float timeBetweenExplosions = .5f;
+    public bool hitMoreThanOnce;
 
     [Header("Slow Down")]
     public float minSlowdownTime;
@@ -114,16 +118,42 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        StateMachine c = other.transform.root.GetComponent<StateMachine>();
+        //Projectiles
+        Projectile p = other.GetComponent<Projectile>();
+        if (p)
+        {
+            if (p.owner == this.owner && ignoreSiblingProjectiles)
+                return;
 
+            if (absorbProjectiles)
+            {
+                if (p.damage < damage)
+                {
+                    damage += p.damage;
+                    return;
+                }
+            }
+
+            if (explodeOnProjectile)
+            {
+                Explode();
+                return;
+            }
+            else
+                return;
+        }
+        
+        //Characters
+        StateMachine c = other.transform.root.GetComponent<StateMachine>();
         if (c)
         {
             //Ignore self for the first second and anybody that was already hit
-            if (c == owner && timer < 1f || hits.Contains(c))
+            if (c == owner && timer < 1f || hits.Contains(c) && !hitMoreThanOnce || c == owner && ignoreOwner)
                 return;
 
             if (c.Hit(damage, owner, transform.position))
             {
+                Debug.Log("Hit::" + c + "Owner::" + owner);
                 if (owner)
                 {
                     owner.AddToCombo(1, damage);
@@ -140,6 +170,7 @@ public class Projectile : MonoBehaviour
             }
         }
 
+        //Rigidbodies
         Rigidbody rb = other.GetComponent<Rigidbody>();
         if (rb)
         {
@@ -148,6 +179,7 @@ public class Projectile : MonoBehaviour
 
         if (other.gameObject.layer == 10) return;
 
+        //Destructable
         Destructable d = other.GetComponent<Destructable>();
         if (d && explodeOnTerrain)
         {
@@ -159,17 +191,8 @@ public class Projectile : MonoBehaviour
                 return;
             }
         }
-
-        Projectile p = other.GetComponent<Projectile>();
-        if(p && absorbProjectiles)
-        {
-            if (p.damage < damage)
-            {
-                damage += p.damage;
-                return;
-            }
-        }
-
+        
+        //Terrain
         if(explodeOnTerrain)
         {
             Explode();

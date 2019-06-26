@@ -24,6 +24,7 @@ public class BeamState : State
         stats = Machine.stats;
         camScript = Machine.camScript;
         camScript.StartShake(false);
+        camScript.TransitionView(ThirdPersonCam.CamView.FiringBeam);
         anim = Machine.anim;
         
         techManager = Machine.techManager;
@@ -107,6 +108,7 @@ public class BeamState : State
     {
         base.OnStateExit();
         camScript.EndShake();
+        camScript.SetDefault();
         techManager.ExitBeamMode();
     }
 }

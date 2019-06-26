@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89699d0f120164e4bac64cf3668a4c1e, type: 3}
+  m_Name: Saw Disk
+  m_EditorClassIdentifier: 
+  Name: Saw Disk
+  Icon: {fileID: 0}
+  healthCost: 0
+  energyCost: 100
+  staminaCost: 0
+  type: 0
+  chargable: 1
+  minChargeTime: 2
+  fullChargeTime: 2
+  autoFire: 0
+  timeBetweenFire: 0
+  castRadius: 0
+  secondary: 0
+  damage: 100
+  fullChargeDamge: 100
+  speed: 50
+  blowBackForce: 20
+  fullChargeBlowBackForce: 0
+  fullChargeScale: {x: 0, y: 0, z: 0}
+  projectile: {fileID: 7376054762743632142, guid: c9425d5cf6c3cf94fa2339cfb2afbf1d,
+    type: 3}
+  chargePrefab: {fileID: 7961329118414600035, guid: f6e4fe8859ea4b24999ffd099b1ca421,
+    type: 3}
+  chargeAnimation: 6
+  attackAnimation: 2

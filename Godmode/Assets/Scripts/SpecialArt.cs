@@ -30,14 +30,14 @@ public class SpecialArt : Technique
     public int speed;
     public float blowBackForce;
     public float fullChargeBlowBackForce;
-    public int fullChargeScale;
+    public Vector3 fullChargeScale;
 
     [Header("Prefabs")]
     public GameObject projectile;
     public GameObject chargePrefab;
 
     [Header("Animation")]
-    [Range(1, 5)] public int chargeAnimation = 1;
+    [Range(1, 6)] public int chargeAnimation = 1;
     [Range(1, 5)] public int attackAnimation = 1;
 }
 
